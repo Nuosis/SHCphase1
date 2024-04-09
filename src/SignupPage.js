@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext'; // Ensure this path is correct
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './Security/inputValidation.js';
 import Popup from './UI Elements/Popup.js'
+import { createRecord } from './FileMaker/createRecord.js';
 
 
 function SignupPage() {
@@ -76,18 +77,18 @@ function SignupPage() {
             setPopup({ show: true, message: `Login Failed. ${authState.error.message}` });
         }
     };
-    
-
 
     const handleCreateAccount = async (event) => {
-        //TODO: street validation
         console.log('handleCreateAccount')
         event.preventDefault();
     
         let sanitizedFormData = {};
         let isFormValid = true;
         let validationMessage = '';
-    
+        /**
+         * FORM VALIDATION AND PREPERATION
+         */
+        //TODO: street validation
         for (const [key, value] of Object.entries(formFields)) {
             // Directly sanitize each input value
             let sanitizedValue = sanitizeInput(value);
@@ -127,6 +128,10 @@ function SignupPage() {
             setPopup({ show: true, message: validationMessage });
             return;
         }
+
+        /**
+         * USER CREATATION
+         */
     
         try {
             await createAuthUser(sanitizedFormData);
@@ -137,20 +142,51 @@ function SignupPage() {
 
         //TODO: Pass Form details to FileMaker >> end point to CRUD data /clarityData implemented
     
+        // create party record in FileMaker
+        let partyResult = {}
         try {
-            await logIn(sanitizedFormData);
-            setPopup({ show: true, message: "Account created successfully!" });
+            const params = {
+                fieldData: {
+                    displayName: `${sanitizedFormData.firstName} ${sanitizedFormData.lastName}`,
+                    f_company: "0", // Assuming this is a constant for all new records
+                    firstName: sanitizedFormData.firstName,
+                    lastName: sanitizedFormData.lastName,
+                }
+            };
+            const layout = "dapiParty"
+            partyResult = await createRecord(authState.token,params,layout);
+            console.log(partyResult) //remove in production
         } catch (error) {
-            setPopup({ show: true, message: "Login Failed." });
+            setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
+        }
+
+        // get party::__ID
+        const partyID = partyResult.response.data[0].fieldData["__ID"]
+
+        // create email record in FileMaker
+        let emailResult = {}
+        try {
+            const params = {
+                fieldData: {
+                    email: sanitizedFormData.email,
+                    label: "main",
+                    f_primary: 1,
+                    "_fkID": partyID,
+                }
+            };
+            const layout = "dapiEmail"
+            emailResult = await createRecord(authState.token,params,layout);
+            console.log(emailResult)
+        } catch (error) {
+            setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
         }
     };
-    
-    
 
     const handleChangeForm = () => {
         setIsCreatingAccount(true);
     };
 
+    //TODO: create consent to text flag. pop up if checked on creatation explaining sms usage. if user uncheck explain impact
     return (
         <div className="container mx-auto px-4">
             {/* Overlay and POPUP */}
