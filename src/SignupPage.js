@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
-import { useAuth } from './AuthContext'; // Ensure this path is correct
+import React, { useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { useWorkOrder } from './WorkOrderContext';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './Security/inputValidation.js';
 import Popup from './UI Elements/Popup.js'
 import { createRecord } from './FileMaker/createRecord.js';
+import { useNavigate } from 'react-router-dom';
+
 
 
 function SignupPage() {
-    const { createAuthUser, logIn, authState, setAuthState } = useAuth(); // Assuming createUser is the function for account creation
+    const { createAuthUser, logIn, authState, setAuthState } = useAuth();
+    const { setWorkOrderData } = useWorkOrder();
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authState.userToken) {
+            const storedData = localStorage.getItem('formData');
+            try {
+                if (storedData) {
+                    setWorkOrderData(JSON.parse(storedData));
+                    // localStorage.removeItem('cleaningFormData'); // Optional: Clear the local storage
+                    // navigate('/customer-portal'); // Navigate to customer portal
+                }
+            } catch (error) {
+                console.error('Error parsing stored work order data:', error);
+                setPopup({ show: true, message: "Failed to load work order data. Please try again." });
+            }
+        }
+    }, [authState.userToken, navigate, setWorkOrderData]);
+    
 
     // State for each field
     const [formFields, setFormFields] = useState({
@@ -76,6 +98,8 @@ function SignupPage() {
             }));
             setPopup({ show: true, message: `Login Failed. ${authState.error.message}` });
         }
+
+        navigate('/customer-portal');
     };
 
     const handleCreateAccount = async (event) => {
@@ -135,14 +159,19 @@ function SignupPage() {
     
         try {
             await createAuthUser(sanitizedFormData);
+            console.log('user account created')
             setPopup({ show: true, message: "Account created successfully!" });
         } catch (error) {
+            console.log('user account creation failed')
+            console.error(error)
             setPopup({ show: true, message: "Failed to create account. Please try again." });
+            return
+            
         }
-
-        //TODO: Pass Form details to FileMaker >> end point to CRUD data /clarityData implemented
     
-        // create party record in FileMaker
+        // create records in FileMaker
+
+        console.log("creating party in FileMaker")
         let partyResult = {}
         try {
             const params = {
@@ -154,16 +183,19 @@ function SignupPage() {
                 }
             };
             const layout = "dapiParty"
-            partyResult = await createRecord(authState.token,params,layout);
-            console.log(partyResult) //remove in production
+            const returnRecord = true;
+            partyResult = await createRecord(authState.token,params,layout,returnRecord);
+            // console.log(partyResult) //remove in production
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
         }
 
         // get party::__ID
         const partyID = partyResult.response.data[0].fieldData["__ID"]
+        console.log("party created",partyID) //remove in production
 
         // create email record in FileMaker
+        console.log("creating email in FileMaker")
         let emailResult = {}
         try {
             const params = {
@@ -175,11 +207,65 @@ function SignupPage() {
                 }
             };
             const layout = "dapiEmail"
-            emailResult = await createRecord(authState.token,params,layout);
-            console.log(emailResult)
+            const emailReturn = false;
+            emailResult = await createRecord(authState.token,params,layout, emailReturn);
+            // console.log(emailResult)
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
         }
+        console.log("email created")
+
+        // create phone record in FileMaker
+        console.log("creating email in FileMaker")
+        let phoneResult = {}
+        try {
+            const params = {
+                fieldData: {
+                    phone: sanitizedFormData.phoneNumber,
+                    label: "main",
+                    f_primary: 1,
+                    f_sms: 1,
+                    "_fkID": partyID,
+                }
+            };
+            const layout = "dapiEmail"
+            const phoneReturn = false;
+            phoneResult = await createRecord(authState.token,params,layout, phoneReturn);
+            console.log(phoneResult)
+        } catch (error) {
+            setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
+        }
+        console.log("phone created")
+
+        // create address record in FileMaker
+        console.log("creating address in FileMaker")
+        let addressResult = {}
+        try {
+            const params = {
+                fieldData: {
+                    prov: sanitizedFormData.province,
+                    city: sanitizedFormData.city,
+                    streetAddress: sanitizedFormData.street,
+                    type: "home",
+                    label: "main",
+                    f_primary: 1,
+                    f_sms: 1,
+                    "_fkID": partyID,
+                }
+            };
+            const layout = "dapiEmail"
+            const returnResult = false;
+            addressResult = await createRecord(authState.token,params,layout, returnResult);
+            console.log(addressResult)
+        } catch (error) {
+            setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
+        }
+        console.log("address created")
+
+        //TODO: update authUser with partyID
+
+        //redirect user to customer portal
+        navigate('/customer-portal');
     };
 
     const handleChangeForm = () => {

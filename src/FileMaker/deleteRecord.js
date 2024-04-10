@@ -1,14 +1,16 @@
 
 
-async function deleteRecord(token, params, layout) {
+async function deleteRecord(token, params, layout, recordID) {
+
+    console.log("FileMaker_deleteRecord called")
     // Prepare the data for the API call
     const payloadData = {
         method: "deleteRecord",
         server: "server.selectjanitorial.com",
         database: "clarityData",
         layout,
-        recordId: params.recordID,
-        params: params.params
+        recordId: recordID,
+        params: params
     };
 
     try {
@@ -29,8 +31,8 @@ async function deleteRecord(token, params, layout) {
 
         // Check if the response indicates success
         if (responseData.messages && responseData.messages[0].code === "0") {
-            console.log("Record created successfully", responseData.response);
-            return responseData.response
+            console.log("Record deleted successfully", responseData.response);
+            return responseData
         } else {
             throw new Error(`Failed to create record: ${responseData.messages[0].message}`);
         }

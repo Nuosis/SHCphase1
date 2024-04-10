@@ -53,19 +53,20 @@ export const AuthProvider = ({ children }) => {
 
 
     const createAuthUser = async (formData) => {
-
+        console.log('creatingAuthUser')
         const data = {
-            apiKey: authState.token,
-            username: authState.adminUserName,
+            accessLevel: "Standard",
             newUserName: formData.email,
             newPassword: formData.password,
         };
 
-        try {
+        try {        
+            console.log("token: ",authState.token)
             const response = await fetch(`${variables.server}/createUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authState.token,
                 },
                 body: JSON.stringify(data),
             });
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }) => {
             // Update state with the login data
             setAuthState(prevState => ({
                 ...prevState,
-                token: responseData.token,
+                userToken: responseData.token,
             }));
 
         } catch (error) {

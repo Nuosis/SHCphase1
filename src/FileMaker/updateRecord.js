@@ -1,14 +1,15 @@
 
 
-async function updateRecord(token, params, layout) {
+async function updateRecord(token, params, layout, recordID) {
+    console.log("FileMaker_updateRecord called")
     // Prepare the data for the API call
     const payloadData = {
         method: "editRecord",
         server: "server.selectjanitorial.com",
         database: "clarityData",
         layout,
-        recordId: params.recordID,
-        params: params.params
+        recordID,
+        params: params
     };
 
     try {
@@ -30,7 +31,7 @@ async function updateRecord(token, params, layout) {
         // Check if the response indicates success
         if (responseData.messages && responseData.messages[0].code === "0") {
             console.log("Record updated successfully", responseData.response);
-            return responseData.response
+            return responseData
         } else {
             throw new Error(`Failed to create record: ${responseData.messages[0].message}`);
         }
