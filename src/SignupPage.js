@@ -4,9 +4,11 @@ import { useWorkOrder } from './WorkOrderContext';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './Security/inputValidation.js';
 import Popup from './UI Elements/Popup.js'
 import { createRecord } from './FileMaker/createRecord.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+} 
 
 function SignupPage() {
     const { createAuthUser, logIn, authState, setAuthState } = useAuth();
@@ -14,22 +16,30 @@ function SignupPage() {
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
     const navigate = useNavigate();
+    const formToken = useQuery().get('form');
+    console.log("formToken: ",formToken)
 
     useEffect(() => {
-        if (authState.userToken) {
-            const storedData = localStorage.getItem('formData');
+        const detokenize = async (token) => {
             try {
-                if (storedData) {
-                    setWorkOrderData(JSON.parse(storedData));
-                    // localStorage.removeItem('cleaningFormData'); // Optional: Clear the local storage
-                    // navigate('/customer-portal'); // Navigate to customer portal
+                const response = await fetch(`https://server.claritybusinesssolutions.ca/detokenize?token=${token}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const formData = await response.json();
+                setWorkOrderData(formData);
+                // Optionally navigate here or elsewhere depending on your application logic
             } catch (error) {
-                console.error('Error parsing stored work order data:', error);
-                setPopup({ show: true, message: "Failed to load work order data. Please try again." });
+                console.error("Error detokenizing data: ", error);
+                setPopup({ show: true, message: "Failed to load form data. Please try again." });
             }
+        };
+
+        if (authState.userToken && formToken) {
+            console.log("detokenizeCalled")
+            detokenize(formToken);
         }
-    }, [authState.userToken, navigate, setWorkOrderData]);
+    }, [authState.userToken, formToken, setWorkOrderData, navigate]);
     
 
     // State for each field
@@ -69,10 +79,9 @@ function SignupPage() {
             [name]: value // Dynamically update the appropriate field based on input name
         }));
     };
-    
 
     const handleLoginSubmit = async (event) => {
-        console.log("loginSubmitted")
+        // console.log("loginSubmitted")
         event.preventDefault();
     
         const email = formFields.email; // Assuming you are using the consolidated state for formFields
@@ -81,6 +90,7 @@ function SignupPage() {
         try {
             // Assuming `login` is an async function that posts to the login endpoint
             const responseData = await logIn({ email, password });
+            console.log({responseData})
             // Handle success
             setAuthState(prevState => ({
             ...prevState,
@@ -96,7 +106,7 @@ function SignupPage() {
                 ...prevState,
                 errorMessage: error.message,
             }));
-            setPopup({ show: true, message: `Login Failed. ${authState.error.message}` });
+            setPopup({ show: true, message: `Login Failed. ${authState.errorMessage}` });
         }
 
         navigate('/customer-portal');
@@ -216,7 +226,7 @@ function SignupPage() {
         console.log("email created")
 
         // create phone record in FileMaker
-        console.log("creating email in FileMaker")
+        console.log("creating phone in FileMaker")
         let phoneResult = {}
         try {
             const params = {
@@ -262,7 +272,35 @@ function SignupPage() {
         }
         console.log("address created")
 
-        //TODO: update authUser with partyID
+        // update AuthUser with FileMakerID
+        console.log("Updating Auth User")
+        const data = {newFileMakerID: partyID}
+        try {        
+            const response = await fetch(`${authState.server}/updateUser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authState.token,
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const responseData = await response.json();
+            console.log('User Updated:', responseData);
+        } catch (error) {
+            console.error('Create User Error:', error);
+            setAuthState(prevState => ({
+                ...prevState,
+                errorMessage: error.message,
+            }));
+        }
+
+        setPopup({ show: true, message: "Account Created!" });
+    
 
         //redirect user to customer portal
         navigate('/customer-portal');

@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
         userToken: "",
         adminUserName: variables.adminUserName,
         adminPassword: variables.adminPassword,
+        server: variables.server,
         errorMessage: null, // For storing login errors
     });
 
@@ -22,8 +23,8 @@ export const AuthProvider = ({ children }) => {
             password: formData.password,
             apiKey: authState.apiKey,
         };
-        console.log("requestData: ",requestData)
-        console.log("serverURL: ",variables.server)
+        //console.log("requestData: ",requestData)
+        //console.log("serverURL: ",variables.server)
 
         try {
             const response = await fetch(`${variables.server}/login`, {
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             }
     
             const responseData = await response.json();
-            console.log("Login success: ", responseData);
+            // console.log("Login success: ", responseData);
             return responseData
         } catch (error) {
             console.error("Login failed: ", error);
