@@ -2,47 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useWorkOrder } from './WorkOrderContext';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './Security/inputValidation.js';
-import Popup from './UI Elements/Popup.js'
+import Popup from './UI Elements/Popup.js';
 import { createRecord } from './FileMaker/createRecord.js';
 import { useNavigate, useLocation } from 'react-router-dom';
+import provinces from './Environment/provinces.json';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
-} 
+}
 
 function SignupPage() {
     const { createAuthUser, logIn, authState, setAuthState } = useAuth();
-    const { setWorkOrderData } = useWorkOrder();
+    const { workOrderData, setWorkOrderData } = useWorkOrder();
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
-    const navigate = useNavigate();
-    const formToken = useQuery().get('form');
-    console.log("formToken: ",formToken)
-
-    useEffect(() => {
-        const detokenize = async (token) => {
-            try {
-                const response = await fetch(`https://server.claritybusinesssolutions.ca/detokenize?token=${token}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const formData = await response.json();
-                setWorkOrderData(formData);
-                // Optionally navigate here or elsewhere depending on your application logic
-            } catch (error) {
-                console.error("Error detokenizing data: ", error);
-                setPopup({ show: true, message: "Failed to load form data. Please try again." });
-            }
-        };
-
-        if (authState.userToken && formToken) {
-            console.log("detokenizeCalled")
-            detokenize(formToken);
-        }
-    }, [authState.userToken, formToken, setWorkOrderData, navigate]);
-    
-
-    // State for each field
     const [formFields, setFormFields] = useState({
         firstName: '',
         lastName: '',
@@ -54,62 +27,88 @@ function SignupPage() {
         password: '',
         confirmPassword: '',
     });
+    const navigate = useNavigate();
+    const formToken = useQuery().get('token'); // get param token from url
+    // console.log("formToken: ",formToken)
 
-    const provinces = [
-        { code: "AB", name: "Alberta" },
-        { code: "BC", name: "British Columbia" },
-        { code: "MB", name: "Manitoba" },
-        { code: "NB", name: "New Brunswick" },
-        { code: "NL", name: "Newfoundland and Labrador" },
-        { code: "NS", name: "Nova Scotia" },
-        { code: "ON", name: "Ontario" },
-        { code: "PE", name: "Prince Edward Island" },
-        { code: "QC", name: "Quebec" },
-        { code: "SK", name: "Saskatchewan" },
-        { code: "NT", name: "Northwest Territories" },
-        { code: "NU", name: "Nunavut" },
-        { code: "YT", name: "Yukon" }
-    ];
+    useEffect(() => {
+        async function fetchAndSetFormData() {
+            if (formToken) {
+                try {
+                    const data = await detokenize(formToken);
+                    if (!data) {
+                        throw new Error("Form data fetch failed");
+                    }
+                    setWorkOrderData(data.decoded.data);
+                } catch (error) {
+                    console.error("Detokenization failed: ", error.message);
+                    setPopup({ show: true, message: "Failed to load form data. Please try again." });
+                }
+            }
+        }
+        fetchAndSetFormData();
+    }, [formToken, setWorkOrderData]);
 
-
-    const handleChange = (event) => {
-        const { name, value } = event.target; // Get the input name and value from the event target
-        setFormFields(prevFields => ({
-            ...prevFields,
-            [name]: value // Dynamically update the appropriate field based on input name
-        }));
-    };
-
-    const handleLoginSubmit = async (event) => {
-        // console.log("loginSubmitted")
-        event.preventDefault();
-    
-        const email = formFields.email; // Assuming you are using the consolidated state for formFields
-        const password = formFields.password;
-    
+    async function detokenize(token) {
         try {
-            // Assuming `login` is an async function that posts to the login endpoint
-            const responseData = await logIn({ email, password });
-            console.log({responseData})
-            // Handle success
-            setAuthState(prevState => ({
-            ...prevState,
-            userToken: responseData.token,
-            // Update other state based on responseData as needed
-            })); 
-            setPopup({ show: true, message: `Logged In` })
-            console.log("token", authState.userToken);
+            const response = await fetch(`${authState.server}/getTokenData?token=${token}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
         } catch (error) {
-            // Handle login failure
-            console.error("Login failed: ", error.message);
+            console.error("Detokenization failed: ", error.message);
             setAuthState(prevState => ({
                 ...prevState,
                 errorMessage: error.message,
             }));
-            setPopup({ show: true, message: `Login Failed. ${authState.errorMessage}` });
+            throw error; // Rethrow to handle in the calling context
         }
+    }
 
-        navigate('/customer-portal');
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormFields(prevFields => ({
+            ...prevFields,
+            [name]: value
+        }));
+    };
+
+    const handleLoginSubmit = async (event) => {
+        event.preventDefault();
+    
+        const email = formFields.email;
+        const password = formFields.password;
+    
+        try {
+            const responseData = await logIn({ email, password });
+            if (!responseData || !responseData.token) {
+                throw new Error("Invalid login response");
+            }
+            setAuthState(prevState => ({
+                ...prevState,
+                userToken: responseData.token,
+            }));
+
+            if (workOrderData && Object.keys(workOrderData).length > 0) {
+                setPopup({ show: true, message: "Login successful." });
+            } else {
+                throw new Error("Work order data is not set. Check detokenization process.");
+            }
+    
+            setTimeout(() => navigate('/customer-portal'), 500);
+        } catch (error) {
+            console.error("Login or detokenization failed: ", error.message);
+            setAuthState(prevState => ({
+                ...prevState,
+                errorMessage: error.message,
+            }));
+            setPopup({ show: true, message: `Login Failed. ${error.message}` });
+            return
+        }
     };
 
     const handleCreateAccount = async (event) => {
@@ -299,11 +298,16 @@ function SignupPage() {
             }));
         }
 
-        setPopup({ show: true, message: "Account Created!" });
-    
-
+        if (workOrderData && Object.keys(workOrderData).length > 0) {
+            setPopup({ show: true, message: "Account Created!" });
+        } else {
+            throw new Error("Work order data is not set. Check detokenization process.");
+        }
+        
         //redirect user to customer portal
-        navigate('/customer-portal');
+        setTimeout(() => {  // Delay navigation
+            navigate('/customer-portal');
+        }, 500); 
     };
 
     const handleChangeForm = () => {

@@ -2,7 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CUSTOMER PORTAL*/
 
+.customerPortal {
+    background-color: #CAF0F8; /* Soft baby blue background */
+    min-height: 100vh; /* Ensures it takes at least the full height of the viewport */
+    min-width: 100%; /* Ensures it takes the full width of the viewport */
+    width: 100vw; /* Ensures the div uses the total available width */
+    height: auto; /* Responsive height based on content */
+    display: flex; /* Flexbox for layout */
+    flex-direction: row; /* Stack children horizontally */
+    justify-content: space-between; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+  }
+  
+  /* Ensure responsiveness on smaller devices like cell phones */
+  @media (max-width: 480px) {
+    .customerPortal {
+      min-width: 320px; /* Minimum width no smaller than typical cell phone width */
+    }
+  }
+
+  .leftBackgroundShadowBox {
+    width: 30%; /* Sets width to one fifth of the parent container */
+    height: 100vh;
+    margin: 10px 10px 10px 0; /* 20px margin for top, right, and bottom, none on the left */
+    background: linear-gradient(to bottom right, #FFFACD 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
+    border-top-right-radius: 20px; /* Large rounded corner on the top right */
+    border-bottom-right-radius: 20px; /* Large rounded corner on the bottom right */
+    display: flex; /* Flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+    padding: 20px; /* Padding inside the box */
+  }
+  
+  @media (max-width: 768px) {
+    .leftBackgroundShadowBox {
+      width: 100%; /* Full width on smaller screens */
+    }
+  }
+
+  .middleBackgroundShadowBox {
+    width: 36%; /* Sets width to one fifth of the parent container */
+    height: 100vh;
+    margin: 10px 0px 10px 0px; /* 20px margin for top, right, and bottom, none on the left */
+    background: linear-gradient(to bottom right, #B6CDA5 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
+    border-radius: 20px; /* Large rounded corner on the top right */
+    display: flex; /* Flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+    padding: 20px; /* Padding inside the box */
+  }
+  
+  @media (max-width: 768px) {
+    .middleBackgroundShadowBox {
+      width: 100%; /* Full width on smaller screens */
+    }
+  }
+
+  .rightBackgroundShadowBox {
+    width: 30%; /* Sets width to one fifth of the parent container */
+    height: 100vh;
+    margin: 10px 0px 10px 10px; /* 20px margin for top, right, and bottom, none on the left */
+    background: linear-gradient(to bottom right, #8EB48F 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
+    border-top-left-radius: 20px; /* Large rounded corner on the top right */
+    border-bottom-left-radius: 20px; /* Large rounded corner on the bottom right */
+    display: flex; /* Flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+    padding: 20px; /* Padding inside the box */
+  }
+  
+  @media (max-width: 768px) {
+    .rightBackgroundShadowBox {
+      width: 100%; /* Full width on smaller screens */
+    }
+  }
+
+  /* UI ELEMENTS*/
 
 .popup-overlay {
     position: fixed;
@@ -24,3 +102,23 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     z-index: 1001; /* Above the overlay */
 }
+
+/* images/portraits */
+.portraitContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Adjust the height of the container as needed */
+    width: 100%; /* Adjust the width of the container as needed */
+    max-height: 200px; /* Maximum size */
+    max-width: 200px; /* Maximum size */
+    overflow: hidden;
+  }
+  
+  .circularPortraitFrame {
+    border: 10px solid white; /* Change the color as needed */
+    height: 100%; /* Fills the height of the container */
+    width: 100%; /* Fills the width of the container */
+    border-radius: 50%; /* Creates a circular shape */
+    object-fit: cover; /* Ensures the image within the frame does not get distorted */
+  }

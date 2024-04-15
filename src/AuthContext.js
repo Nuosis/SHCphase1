@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         //console.log("serverURL: ",variables.server)
 
         try {
-            const response = await fetch(`${variables.server}/login`, {
+            const response = await fetch(`${authState.server}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData),
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             }
     
             const responseData = await response.json();
-            // console.log("Login success: ", responseData);
+            console.log("Login success");
             return responseData
         } catch (error) {
             console.error("Login failed: ", error);
