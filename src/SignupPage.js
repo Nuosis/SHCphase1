@@ -47,7 +47,7 @@ function SignupPage() {
             }
         }
         fetchAndSetFormData();
-    }, [formToken, setWorkOrderData]);
+    }, [formToken, setWorkOrderData,]);
 
     async function detokenize(token) {
         try {

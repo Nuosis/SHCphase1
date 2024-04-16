@@ -1,5 +1,5 @@
 import React from 'react';
-import '../index.css'; // Import the CSS for styling
+import '../index.css';
 
 const Portrait = ({ imageUrl }) => {
   return (

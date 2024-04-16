@@ -26,13 +26,14 @@
 
   .leftBackgroundShadowBox {
     width: 30%; /* Sets width to one fifth of the parent container */
-    height: 100vh;
+    height: 96vh;
     margin: 10px 10px 10px 0; /* 20px margin for top, right, and bottom, none on the left */
     background: linear-gradient(to bottom right, #FFFACD 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-top-right-radius: 20px; /* Large rounded corner on the top right */
-    border-bottom-right-radius: 20px; /* Large rounded corner on the bottom right */
+    border-top-right-radius: 40px; /* Large rounded corner on the top right */
+    border-bottom-right-radius: 40px; /* Large rounded corner on the bottom right */
     display: flex; /* Flexbox for layout */
     flex-direction: column; /* Stack children vertically */
+    align-items: center;
     box-sizing: border-box; /* Include padding and border in the width and height */
     padding: 20px; /* Padding inside the box */
   }
@@ -45,12 +46,13 @@
 
   .middleBackgroundShadowBox {
     width: 36%; /* Sets width to one fifth of the parent container */
-    height: 100vh;
+    height: 96vh;
     margin: 10px 0px 10px 0px; /* 20px margin for top, right, and bottom, none on the left */
     background: linear-gradient(to bottom right, #B6CDA5 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-radius: 20px; /* Large rounded corner on the top right */
+    border-radius: 40px; /* Large rounded corner on the top right */
     display: flex; /* Flexbox for layout */
     flex-direction: column; /* Stack children vertically */
+    flex-grow: 1;
     box-sizing: border-box; /* Include padding and border in the width and height */
     padding: 20px; /* Padding inside the box */
   }
@@ -63,11 +65,11 @@
 
   .rightBackgroundShadowBox {
     width: 30%; /* Sets width to one fifth of the parent container */
-    height: 100vh;
+    height: 96vh;
     margin: 10px 0px 10px 10px; /* 20px margin for top, right, and bottom, none on the left */
     background: linear-gradient(to bottom right, #8EB48F 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-top-left-radius: 20px; /* Large rounded corner on the top right */
-    border-bottom-left-radius: 20px; /* Large rounded corner on the bottom right */
+    border-top-left-radius: 40px; /* Large rounded corner on the top right */
+    border-bottom-left-radius: 40px; /* Large rounded corner on the bottom right */
     display: flex; /* Flexbox for layout */
     flex-direction: column; /* Stack children vertically */
     box-sizing: border-box; /* Include padding and border in the width and height */
@@ -108,8 +110,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%; /* Adjust the height of the container as needed */
-    width: 100%; /* Adjust the width of the container as needed */
     max-height: 200px; /* Maximum size */
     max-width: 200px; /* Maximum size */
     overflow: hidden;
@@ -121,4 +121,73 @@
     width: 100%; /* Fills the width of the container */
     border-radius: 50%; /* Creates a circular shape */
     object-fit: cover; /* Ensures the image within the frame does not get distorted */
+    box-shadow: inset 0px -8px 15px -10px rgba(0, 0, 0, 0.2);
   }
+
+  /* CARDS*/
+  .simpleCard {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    padding: 10px 30px;
+    margin: 10px 0px 10px 0px;
+    background-color: #fffffc; /* Equivalent to RGB(255, 252, 233) */
+    border-radius: 20px;
+    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
+    width: 100%; /* Adjust based on parent container or specific needs */
+  }
+  
+  .cardIcon {
+    flex: 0 0 33.333%; /* Takes up 1/3 of the card */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Shows a pointer cursor if the icon is clickable */
+  }
+  
+  .cardText {
+    flex: 0 0 66.666%; /* Takes up 2/3 of the card */
+    padding: 0 30px;
+    color: #18313a;
+    flex-grow: 1;
+  }
+
+  .headerCard {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff; /* Equivalent to RGB(255, 252, 233) */
+    border-radius: 20px;
+    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
+    margin: 10px 0px 10px 0px;
+    width: 100%;
+  }
+
+  .headerCardHeader {
+    padding: 10px 30px;
+    border-radius: 20px 20px 0px 0px;
+    background-color: #f8fdff; /* Soft baby blue */
+    color: #0d1d23;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #5f92a4; /* Dark blue line */
+    text-align: left;
+  }
+
+  .headerRow {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+  }
+  
+  .headerRowIcon {
+    width: 20px; /* Fixed width for icon */
+    margin-right: 20px; /* Space between icon and text */
+  }
+  
+  .headerRowText {
+    flex-grow: 1;
+    font-weight: bold;
+    font-size: 16px;
+    color: #18313a;
+  }
+  
