@@ -113,6 +113,7 @@
     max-height: 200px; /* Maximum size */
     max-width: 200px; /* Maximum size */
     overflow: hidden;
+    padding: 15px;
   }
   
   .circularPortraitFrame {
@@ -122,6 +123,7 @@
     border-radius: 50%; /* Creates a circular shape */
     object-fit: cover; /* Ensures the image within the frame does not get distorted */
     box-shadow: inset 0px -8px 15px -10px rgba(0, 0, 0, 0.2);
+    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
   }
 
   /* CARDS*/
@@ -160,6 +162,8 @@
     box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
     margin: 10px 0px 10px 0px;
     width: 100%;
+    overflow-y: auto;
+    max-height: 100%;
   }
 
   .headerCardHeader {
@@ -171,6 +175,11 @@
     font-weight: bold;
     border-bottom: 2px solid #5f92a4; /* Dark blue line */
     text-align: left;
+  }
+  
+  .headerCardContent {
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 70vh; /* Set maximum height to 70% of the viewport height */
   }
 
   .headerRow {

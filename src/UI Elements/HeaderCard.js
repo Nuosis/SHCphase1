@@ -7,7 +7,9 @@ const HeaderCard = ({ headerText, headerTextStyle, children }) => {
             <div className="headerCardHeader" style={headerTextStyle}>
                 {headerText}
             </div>
-            {children}
+            <div className="headerCardContent">
+                {children}
+            </div>
         </div>
     );
 };

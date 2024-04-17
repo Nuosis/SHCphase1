@@ -20,7 +20,7 @@ const AccessCard = ({ onSubmitAccess }) => {
         <HeaderCard headerText="Access" headerTextStyle={headerTextStyle}>
             <form onSubmit={handleAccessSubmit} className="flex flex-col gap-4 p-4">
                 <textarea 
-                    className="textarea textarea-bordered w-full" 
+                    className="textarea textarea-bordered w-full h-full" 
                     placeholder="Type your access instructions here..."
                     value={accessInstructions}
                     onChange={(e) => setAccessInstructions(e.target.value)}

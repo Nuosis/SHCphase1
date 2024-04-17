@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext'; // Ensure this path is correct
 import { useWorkOrder } from './WorkOrderContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
 import Portrait from './UI Elements/Portrait';
 import SimpleCard from './UI Elements/SimpleCard.js'
 import HeaderCard from './UI Elements/HeaderCard.js';
 import HeaderRow from './UI Elements/HeaderRow.js';
 import AccessCard from './UI Elements/Access.js'
-import MyPets from './UI Elements/Pet.js';
+import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui/icons-material';
 
@@ -44,12 +44,18 @@ import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui
 
 function CustomerPortal() {
     //STATE
-    const authState = useAuth();
+    const { authState } = useAuth();
     const { workOrderData } = useWorkOrder();
     // const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
     const [popupContent, setPopupContent] = useState('');
     const [activeComponent, setActiveComponent] = useState(null);
+
+    // Dynamic component map
+    const componentMap = {
+        MyPets: MyPets,
+        AccessCard: AccessCard,
+    };
     //FUNCTIONS
     //HANDLERS
     const handleShowData = () => {
@@ -60,13 +66,19 @@ function CustomerPortal() {
         setPopupContent(combinedData);
         setShowPopup(true);
     };
-    const handleComponentChange = (Component, props = {}) => {
-        setActiveComponent(<Component {...props} />);
+
+    const handleComponentChange = (componentKey, props = {}) => {
+        const Component = componentMap[componentKey];
+        if (Component) {
+            setActiveComponent(<Component {...props} />);
+        }
     };
+
     const handleSubmitAccess = (instructions) => {
         console.log('Access Instructions:', instructions);
         // Process the access instructions here
     };
+
     //VARIABLES
     const activityRows = [
         <HeaderRow
@@ -97,7 +109,7 @@ function CustomerPortal() {
         <HeaderRow
             key="info"
             icon={<Info />}
-            onClick={() => console.log('Activity Row 1 clicked')}
+            onClick={() => handleComponentChange('Info')} 
             text='Information'
         />,
         <HeaderRow
@@ -115,13 +127,13 @@ function CustomerPortal() {
         <HeaderRow
             key="pets"
             icon={<Pets />}
-            onClick={() => handleComponentChange(MyPets, { onSubmitAccess: handleSubmitAccess })}
+            onClick={() => handleComponentChange('MyPets', { onSubmitAccess: handleSubmitAccess })}
             text='My Pets'
         />,
         <HeaderRow
         key = "access"
         icon = {<Key />}
-        onClick ={ () => handleComponentChange(AccessCard, { onSubmitAccess: handleSubmitAccess })}
+        onClick ={ () => handleComponentChange('AccessCard', { onSubmitAccess: handleSubmitAccess })}
         text= 'Access'
         />
     ]
