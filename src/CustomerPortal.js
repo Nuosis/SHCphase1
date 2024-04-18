@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext'; // Ensure this path is correct
 import { useWorkOrder } from './WorkOrderContext';
+import { useUser } from './UserContext.js';
 import { useNavigate, useLocation  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
 import Portrait from './UI Elements/Portrait';
@@ -8,6 +9,7 @@ import SimpleCard from './UI Elements/SimpleCard.js'
 import HeaderCard from './UI Elements/HeaderCard.js';
 import HeaderRow from './UI Elements/HeaderRow.js';
 import AccessCard from './UI Elements/Access.js'
+import GeneralInstructions from './Modules/GeneralInstructions.js';
 import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui/icons-material';
@@ -46,6 +48,7 @@ function CustomerPortal() {
     //STATE
     const { authState } = useAuth();
     const { workOrderData } = useWorkOrder();
+    const { userData } = useUser();
     // const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
     const [popupContent, setPopupContent] = useState('');
@@ -55,14 +58,16 @@ function CustomerPortal() {
     const componentMap = {
         MyPets: MyPets,
         AccessCard: AccessCard,
+        GeneralInstructions: GeneralInstructions,
     };
     //FUNCTIONS
     //HANDLERS
     const handleShowData = () => {
         const workOrderDataStringified = JSON.stringify(workOrderData, null, 2);
-        const authStateStringified = JSON.stringify(authState, null, 2);
+        // const authStateStringified = JSON.stringify(authState, null, 2);
+        const userStateStringified = JSON.stringify(userData, null, 2);
 
-        const combinedData = `Context workOrderData: ${workOrderDataStringified} Auth state: ${authStateStringified}`;
+        const combinedData = `Context workOrderData: ${workOrderDataStringified} UserData: ${userStateStringified}`;
         setPopupContent(combinedData);
         setShowPopup(true);
     };
@@ -76,6 +81,16 @@ function CustomerPortal() {
 
     const handleSubmitAccess = (instructions) => {
         console.log('Access Instructions:', instructions);
+        // Process the access instructions here
+    };
+
+    const handleSubmitPets = (Pets) => {
+        console.log('Pets:', Pets);
+        // Process the access instructions here
+    };
+
+    const handleSubmitGenInstruct = (instructions) => {
+        console.log('General Instructions:', instructions);
         // Process the access instructions here
     };
 
@@ -121,19 +136,19 @@ function CustomerPortal() {
         <HeaderRow
             key="instructions"
             icon={<ChecklistRtl />}
-            onClick={() => console.log('Activity Row 2 clicked')}
+            onClick={() => handleComponentChange('GeneralInstructions', { onSubmit: handleSubmitGenInstruct })}
             text='General Instructions'
         />,
         <HeaderRow
             key="pets"
             icon={<Pets />}
-            onClick={() => handleComponentChange('MyPets', { onSubmitAccess: handleSubmitAccess })}
+            onClick={() => handleComponentChange('MyPets', { onSubmit: handleSubmitPets })}
             text='My Pets'
         />,
         <HeaderRow
         key = "access"
         icon = {<Key />}
-        onClick ={ () => handleComponentChange('AccessCard', { onSubmitAccess: handleSubmitAccess })}
+        onClick ={ () => handleComponentChange('AccessCard', { onSubmit: handleSubmitAccess })}
         text= 'Access'
         />
     ]
@@ -142,7 +157,7 @@ function CustomerPortal() {
         <div className="customerPortal">
             <div className="leftBackgroundShadowBox">
                 <Portrait imageUrl={altUserImage} />
-                <SimpleCard text="Welcome Marcus" textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
+                <SimpleCard text = {`Welcome ${userData.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
                 <HeaderCard headerText = "Activity">
                     {activityRows}
                 </HeaderCard>

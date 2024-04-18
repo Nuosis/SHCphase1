@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import HeaderCard from './HeaderCard'; // Import the HeaderCard component
+import HeaderCard from '../UI Elements/HeaderCard';
 import {IconButton} from '../UI Elements/Button';
 import 'daisyui'; // Ensure DaisyUI is imported if it is not globally available
 
-const AccessCard = ({ onSubmitAccess }) => {
-    const [accessInstructions, setAccessInstructions] = useState('');
+const GeneralInstructions = ({ onSubmitGenInstruct }) => {
+    const [generalInstructions, setGeneralInstructions] = useState('');
 
     const headerTextStyle = {
         textAlign: 'center',
@@ -14,17 +14,17 @@ const AccessCard = ({ onSubmitAccess }) => {
 
     const handleAccessSubmit = (e) => {
         e.preventDefault();
-        onSubmitAccess(accessInstructions); // This function should be defined in the parent component or context
+        onSubmitGenInstruct(generalInstructions); // This function should be defined in the parent component or context
     };
 
     return (
-        <HeaderCard headerText="Access" headerTextStyle={headerTextStyle}>
+        <HeaderCard headerText="General Instructions" headerTextStyle={headerTextStyle}>
             <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
                 <textarea 
                     className="textarea textarea-bordered w-full flex-grow overflow-y-auto" 
-                    placeholder="Type your access instructions here..."
-                    value={accessInstructions}
-                    onChange={(e) => setAccessInstructions(e.target.value)}
+                    placeholder="Type any additional instructions here. These will be sent to the cleaner for every clean. Your preferences, (scent, areas of focus, etc) are really helpful here."
+                    value={generalInstructions}
+                    onChange={(e) => setGeneralInstructions(e.target.value)}
                 />
                 <IconButton
                     className="btn btn-primary"
@@ -36,4 +36,4 @@ const AccessCard = ({ onSubmitAccess }) => {
     );
 };
 
-export default AccessCard;
+export default GeneralInstructions;

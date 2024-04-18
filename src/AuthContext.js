@@ -62,7 +62,6 @@ export const AuthProvider = ({ children }) => {
         };
 
         try {        
-            console.log("token: ",authState.token)
             const response = await fetch(`${variables.server}/createUser`, {
                 method: 'POST',
                 headers: {
@@ -84,6 +83,7 @@ export const AuthProvider = ({ children }) => {
                 ...prevState,
                 userToken: responseData.token,
             }));
+            return true; // Indicates success
 
         } catch (error) {
             console.error('Create User Error:', error);
@@ -91,6 +91,7 @@ export const AuthProvider = ({ children }) => {
                 ...prevState,
                 errorMessage: error.message,
             }));
+            return false;
         }
     };
 
