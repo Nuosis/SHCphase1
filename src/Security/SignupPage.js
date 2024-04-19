@@ -6,7 +6,7 @@ import { useUser } from '../UserContext.js';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
-import { readRecord } from '../FileMaker/readRecord.js';
+import { /*readRecord*/ } from '../FileMaker/readRecord.js';
 import provinces from '../Environment/provinces.json';
 
 function useQuery() {
@@ -16,7 +16,7 @@ function useQuery() {
 function SignupPage() {
     const { createAuthUser, logIn, authState, setAuthState } = useAuth();
     const { workOrderData, setWorkOrderData } = useWorkOrder();
-    const { userData, setUserData } = useUser();
+    const { /*userData, setUserData,*/ getUserData } = useUser();
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
     const [formFields, setFormFields] = useState({
@@ -96,15 +96,11 @@ function SignupPage() {
                 userToken: responseData.token,
             }));
             const filemakerId = responseData.filemakerId
-            const layout = "dapiPartyObject"
-            const query = [
-                {"__ID": filemakerId}
-            ];
-            const filemakerUserObject = await readRecord(authState.token,{query},layout);
-            if(filemakerUserObject.length===0){
-                throw new Error("Error on getting user info from FileMaker")
+            const userDataInit = await getUserData(filemakerId)
+
+            if (!userDataInit) {
+                throw new Error("User data is not set. Check user context.");
             };
-            setUserData({appUserData: responseData,fmUserData: filemakerUserObject.response.data});
 
             if (workOrderData && Object.keys(workOrderData).length > 0) {
                 setPopup({ show: true, message: "Login successful." });

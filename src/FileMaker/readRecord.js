@@ -1,7 +1,7 @@
 
 
 async function readRecord(token, params, layout) {
-    console.log("FileMaker_readRecord called")
+    console.log("FileMaker Read called")
     // Prepare the data for the API call
     const payloadData = {
         method: "findRecord",
@@ -29,7 +29,6 @@ async function readRecord(token, params, layout) {
 
         // Check if the response indicates success
         if (responseData.messages && responseData.messages[0].code === "0") {
-            console.log("Record found successfully", responseData.response);
             return responseData
         } else {
             throw new Error(`Failed to create record: ${responseData.messages[0].message}`);
@@ -37,6 +36,7 @@ async function readRecord(token, params, layout) {
 
 
     } catch (error) {
+        console.log("Find unsuccessfull");
         console.error("Error creating account: ", error.message);
         throw error; // Rethrow the error to be handled by the caller
     }

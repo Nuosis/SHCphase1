@@ -5,13 +5,18 @@ import {IconButton} from '../UI Elements/Button';
 import PetRow from './PetRow';
 import NewPet from './PetNew';
 
-const MyPets = () => {
+const MyPets = ({json, onSubmit}) => {
+    console.log('MyPets Called: ',{json})
+    // Convert the initial JSON data to a usable state format
+    const parsedPets = json.map((entry) => ({
+        ...JSON.parse(entry.data),
+        id: entry.ID,
+        dapiRecordID: entry.dapiRecordID
+    }));
+    console.log({parsedPets})
     //STATE
-    const [pets, setPets] = useState([
-        { id: 1, type: 'cat', name: 'Whiskers', temperament: ['Cuddly', 'Sleepy'], specialInstructions: 'None' },
-        { id: 2, type: 'dog', name: 'Rover', temperament: ['Playful', 'Energetic'], specialInstructions: 'Needs lots of exercise' },
-    ]);
-    const [showNewPetForm, setShowNewPetForm] = useState(false);
+    const [pets, setPets] = useState(parsedPets);
+    const [showNewPetForm, setShowNewPetForm] = useState(false); // show form if pets array is empty
     const [editablePet, setEditablePet] = useState({});
 
     //FUNCTIONS

@@ -3,8 +3,16 @@ import HeaderCard from '../UI Elements/HeaderCard';
 import {IconButton} from '../UI Elements/Button';
 import 'daisyui'; // Ensure DaisyUI is imported if it is not globally available
 
-const GeneralInstructions = ({ onSubmitGenInstruct }) => {
-    const [generalInstructions, setGeneralInstructions] = useState('');
+const GeneralInstructions = ({json, onSubmitGenInstruct}) => {
+    // Convert the initial JSON data to a usable state format
+    const parsedJson = json.map((entry) => ({
+        ...JSON.parse(entry.data),
+        id: entry.ID,
+        dapiRecordID: entry.dapiRecordID
+    }));
+    //console.log('General Instructions Called: ',{parsedJson})
+
+    const [generalInstructions, setGeneralInstructions] = useState(parsedJson[0].details);
 
     const headerTextStyle = {
         textAlign: 'center',

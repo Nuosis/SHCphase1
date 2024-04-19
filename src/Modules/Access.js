@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
-import HeaderCard from './HeaderCard'; // Import the HeaderCard component
+import HeaderCard from '../UI Elements/HeaderCard'; // Import the HeaderCard component
 import {IconButton} from '../UI Elements/Button';
 import 'daisyui'; // Ensure DaisyUI is imported if it is not globally available
 
-const AccessCard = ({ onSubmitAccess }) => {
-    const [accessInstructions, setAccessInstructions] = useState('');
+const AccessCard = ({json, onSubmitAccess}) => {
+    // Convert the initial JSON data to a usable state format
+    const parsedJson = json.map((entry) => ({
+        ...JSON.parse(entry.data),
+        id: entry.ID,
+        dapiRecordID: entry.dapiRecordID
+    }));
+    //console.log('General Instructions Called: ',{parsedJson})
+    const [accessInstructions, setAccessInstructions] = useState(parsedJson[0].details);
 
     const headerTextStyle = {
         textAlign: 'center',
