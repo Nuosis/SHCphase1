@@ -161,12 +161,16 @@ export const UserProvider = ({ children }) => {
         userObject[0].portalData.dapiPartyBillable.forEach(record => {
             const { 
                 description = record["dapiPartyBillable::description"],
-                price = record["dapiPartyBillable::price"],
+                taxableGST = record["dapiPartyBillable::f_taxableGST"],
+                taxableHST = record["dapiPartyBillable::f_taxableHST"],
+                taxablePST = record["dapiPartyBillable::f_taxablePST"],
+                gstAmount = record["dapiPartyBillable::gstAmount"],
+                hstAmount = record["dapiPartyBillable::hstAmount"],
+                pstAmount = record["dapiPartyBillable::pstAmount"],
                 quantity = record["dapiPartyBillable::quantity"],
                 unitPrice = record["dapiPartyBillable::unitPrice"],
-                PST = record["dapiPartyBillable::f_taxablePST"],
-                GST = record["dapiPartyBillable::f_taxableGST"],
-                HST = record["dapiPartyBillable::f_taxableHST"],
+                price = record["dapiPartyBillable::price"],
+                unit = record["dapiPartyBillable::unit"],
                 dapiRecordID = record["dapiPartyBillable::~dapiRecordID"], 
                 ID = record["dapiPartyBillable::__ID"]
             } = record;
@@ -174,9 +178,13 @@ export const UserProvider = ({ children }) => {
                 price,
                 quantity,
                 unitPrice,
-                PST,
-                HST,
-                GST,
+                taxableGST,
+                taxableHST,
+                taxablePST,
+                gstAmount,
+                hstAmount,
+                pstAmount,
+                unit,
                 ID,
                 dapiRecordID,
             };
@@ -222,18 +230,32 @@ export const UserProvider = ({ children }) => {
         
         
         //GET USER OBJECT RECORD
-        const layout = "dapiPartyObject"
-        const query = [
+        const userLayout = "dapiPartyObject"
+        const userQuery = [
             {"__ID": filemakerId}
         ];
+
+        const billableLayout = "dapiBillableObject"
+        const billableQuery = [
+            {"_partyID": filemakerId}
+        ];
+        
         try{
-            const filemakerUserObject = await readRecord(authState.token,{query},layout)
+            const filemakerUserObject = await readRecord(authState.token,{userQuery},userLayout)
             if(filemakerUserObject.length===0){
                 throw new Error("Error on getting user info from FileMaker")
             }
             console.log("fetch successfull ...")
             const userObject = filemakerUserObject.response.data  
-            //console.log({userObject})  
+            //console.log({userObject}) 
+
+            const filemakerBillableObject = await readRecord(authState.token,{billableQuery},billableLayout)
+            if(filemakerBillableObject.length===0){
+                throw new Error("Error on getting billable info from FileMaker")
+            }
+            console.log("fetch successfull ...")
+            const billableObject = filemakerBillableObject.response.data  
+            //console.log({userObject}) 
 
             const userInfo = {
                 displayName: userObject[0].fieldData.displayName,
@@ -241,8 +263,23 @@ export const UserProvider = ({ children }) => {
                 lastName: userObject[0].fieldData.lastName,
                 dapiRecordID: userObject[0].fieldData["~dapiRecordID"],
                 ID: userObject[0].fieldData["__ID"],
+                orgID: userObject[0].fieldData["_orgID"],
             }
             //console.log({userInfo})
+
+            const orgLayout = "dapiOrganizationObject"
+            const orgQuery = [
+                {"__ID": userInfo.orgID}
+            ];
+
+            const filemakerOrgObject = await readRecord(authState.token,{orgQuery},orgLayout)
+            if(filemakerOrgObject.length===0){
+                throw new Error("Error on getting organization info from FileMaker")
+            }
+            console.log("fetch successfull ...")
+            const orgObject = filemakerOrgObject.response.data  
+            //console.log({userObject}) 
+
             const userAddress = createAddressObject(userObject)
             //console.log({userAddress})
             if(!userAddress){throw new Error("Address Object undefined");}
