@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import HeaderCard from '../UI Elements/HeaderCard'; // Import the HeaderCard component
+import HeaderCard from '../UI Elements/HeaderCard';
 import {IconButton} from '../UI Elements/Button';
-import 'daisyui'; // Ensure DaisyUI is imported if it is not globally available
+import 'daisyui';
 
 const AccessCard = ({json, onSubmitAccess}) => {
     // Convert the initial JSON data to a usable state format

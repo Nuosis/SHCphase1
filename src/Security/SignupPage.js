@@ -31,7 +31,7 @@ function SignupPage() {
         confirmPassword: '',
     });
     const navigate = useNavigate();
-    const formToken = useQuery().get('token'); // get param token from url
+    const formToken = useQuery().get('form'); // get param token from url
     // console.log("formToken: ",formToken)
 
     useEffect(() => {
