@@ -12,6 +12,7 @@ import HeaderSubrow from './UI Elements/HeaderSubrow.js';
 import AccessCard from './Modules/Access.js'
 import GeneralInstructions from './Modules/GeneralInstructions.js';
 import InformationCard from './Modules/Information.js';
+import WorkOrderCard from './Modules/Workorder.js';
 import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui/icons-material';
@@ -26,7 +27,7 @@ function CustomerPortal() {
     // const navigate = useNavigate();
     const [showPopup, setShowPopup] = useState(false);
     const [popupContent, setPopupContent] = useState('');
-    const [activeComponent, setActiveComponent] = useState(null);
+    const [activeComponent, setActiveComponent] = useState('WorkOrderCard');
 
     // Dynamic component map
     const componentMap = {
@@ -34,7 +35,9 @@ function CustomerPortal() {
         AccessCard: AccessCard,
         GeneralInstructions: GeneralInstructions,
         InformationCard: InformationCard,
+        WorkOrderCard: WorkOrderCard,
     };
+
     //FUNCTIONS
     function prepareActivityData(workOrderData, userData) {
         const activities = {};
@@ -65,7 +68,6 @@ function CustomerPortal() {
         return activities;
     }
     
-
     function generateActivityRows(activities) {
         const activityRows = Object.entries(activities).map(([activity, details]) => (
             <HeaderRow key={activity} text={activity} textStyle={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start'  }}>
@@ -73,6 +75,7 @@ function CustomerPortal() {
                     <HeaderSubrow
                         key={detail.date}
                         text={new Date(detail.date).toISOString().slice(0, 10)}
+                        onClick={() => handleComponentChange('WorkOrderCard', { onSubmitWorkOrder: handleSubmitWorkOrder })}
                         isSelected={detail.isSelected}
                     />
                 ))}
@@ -81,9 +84,6 @@ function CustomerPortal() {
     
         return activityRows;
     }
-    
-    
-    
     
     
     //HANDLERS
@@ -119,6 +119,11 @@ function CustomerPortal() {
         // Process the access instructions here
     };
 
+    const handleSubmitWorkOrder = (json) => {
+        console.log('userInfo:', json);
+        // Process the access instructions here
+    };
+
     const handleSubmitPets = (Pets) => {
         console.log('Pets:', Pets);
         // Process the access instructions here
@@ -127,16 +132,17 @@ function CustomerPortal() {
     //VARIABLES
     // Prepare activity data
     const activities = prepareActivityData(workOrderData, userData);
-    console.log({activities})
+    // console.log({activities})
 
     // Generate activity rows from prepared data
     const activityRows = generateActivityRows(activities);
+    const ActiveComponent = componentMap[activeComponent]; 
     
     const accountRows = [
         <HeaderRow
             key="info"
             icon={<Info />}
-            onClick={() => handleComponentChange('InformationCard', { json: userData.userData, onSubmit: handleSubmitInfo })} 
+            onClick={() => handleComponentChange('InformationCard', { json: userData.userData, onSubmitInformation: handleSubmitInfo })} 
             text='Information'
         />,
         <HeaderRow
@@ -151,7 +157,7 @@ function CustomerPortal() {
         <HeaderRow
             key="instructions"
             icon={<ChecklistRtl />}
-            onClick={() => handleComponentChange('GeneralInstructions', { json: userData.userData.userDetails.generalInstructions, onSubmit: handleSubmitGenInstruct })}
+            onClick={() => handleComponentChange('GeneralInstructions', { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct })}
             text='General Instructions'
         />,
         <HeaderRow
@@ -169,31 +175,29 @@ function CustomerPortal() {
     ]
 
     return (
-        <div className="customerPortal">
-            <div className="leftBackgroundShadowBox">
-                <Portrait imageUrl={altUserImage} />
-                <SimpleCard text = {`Welcome ${userData.userData.userInfo.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
-                <HeaderCard headerText = "Activity">
-                    {activityRows}
-                </HeaderCard>
-                <HeaderCard headerText = "Account">
-                    {accountRows}
-                </HeaderCard>
-            </div>
-            <div className="middleBackgroundShadowBox">
-                {activeComponent}
-            </div>
-            <div className="rightBackgroundShadowBox">
-                <HeaderCard headerText = "Settings">
-                    {settingRows}
-                </HeaderCard>
-                <HeaderCard headerText = "Comunication">
-                    
-                </HeaderCard>
-            </div>
-            
-
+      <div className="customerPortal">
+        <div className="leftBackgroundShadowBox">
+          <Portrait imageUrl={altUserImage} />
+          <SimpleCard text = {`Welcome ${userData.userData.userInfo.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
+          <HeaderCard headerText = "Activity">
+            {activityRows}
+          </HeaderCard>
+          <HeaderCard headerText = "Account">
+            {accountRows}
+          </HeaderCard>
         </div>
+        <div className="middleBackgroundShadowBox">
+          {activeComponent && <ActiveComponent onSubmitWorkOrder={handleSubmitWorkOrder} />}
+        </div>
+        <div className="rightBackgroundShadowBox">
+          <HeaderCard headerText = "Settings">
+            {settingRows}
+          </HeaderCard>
+          <HeaderCard headerText = "Comunication">
+            
+          </HeaderCard>
+        </div>
+      </div>
     );
 }
 
