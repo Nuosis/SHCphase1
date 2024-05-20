@@ -297,8 +297,8 @@ export const UserProvider = ({ children }) => {
                 throw new Error("Error on getting organization info from FileMaker")
             }
             console.log("org fetch successfull ...")
-            const orgObject = filemakerOrgObject.response.data  
-            //console.log({orgObject}) 
+            const orgObject = filemakerOrgObject.response.data
+            // console.log({orgObject}) 
 
             //GET USER PURCHASE HX
             const billableLayout = "dapiBillableObject"
@@ -315,7 +315,7 @@ export const UserProvider = ({ children }) => {
             let billableData = {}
             if (Array.isArray(billableObject)) {
                 billableObject.map(bill => {
-                    const description = bill.fieldData.description
+                    const description = bill.portalData.dapiBillableSellable[0]["dapiBillableSellable::description"]
                     const billable = {
                         GST: bill.fieldData.f_taxableGST,
                         HST: bill.fieldData.f_taxableHST,
@@ -372,8 +372,9 @@ export const UserProvider = ({ children }) => {
             //ORG 
             //info
             const orgInfo = {
-                displayName: orgObject.Name,
-                website: orgObject.website
+                displayName: orgObject[0].fieldData.Name,
+                website: orgObject[0].fieldData.website,
+                ID: orgObject[0].fieldData["__ID"]
             };
             //gstNumber
             //wcbNumber
