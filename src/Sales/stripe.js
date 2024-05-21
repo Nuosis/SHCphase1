@@ -34,3 +34,20 @@ async function callStripeApi(token, method, params) {
 }
 
 export { callStripeApi };
+
+
+/**
+ * METHODS
+ *createPaymentIntent(stripeKey, params.amount, params.currency)
+  processPayment(stripeKey, params.paymentMethodId, params.amount, params.currency);
+  refundPayment(stripeKey, params.paymentIntentId);
+  retrievePaymentDetails(stripeKey, params.paymentIntentId);
+  addPaymentMethod(stripeKey, params.customerId, params.paymentMethodId);
+  addCustomer(stripeKey, params.email, params.name);
+  getCustomer(stripeKey, params.email);
+  updateCustomer(stripeKey, params.customerId, params.updateParams);
+  createSubscription(stripeKey, params.customerId, params.priceId);
+  cancelSubscription(stripeKey, params.subscriptionId);
+  listSubscriptions(stripeKey, params.customerId);
+  retrieveSubscription(stripeKey, params.subscriptionId);
+ */

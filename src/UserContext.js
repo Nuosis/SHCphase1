@@ -79,6 +79,7 @@ export const UserProvider = ({ children }) => {
     };
 
     function createDetailsObject(userObject, portalStem) {
+      console.log("detailsObject...",{userObject},portalStem)
         const newObject = {};
         if (Array.isArray(userObject[0]?.portalData?.[portalStem])) {
         userObject[0].portalData[portalStem].forEach(record => {
@@ -186,17 +187,20 @@ export const UserProvider = ({ children }) => {
     };
 
     function createSellableObject(userObject, portalStem) {
+        console.log('Sellables...:',{userObject},portalStem)
         const newObject = {};
         if (Array.isArray(userObject[0]?.portalData?.[portalStem])) {
         userObject[0].portalData[portalStem].forEach(record => {
             const { 
                 description = record[`${portalStem}::description`],
-                unit = record[`${portalStem}::unit`],
-                unitPrice = record[`${portalStem}::_unitPrice`],
+                unit = record[`${portalStem}::units`],
+                unitPrice = record[`${portalStem}::unitPrice`],
                 GST = record[`${portalStem}::f_taxableGST`],
                 PST = record[`${portalStem}::f_taxablePST`],
                 HST = record[`${portalStem}::f_taxableHST`],
                 dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
+                qbItemID = record[`${portalStem}::qbItemID`], 
+                qbTaxID = record[`${portalStem}::qbTaxID`], 
                 ID = record[`${portalStem}::__ID`]
             } = record;
             const details = {
@@ -207,6 +211,8 @@ export const UserProvider = ({ children }) => {
                 PST,
                 ID,
                 dapiRecordID,
+                qbTaxID,
+                qbItemID
             };
 
             if (newObject[description]) {
@@ -219,11 +225,13 @@ export const UserProvider = ({ children }) => {
     };
 
     function createModulesObject(userObject, portalStem) {
+      //console.log('moduleObjectCalled... ',{userObject},portalStem)
         const newObject = {};
         if (Array.isArray(userObject[0]?.portalData?.[portalStem])) {
         userObject[0].portalData[portalStem].forEach(record => {
             const { 
                 name = record[`${portalStem}::moduleName`],
+                active = record[`${portalStem}::f_active`],
                 accessLevel = record[`${portalStem}::accessLevel`],
                 dateEnd = record[`${portalStem}::dateEnd`],
                 dateStart = record[`${portalStem}::dateStart`],
@@ -237,9 +245,10 @@ export const UserProvider = ({ children }) => {
                 usageCap = record[`${portalStem}::usageCap`], 
                 usageScheme = record[`${portalStem}::usageScheme`],
                 dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::__ID`]
+                ID = record[`${portalStem}::_moduleID`]
             } = record;
             const details = {
+                active,
                 accessLevel,
                 dateEnd,
                 dateStart,
@@ -382,8 +391,8 @@ export const UserProvider = ({ children }) => {
 
             const orgSellables = createSellableObject(orgObject,"dapiOrgSellable")
             //sellableItems
-            const orgModules = createModulesObject(orgObject,"dapiOrgModules")
-            //console.log({userInfo})
+            const orgModules = createModulesObject(orgObject,"dapiOrgModulesSelected")
+            //console.log({orgModules})
             const orgAddress = createAddressObject(orgObject,"dapiOrgAddress")
             //console.log({userAddress})
             const orgEmail = createEmailObject(orgObject,"dapiOrgEmail")

@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '../UserContext.js';
 import { useWorkOrder } from '../WorkOrderContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';

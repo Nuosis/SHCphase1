@@ -3,9 +3,9 @@ import {updateRecord} from './updateRecord'
 async function createRecord(token, params, layout, returnRecord) {
     console.log("FileMaker_createRecord called")
     // Prepare the data for the API call
-    const partyData = {
+    const bodyData = {
         method: "createRecord",
-        server: "server.selectjanitorial.com",
+        server: "server.claritybusinesssolutions.ca",
         database: "clarityData",
         layout,
         params
@@ -18,7 +18,7 @@ async function createRecord(token, params, layout, returnRecord) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify(partyData),
+            body: JSON.stringify(bodyData),
         });
 
         if (!response.ok) {
@@ -51,7 +51,7 @@ async function createRecord(token, params, layout, returnRecord) {
             ];
             const findParams = {
                 method: "findRecord",
-                server: "server.selectjanitorial.com",
+                server: "server.claritybusinesssolutions.ca",
                 database: "clarityData",
                 layout,
                 params: {query},

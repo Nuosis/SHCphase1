@@ -1,5 +1,5 @@
 import React, { useState, /*useEffect*/ } from 'react';
-import { /*useAuth*/ } from './AuthContext'; // Ensure this path is correct
+import { useAuth } from './AuthContext';
 import { useWorkOrder } from './WorkOrderContext';
 import { useUser } from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
@@ -16,11 +16,12 @@ import WorkOrderCard from './Modules/Workorder.js';
 import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui/icons-material';
+import CreateSale from './Sales/CreateSale.js'
 
 
 function CustomerPortal() {
     //STATE
-    // const { authState, setAuthState } = useAuth();
+    const { authState, setAuthState } = useAuth();
     const { workOrderData } = useWorkOrder();
     const { userData, /*setUserData*/ } = useUser();
     console.log({userData},{workOrderData})
@@ -87,15 +88,15 @@ function CustomerPortal() {
     
     
     //HANDLERS
-    const handleShowData = () => {
-        const workOrderDataStringified = JSON.stringify(workOrderData, null, 2);
-        // const authStateStringified = JSON.stringify(authState, null, 2);
-        const userStateStringified = JSON.stringify(userData, null, 2);
+    // const handleShowData = () => {
+    //     const workOrderDataStringified = JSON.stringify(workOrderData, null, 2);
+    //     // const authStateStringified = JSON.stringify(authState, null, 2);
+    //     const userStateStringified = JSON.stringify(userData, null, 2);
 
-        const combinedData = `Context workOrderData: ${workOrderDataStringified} userData: ${userStateStringified}`;
-        setPopupContent(combinedData);
-        setShowPopup(true);
-    };
+    //     const combinedData = `Context workOrderData: ${workOrderDataStringified} userData: ${userStateStringified}`;
+    //     setPopupContent(combinedData);
+    //     setShowPopup(true);
+    // };
 
     const handleComponentChange = (componentKey, props = {}) => {
         const Component = componentMap[componentKey];
@@ -119,9 +120,14 @@ function CustomerPortal() {
         // Process the access instructions here
     };
 
-    const handleSubmitWorkOrder = (json) => {
-        console.log('userInfo:', json);
-        // Process the access instructions here
+    const handleSubmitWorkOrder = async(json) => {
+        console.log('workOrder Submitted:', workOrderData);
+        const saleData = await CreateSale(userData,workOrderData,authState.token);
+        if (saleData === true) {
+          console.log("Sale process submitted successfully.");
+        } else {
+          console.error("Sale process failed:", saleData);
+        }
     };
 
     const handleSubmitPets = (Pets) => {
