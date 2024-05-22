@@ -30,12 +30,12 @@ async function createRecord(token, params, layout, returnRecord) {
         let recordID = ""
         // Check if the response indicates success
         if (responseData.messages && responseData.messages[0].code === "0") {
-            console.log("Record created successfully", responseData.response);
+            // console.log("Record created successfully", responseData.response);
             recordID = responseData.response.recordId;
             const params = {fieldData: {"~dapiRecordID": recordID}}
 
             const updateData = await updateRecord(token, params, layout, recordID)
-            console.log('updateResponse: ',{updateData})
+            // console.log('updateResponse: ',{updateData})
             // Check if the response threw error
             if (updateData.messages && responseData.messages[0].code !== "0") {
                 throw new Error(`Failed to create record: ${updateData.messages[0].message}`);
@@ -45,7 +45,7 @@ async function createRecord(token, params, layout, returnRecord) {
         }
 
         if(returnRecord){
-            console.log('returningRecord')
+            // console.log('returningRecord')
             const query = [
                 {"~dapiRecordID": recordID}
             ];

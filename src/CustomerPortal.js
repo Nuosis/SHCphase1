@@ -125,8 +125,15 @@ function CustomerPortal() {
         const saleData = await CreateSale(userData,workOrderData,authState.token);
         if (saleData === true) {
           console.log("Sale process submitted successfully.");
+          // confirm CC or collect
+          // payment intent
+          // inform card will be charged at 7am on day of the clean
+          // late cancel fee
+          // process to inform cleaners
         } else {
           console.error("Sale process failed:", saleData);
+          // revert process
+          // inform customer
         }
     };
 

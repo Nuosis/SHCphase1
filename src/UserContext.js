@@ -192,7 +192,7 @@ export const UserProvider = ({ children }) => {
         if (Array.isArray(userObject[0]?.portalData?.[portalStem])) {
         userObject[0].portalData[portalStem].forEach(record => {
             const { 
-                description = record[`${portalStem}::description`],
+                description = record[`${portalStem}::description`] || "",
                 unit = record[`${portalStem}::units`],
                 unitPrice = record[`${portalStem}::unitPrice`],
                 GST = record[`${portalStem}::f_taxableGST`],
