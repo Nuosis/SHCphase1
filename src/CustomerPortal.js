@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { useWorkOrder } from './WorkOrderContext';
+import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
 import { useUser } from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
 // import Popup from './UI Elements/Popup.js'
@@ -22,7 +22,7 @@ import CreateSale from './Sales/CreateSale.js'
 function CustomerPortal() {
     //STATE
     const { authState } = useAuth();
-    const { workOrderData } = useWorkOrder();
+    const { workOrderData, newWorkOrderData } = useWorkOrder();
     const { userData, /*setUserData*/ } = useUser();
     console.log({userData},{workOrderData})
     // const navigate = useNavigate();
@@ -82,7 +82,6 @@ function CustomerPortal() {
                 ))}
             </HeaderRow>
         ));
-    
         return activityRows;
     }
 
@@ -104,6 +103,7 @@ function CustomerPortal() {
   };
     
     //HANDLERS
+    // TODO: HANDLER TO CHANGE WORKORDERDATA 
     const handleComponentChange = (componentKey, props = {}) => {
       if (componentMap[componentKey]) {
           setActiveComponent(componentKey);

@@ -3,13 +3,23 @@ import {readRecord} from './FileMaker/readRecord'
 
 const WorkOrderContext = createContext();
 
-export const useWorkOrder = () => useContext(WorkOrderContext);
+export const useWorkOrder = () => {
+    return useContext(WorkOrderContext);
+};
 
 export const WorkOrderProvider = ({ children }) => {
     const [workOrderData, setWorkOrderData] = useState({});
+    const [newWorkOrderData, setNewWorkOrderData] = useState({});
+
+    const value = {
+        workOrderData,
+        setWorkOrderData,
+        newWorkOrderData,
+        setNewWorkOrderData,
+    };
 
     return (
-        <WorkOrderContext.Provider value={{ workOrderData, setWorkOrderData }}>
+        <WorkOrderContext.Provider value={value}>
             {children}
         </WorkOrderContext.Provider>
     );

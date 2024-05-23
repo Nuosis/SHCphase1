@@ -6,7 +6,6 @@ import { useUser } from '../UserContext.js';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
-import { /*readRecord*/ } from '../FileMaker/readRecord.js';
 import provinces from '../Environment/provinces.json';
 
 function useQuery() {
@@ -15,8 +14,8 @@ function useQuery() {
 
 function SignupPage() {
     const { createAuthUser, logIn, authState, setAuthState } = useAuth();
-    const { workOrderData, setWorkOrderData } = useWorkOrder();
-    const { /*userData, setUserData,*/ getUserData } = useUser();
+    const { workOrderData, setWorkOrderData, setNewWorkOrderData } = useWorkOrder();
+    const { getUserData } = useUser();
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
     const [formFields, setFormFields] = useState({
@@ -31,8 +30,7 @@ function SignupPage() {
         confirmPassword: '',
     });
     const navigate = useNavigate();
-    const formToken = useQuery().get('form'); // get param token from url
-    // console.log("formToken: ",formToken)
+    const formToken = useQuery().get('form');
 
     useEffect(() => {
         async function fetchAndSetFormData() {
@@ -43,6 +41,7 @@ function SignupPage() {
                         throw new Error("Form data fetch failed");
                     }
                     setWorkOrderData(data.decoded.data);
+                    setNewWorkOrderData(data.decoded.data); // Set newWorkOrderData as well
                 } catch (error) {
                     console.error("Detokenization failed: ", error.message);
                     setPopup({ show: true, message: "Failed to load form data. Please try again." });
@@ -50,7 +49,7 @@ function SignupPage() {
             }
         }
         fetchAndSetFormData();
-    }, [formToken, setWorkOrderData,]);
+    }, [formToken, setWorkOrderData, setNewWorkOrderData]);
 
     async function detokenize(token) {
         try {
@@ -68,7 +67,7 @@ function SignupPage() {
                 ...prevState,
                 errorMessage: error.message,
             }));
-            throw error; // Rethrow to handle in the calling context
+            throw error;
         }
     }
 
