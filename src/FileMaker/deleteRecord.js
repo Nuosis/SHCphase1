@@ -1,6 +1,6 @@
 
 
-async function deleteRecord(token, params, layout, recordID) {
+async function deleteRecord(token, layout, recordID) {
 
     console.log("FileMaker_deleteRecord called")
     // Prepare the data for the API call
@@ -10,7 +10,6 @@ async function deleteRecord(token, params, layout, recordID) {
         database: "clarityData",
         layout,
         recordId: recordID,
-        params: params
     };
 
     try {

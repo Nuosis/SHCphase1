@@ -1,9 +1,9 @@
-import React, { useState, /*useEffect*/ } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useWorkOrder } from './WorkOrderContext';
 import { useUser } from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
-import Popup from './UI Elements/Popup.js'
+// import Popup from './UI Elements/Popup.js'
 import Portrait from './UI Elements/Portrait';
 import SimpleCard from './UI Elements/SimpleCard.js'
 import HeaderCard from './UI Elements/HeaderCard.js';
@@ -15,19 +15,19 @@ import InformationCard from './Modules/Information.js';
 import WorkOrderCard from './Modules/Workorder.js';
 import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
-import { Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment } from '@mui/icons-material';
+import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
 
 
 function CustomerPortal() {
     //STATE
-    const { authState, setAuthState } = useAuth();
+    const { authState } = useAuth();
     const { workOrderData } = useWorkOrder();
     const { userData, /*setUserData*/ } = useUser();
     console.log({userData},{workOrderData})
     // const navigate = useNavigate();
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupContent, setPopupContent] = useState('');
+    // const [showPopup, setShowPopup] = useState(false);
+    // const [popupContent, setPopupContent] = useState('');
     const [activeComponent, setActiveComponent] = useState('WorkOrderCard');
 
     // Dynamic component map
@@ -76,7 +76,7 @@ function CustomerPortal() {
                     <HeaderSubrow
                         key={detail.date}
                         text={new Date(detail.date).toISOString().slice(0, 10)}
-                        onClick={() => handleComponentChange('WorkOrderCard', { onSubmitWorkOrder: handleSubmitWorkOrder })}
+                        onClick={() => handleComponentChange('WorkOrderCard')}
                         isSelected={detail.isSelected}
                     />
                 ))}
@@ -85,24 +85,29 @@ function CustomerPortal() {
     
         return activityRows;
     }
-    
+
+    const renderActiveComponent = () => {
+      const Component = componentMap[activeComponent];
+      if (!Component) return null;
+  
+      // Define props here if they are dynamic based on the component
+      const componentProps = {
+          ...(activeComponent === 'WorkOrderCard' && { onSubmitWorkOrder: handleSubmitWorkOrder }),
+          ...(activeComponent === 'InformationCard' && { json: userData.userData, onSubmitInformation: handleSubmitInfo }),
+          ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
+          ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
+          ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
+          // Extend this pattern for other components as needed
+      };
+  
+      return <Component {...componentProps} />;
+  };
     
     //HANDLERS
-    // const handleShowData = () => {
-    //     const workOrderDataStringified = JSON.stringify(workOrderData, null, 2);
-    //     // const authStateStringified = JSON.stringify(authState, null, 2);
-    //     const userStateStringified = JSON.stringify(userData, null, 2);
-
-    //     const combinedData = `Context workOrderData: ${workOrderDataStringified} userData: ${userStateStringified}`;
-    //     setPopupContent(combinedData);
-    //     setShowPopup(true);
-    // };
-
     const handleComponentChange = (componentKey, props = {}) => {
-        const Component = componentMap[componentKey];
-        if (Component) {
-            setActiveComponent(<Component {...props} />);
-        }
+      if (componentMap[componentKey]) {
+          setActiveComponent(componentKey);
+      }
     };
 
     const handleSubmitAccess = (instructions) => {
@@ -132,8 +137,9 @@ function CustomerPortal() {
           // process to inform cleaners
         } else {
           console.error("Sale process failed:", saleData);
-          // revert process
+          // revert handled in CreateSale
           // inform customer
+          // attempt to submit order request via email
         }
     };
 
@@ -148,14 +154,13 @@ function CustomerPortal() {
     // console.log({activities})
 
     // Generate activity rows from prepared data
-    const activityRows = generateActivityRows(activities);
-    const ActiveComponent = componentMap[activeComponent]; 
+    const activityRows = generateActivityRows(activities); 
     
     const accountRows = [
         <HeaderRow
             key="info"
             icon={<Info />}
-            onClick={() => handleComponentChange('InformationCard', { json: userData.userData, onSubmitInformation: handleSubmitInfo })} 
+            onClick={() => handleComponentChange('InformationCard')} 
             text='Information'
         />,
         <HeaderRow
@@ -170,19 +175,19 @@ function CustomerPortal() {
         <HeaderRow
             key="instructions"
             icon={<ChecklistRtl />}
-            onClick={() => handleComponentChange('GeneralInstructions', { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct })}
+            onClick={() => handleComponentChange('GeneralInstructions')}
             text='General Instructions'
         />,
         <HeaderRow
             key="pets"
             icon={<Pets />}
-            onClick={() => handleComponentChange('MyPets', { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets })}
+            onClick={() => handleComponentChange('MyPets')}
             text='My Pets'
         />,
         <HeaderRow
             key = "access"
             icon = {<Key />}
-            onClick ={ () => handleComponentChange('AccessCard', { json: userData.userData.userDetails.accessInstructions, onSubmit: handleSubmitAccess })}
+            onClick ={ () => handleComponentChange('AccessCard')}
             text= 'Access'
         />
     ]
@@ -200,7 +205,7 @@ function CustomerPortal() {
           </HeaderCard>
         </div>
         <div className="middleBackgroundShadowBox">
-          {activeComponent && <ActiveComponent onSubmitWorkOrder={handleSubmitWorkOrder} />}
+          {renderActiveComponent()}
         </div>
         <div className="rightBackgroundShadowBox">
           <HeaderCard headerText = "Settings">

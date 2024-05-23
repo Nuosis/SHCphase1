@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext.js';
-import { useWorkOrder } from '../WorkOrderContext.js';
+import { useWorkOrder, prepareWorkOrderData } from '../WorkOrderContext.js';
 import { useUser } from '../UserContext.js';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from './inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
@@ -103,7 +103,7 @@ function SignupPage() {
             };
 
             if (workOrderData && Object.keys(workOrderData).length > 0) {
-                setPopup({ show: true, message: "Login successful." });
+                // setPopup({ show: true, message: "Login successful." });
             } else {
                 throw new Error("Work order data is not set. Check detokenization process.");
             };
@@ -342,9 +342,9 @@ function SignupPage() {
         }
         
         //redirect user to customer portal
-        setTimeout(() => {  // Delay navigation
+        //setTimeout(() => {  // Delay navigation
             navigate('/login');
-        }, 500); 
+        //}, 250); 
     };
 
     const handleChangeForm = () => {

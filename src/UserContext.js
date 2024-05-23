@@ -323,35 +323,38 @@ export const UserProvider = ({ children }) => {
             const billableObject = filemakerBillableObject.response.data
             let billableData = {}
             if (Array.isArray(billableObject)) {
-                billableObject.map(bill => {
-                    const description = bill.portalData.dapiBillableSellable[0]["dapiBillableSellable::description"]
-                    const billable = {
-                        GST: bill.fieldData.f_taxableGST,
-                        HST: bill.fieldData.f_taxableHST,
-                        PST: bill.fieldData.f_taxablePST,
-                        GSTamount: bill.fieldData.gstAmount,
-                        PSTamount: bill.fieldData.pstAmount,
-                        HSTamount: bill.fieldData.hstAmount,
-                        unit: bill.fieldData.unit,
-                        unitPrice: bill.fieldData.unitPrice,
-                        price: bill.fieldData.price,
-                        quantity: bill.fieldData.quantity,
-                        totalPrice: bill.fieldData.totalPrice,
-                        dapiRecordID: bill.fieldData["~dapiRecordID"],
-                        ID: bill.fieldData["__ID"],
-                        orgID: bill.fieldData["_orgID"],
-                        invoiceNum: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::invoiceNo"],
-                        invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::date"],
-                    }
-
-                    if (billableData[description]) {
-                        billableData[description].push(description);
-                    } else {
-                        billableData[description] = [billable];
-                    }
-
-                    return billableData
-            })}
+              billableObject.forEach(bill => {
+                  const description = bill.portalData.dapiBillableSellable[0]["dapiBillableSellable::description"];
+                  const billable = {
+                      GST: bill.fieldData.f_taxableGST,
+                      GSTamount: bill.fieldData.gstAmount,
+                      HST: bill.fieldData.f_taxableHST,
+                      HSTamount: bill.fieldData.hstAmount,
+                      PST: bill.fieldData.f_taxablePST,
+                      PSTamount: bill.fieldData.pstAmount,
+                      unit: bill.fieldData.unit,
+                      unitPrice: bill.fieldData.unitPrice,
+                      price: bill.fieldData.price,
+                      quantity: bill.fieldData.quantity,
+                      totalPrice: bill.fieldData.totalPrice,
+                      dapiRecordID: bill.fieldData["~dapiRecordID"],
+                      ID: bill.fieldData["__ID"],
+                      orgID: bill.fieldData["_orgID"],
+                      invoiceNum: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::invoiceNo"],
+                      invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::date"],
+                  };
+          
+                  // Check if the description key exists in billableData
+                  if (billableData[description]) {
+                      // If it exists, push the new billable object to the existing array
+                      billableData[description].push(billable);
+                  } else {
+                      // If it doesn't exist, create a new array with the billable object
+                      billableData[description] = [billable];
+                  }
+                  return billableData
+              });
+          }
             //console.log({billableObject})
             //wo 
             //outcome

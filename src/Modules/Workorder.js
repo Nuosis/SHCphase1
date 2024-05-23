@@ -53,10 +53,17 @@ const WorkOrderCard = ({ onSubmitWorkOrder }) => {
     }));
   }, [setWorkOrderData]);
 
-  const recalculateTotalPrice = (lineItems) => {
-    const totalPrice = lineItems.reduce((sum, item) => sum + item.amount, 0);
-    return totalPrice;
-  }; 
+  function recalculateTotalPrice(lineItems) {
+    const subtotal = lineItems.reduce((sum, item) => {
+        if (item.description !== "GST") {
+            return sum + item.amount;
+        }
+        return sum;
+    }, 0);
+
+    const gstAmount = subtotal * 0.05; // Assuming GST is 10% of subtotal
+    return { newPrice: subtotal + gstAmount, gstAmount };
+}
 
   const handleAddTask = useCallback((taskType) => {
     const newTask = { id: uuidv4(), description: '' };
@@ -93,32 +100,41 @@ const WorkOrderCard = ({ onSubmitWorkOrder }) => {
     setProvideEquipment(prevState => !prevState);
 
     setLineTotals(currentLines => {
-        const equipmentIndex = currentLines.findIndex(line => line.description === "Equipment");
-        let newLines;
+      const equipmentIndex = currentLines.findIndex(line => line.description === "Equipment");
+      let newLines;
 
-        if (equipmentIndex === -1) {
-            // Add Equipment line
-            const gstIndex = currentLines.findIndex(line => line.description === "GST");
-            const newIndex = gstIndex === -1 ? currentLines.length : gstIndex;
-            newLines = [
-                ...currentLines.slice(0, newIndex),
-                { description: "Equipment", amount: workOrderData.hours * 10 },
-                ...currentLines.slice(newIndex)
-            ];
-        } else {
-            // Remove Equipment line
-            newLines = currentLines.filter(line => line.description !== "Equipment");
-        }
+      if (equipmentIndex === -1) {
+          // Add Equipment line
+          const gstIndex = currentLines.findIndex(line => line.description === "GST");
+          const newIndex = gstIndex === -1 ? currentLines.length : gstIndex;
+          newLines = [
+              ...currentLines.slice(0, newIndex),
+              { description: "Equipment", amount: workOrderData.hours * 10 },
+              ...currentLines.slice(newIndex)
+          ];
+      } else {
+          // Remove Equipment line
+          newLines = currentLines.filter(line => line.description !== "Equipment");
+      }
 
-        // Update the price in workOrderData
-        const newPrice = recalculateTotalPrice(newLines);
-        
-        // Update workOrderData with new lineTotals and new price
-        setWorkOrderData(prevData => ({
-            ...prevData,
-            price: newPrice,
-            lineTotals: newLines  // Here we update lineTotals in the context
-        }));
+      // Recalculate totals including GST
+      const { newPrice, gstAmount } = recalculateTotalPrice(newLines);
+
+      // Update or add GST line
+      const gstLineIndex = newLines.findIndex(line => line.description === "GST");
+      if (gstLineIndex !== -1) {
+          newLines[gstLineIndex].amount = gstAmount;  // Update existing GST amount
+      } else {
+          // Insert new GST line just before the end or after the last non-GST item
+          newLines.push({ description: "GST", amount: gstAmount });
+      }
+
+      // Update workOrderData with new lineTotals and new price
+      setWorkOrderData(prevData => ({
+          ...prevData,
+          price: newPrice,
+          lineTotals: newLines  // Update lineTotals in the context
+      }));
 
         return newLines;
     });
