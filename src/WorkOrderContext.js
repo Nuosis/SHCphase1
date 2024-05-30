@@ -26,6 +26,8 @@ export const WorkOrderProvider = ({ children }) => {
 };
 
 export const prepareWorkOrderData = async (token, userData, date, activity) => {
+  console.log('prepareWorkOrderData:')
+  // console.log({token},{userData},date,activity)
 
   const dateFormat = /\d{1,2}\/\d{1,2}\/\d{4}/; // Pattern to match MM/DD/YYYY format
 
@@ -47,7 +49,7 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
 
   // Fetch scope data using the ID from the billable record
   const params = {
-    query: [{ fieldName: "_fkID", value: ID }]
+    query: [{ "_fkID": ID }]
   };
   const layout = "dapiScope";
   try {
@@ -56,9 +58,10 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       detail: item.fieldData.detail,
       label: item.fieldData.label
     }));
+    // console.log({scopeData})
 
     // Replicate the structure seen in workOrderData from the second image
-    return {
+    const woData = {
       activity: activity,
       cleaningDate: date,
       lineTotals: [
@@ -69,9 +72,10 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       price: parseFloat(billableRecord.totalPrice),
       tasks: {
         highPriority: scopeData.filter(item => item.detail === "High Priority").map(item => item.label),
-        lowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
+        LowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
       }
     };
+    return woData
   } catch (error) {
     console.error('Error fetching scope data:', error);
     return;

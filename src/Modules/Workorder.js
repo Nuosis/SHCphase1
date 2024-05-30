@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '../UserContext.js';
-import { useWorkOrder } from '../WorkOrderContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';
 import Totals from '../UI Elements/Totals.js';
 import { Accordion } from '../UI Elements/Accordion.js';
@@ -9,10 +8,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
 
-const WorkOrderCard = ({ onSubmitWorkOrder }) => {
+const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) => {
   // console.log("WorkOrderCard rendering...");
   const { userData, setUserData } = useUser();
-  const { workOrderData, setWorkOrderData } = useWorkOrder();
   const [cleaningDate, setCleaningDate] = useState(workOrderData.cleaningDate);
   const [rate, setRate] = useState(workOrderData.price / workOrderData.hours);
   const [highTasks, setHighTasks] = useState(workOrderData.tasks.highPriority.map(task => ({ id: uuidv4(), description: task })));
@@ -150,6 +148,9 @@ const WorkOrderCard = ({ onSubmitWorkOrder }) => {
 
   const TaskEditor = ({ tasks, taskType }) => (
     <div className="space-y-4">
+      <div className="text-lg font-bold">
+        {taskType === 'high' ? 'High Priority Tasks' : 'Low Priority Tasks'}
+      </div>
       {tasks.map(task => (
         <div key={task.id} className="flex items-center space-x-3">
           <input
@@ -188,7 +189,7 @@ const WorkOrderCard = ({ onSubmitWorkOrder }) => {
         >
           <div className="space-y-4 p-4">
             <div>
-              <label className="block text-md font-strong text-gray-700">{workOrderData.activity}</label>
+              <label className="block text-lg font-bold text-gray-700">{workOrderData.activity}</label>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Date</label>
