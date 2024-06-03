@@ -2,87 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CUSTOMER PORTAL*/
+/* CUSTOMER PORTAL */
 
 .customerPortal {
     background-color: #CAF0F8; /* Soft baby blue background */
+    background-color: #f8fdff;
     min-height: 100vh; /* Ensures it takes at least the full height of the viewport */
     min-width: 100%; /* Ensures it takes the full width of the viewport */
     width: 100vw; /* Ensures the div uses the total available width */
-    height: auto; /* Responsive height based on content */
+    height: 100vh; 
     display: flex; /* Flexbox for layout */
     flex-direction: row; /* Stack children horizontally */
     justify-content: space-between; /* Center content vertically */
     align-items: center; /* Center content horizontally */
     box-sizing: border-box; /* Include padding and border in the width and height */
-  }
-  
-  /* Ensure responsiveness on smaller devices like cell phones */
-  @media (max-width: 480px) {
-    .customerPortal {
-      min-width: 320px; /* Minimum width no smaller than typical cell phone width */
-    }
+}
+
+/* Ensure responsiveness on smaller devices like cell phones */
+
+@media (max-width: 768px) {
+  .customerPortal {
+    flex-direction: column; /* Stack panels vertically on small screens */
   }
 
-  .leftBackgroundShadowBox {
-    width: 30%; /* Sets width to one fifth of the parent container */
-    height: 96vh;
-    margin: 10px 10px 10px 0; /* 20px margin for top, right, and bottom, none on the left */
-    background: linear-gradient(to bottom right, #FFFACD 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-top-right-radius: 40px; /* Large rounded corner on the top right */
-    border-bottom-right-radius: 40px; /* Large rounded corner on the bottom right */
-    display: flex; /* Flexbox for layout */
-    flex-direction: column; /* Stack children vertically */
-    align-items: center;
-    box-sizing: border-box; /* Include padding and border in the width and height */
-    padding: 20px; /* Padding inside the box */
-  }
-  
-  @media (max-width: 768px) {
-    .leftBackgroundShadowBox {
-      width: 100%; /* Full width on smaller screens */
-    }
+  .panel {
+    display: none; /* Hide all panels by default */
   }
 
-  .middleBackgroundShadowBox {
-    width: 36%; /* Sets width to one fifth of the parent container */
-    height: 96vh;
-    margin: 10px 0px 10px 0px; /* 20px margin for top, right, and bottom, none on the left */
-    background: linear-gradient(to bottom right, #B6CDA5 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-radius: 40px; /* Large rounded corner on the top right */
-    display: flex; /* Flexbox for layout */
-    flex-direction: column; /* Stack children vertically */
-    flex-grow: 1;
-    box-sizing: border-box; /* Include padding and border in the width and height */
-    padding: 20px; /* Padding inside the box */
-  }
-  
-  @media (max-width: 768px) {
-    .middleBackgroundShadowBox {
-      width: 100%; /* Full width on smaller screens */
-    }
+  .panel.active {
+    display: block; /* Show only the active panel */
   }
 
-  .rightBackgroundShadowBox {
-    width: 30%; /* Sets width to one fifth of the parent container */
-    height: 96vh;
-    margin: 10px 0px 10px 10px; /* 20px margin for top, right, and bottom, none on the left */
-    background: linear-gradient(to bottom right, #8EB48F 0%, #89B29C 100%); /* Soft yellow to soft sage green gradient */
-    border-top-left-radius: 40px; /* Large rounded corner on the top right */
-    border-bottom-left-radius: 40px; /* Large rounded corner on the bottom right */
-    display: flex; /* Flexbox for layout */
-    flex-direction: column; /* Stack children vertically */
-    box-sizing: border-box; /* Include padding and border in the width and height */
-    padding: 20px; /* Padding inside the box */
+  .tabs {
+    display: flex; /* Show tabs on small screens */
   }
-  
-  @media (max-width: 768px) {
-    .rightBackgroundShadowBox {
-      width: 100%; /* Full width on smaller screens */
-    }
-  }
+}
 
-  /* UI ELEMENTS*/
+/* Default panel styles */
+.leftBackgroundShadowBox,
+.middleBackgroundShadowBox,
+.rightBackgroundShadowBox {
+  width: 30%; /* Default width for each panel */
+  height: 96vh;
+  margin: 10px; /* Margin for spacing */
+  /*background: linear-gradient(to bottom right, #FFFACD 0%, #89B29C 100%); /* Gradient background */
+  background: #e0e0e0;
+  border-radius: 40px; /* Rounded corners */
+  display: flex; /* Flexbox for layout */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center content horizontally */
+  box-sizing: border-box; /* Include padding and border in the width and height */
+  padding: 20px; /* Padding inside the box */
+}
+
+.middleBackgroundShadowBox {
+  width: 36%; /* Larger width for the middle panel */
+  background: #e0e0e0;
+  flex-grow: 1;
+}
+
+.rightBackgroundShadowBox {
+  background: linear-gradient(to bottom right, #8EB48F 0%, #89B29C 100%);
+  background: #e0e0e0;
+  border-top-left-radius: 40px; /* Large rounded corner on the top left */
+  border-bottom-left-radius: 40px; /* Large rounded corner on the bottom left */
+}
+
+/* Panel styles for small screens */
+.panel {
+  display: none; /* Hide all panels by default */
+  flex: 1;
+  overflow-y: auto;
+}
+
+.panel.active {
+  display: block; /* Show only the active panel */
+}
+
+.tabs {
+  display: none; /* Hide tabs by default */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background-color: #e0e0e0;
+}
+
+/* UI ELEMENTS */
 
 .popup-overlay {
     position: fixed;
@@ -149,99 +170,98 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Tailwind ring */
 }
 
-
 /* images/portraits */
 .portraitContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-height: 200px; /* Maximum size */
-    max-width: 200px; /* Maximum size */
-    overflow: hidden;
-    padding: 15px;
-  }
-  
-  .circularPortraitFrame {
-    border: 10px solid white; /* Change the color as needed */
-    height: 100%; /* Fills the height of the container */
-    width: 100%; /* Fills the width of the container */
-    border-radius: 50%; /* Creates a circular shape */
-    object-fit: cover; /* Ensures the image within the frame does not get distorted */
-    box-shadow: inset 0px -8px 15px -10px rgba(0, 0, 0, 0.2);
-    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 200px; /* Maximum size */
+  max-width: 200px; /* Maximum size */
+  overflow: hidden;
+  padding: 15px;
+}
 
-  /* CARDS*/
-  .simpleCard {
-    display: flex;
-    align-items: center;
-    align-content: center;
-    padding: 10px 30px;
-    margin: 10px 0px 10px 0px;
-    background-color: #fffffc; /* Equivalent to RGB(255, 252, 233) */
-    border-radius: 20px;
-    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
-    width: 100%; /* Adjust based on parent container or specific needs */
-  }
-  
-  .cardIcon {
-    flex: 0 0 33.333%; /* Takes up 1/3 of the card */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer; /* Shows a pointer cursor if the icon is clickable */
-  }
-  
-  .cardText {
-    flex: 0 0 66.666%; /* Takes up 2/3 of the card */
-    padding: 0 30px;
-    color: #18313a;
-    flex-grow: 1;
-  }
+.circularPortraitFrame {
+  border: 10px solid white; /* Change the color as needed */
+  height: 100%; /* Fills the height of the container */
+  width: 100%; /* Fills the width of the container */
+  border-radius: 50%; /* Creates a circular shape */
+  object-fit: cover; /* Ensures the image within the frame does not get distorted */
+  box-shadow: inset 0px -8px 15px -10px rgba(0, 0, 0, 0.2);
+  box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
+}
 
-  .headerCard {
-    display: flex;
-    flex-direction: column;
-    background-color: #ffffff; /* Equivalent to RGB(255, 252, 233) */
-    border-radius: 20px;
-    box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
-    margin: 10px 0px 10px 0px;
-    width: 100%;
-    overflow-y: auto;
-    max-height: 100%;
-  }
+/* CARDS */
+.simpleCard {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  padding: 10px 30px;
+  margin: 10px 0px 10px 0px;
+  background-color: #fffffc; /* Equivalent to RGB(255, 252, 233) */
+  border-radius: 20px;
+  box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
+  width: 100%; /* Adjust based on parent container or specific needs */
+}
 
-  .headerCardHeader {
-    padding: 10px 30px;
-    border-radius: 20px 20px 0px 0px;
-    background-color: #f8fdff; /* Soft baby blue */
-    color: #0d1d23;
-    font-size: 20px;
-    font-weight: bold;
-    border-bottom: 2px solid #5f92a4; /* Dark blue line */
-    text-align: left;
-  }
-  
-  .headerCardContent {
-    overflow-y: auto; /* Enable vertical scrolling */
-    max-height: 70vh; /* Set maximum height to 70% of the viewport height */
-  }
+.cardIcon {
+  flex: 0 0 33.333%; /* Takes up 1/3 of the card */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer; /* Shows a pointer cursor if the icon is clickable */
+}
 
-  .headerRow {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-  }
-  
-  .headerRowIcon {
-    width: 20px; /* Fixed width for icon */
-    margin-right: 20px; /* Space between icon and text */
-  }
-  
-  .headerRowText {
-    flex-grow: 1;
-    font-weight: bold;
-    font-size: 16px;
-    color: #18313a;
-  }
+.cardText {
+  flex: 0 0 66.666%; /* Takes up 2/3 of the card */
+  padding: 0 30px;
+  color: #18313a;
+  flex-grow: 1;
+}
+
+.headerCard {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff; /* Equivalent to RGB(255, 252, 233) */
+  border-radius: 20px;
+  box-shadow: 12px 8px 6px rgba(0,0,0,0.1);
+  margin: 10px 0px 10px 0px;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.headerCardHeader {
+  padding: 10px 30px;
+  border-radius: 20px 20px 0px 0px;
+  background-color: #f8fdff; /* Soft baby blue */
+  color: #0d1d23;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 2px solid #5f92a4; /* Dark blue line */
+  text-align: left;
+}
+
+.headerCardContent {
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 70vh; /* Set maximum height to 70% of the viewport height */
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.headerRowIcon {
+  width: 20px; /* Fixed width for icon */
+  margin-right: 20px; /* Space between icon and text */
+}
+
+.headerRowText {
+  flex-grow: 1;
+  font-weight: bold;
+  font-size: 16px;
+  color: #18313a;
+}
   

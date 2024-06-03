@@ -15,10 +15,10 @@
  */
 
 
-import React, { useState } from 'react';
-import { useWorkOrder } from '../WorkOrderContext';
-import { useUser } from '../UserContext';
-import { useAuth } from '../AuthContext';
+//import React, { useState } from 'react';
+//import { useWorkOrder } from '../WorkOrderContext';
+//import { useUser } from '../UserContext';
+//import { useAuth } from '../AuthContext';
 import { createRecord } from '../FileMaker/createRecord';
 import { deleteRecord } from '../FileMaker/deleteRecord';
 import { callQBOApi } from './qbo';
@@ -93,6 +93,7 @@ async function createSale(userData,workOrderData,token) {
   const sellableID = orgSellables[workOrderData.activity][0].ID
   // console.log("sellableID: ",sellableID)
 
+  //ESTABLISH QBO
   try {
     const qboInfo = userData.userData.userDetails.qboInfo[0].data;
     const qboData = JSON.parse(qboInfo)
@@ -108,77 +109,100 @@ async function createSale(userData,workOrderData,token) {
         console.error('Error creating QBO customer:', error);
         return `Error creating QBO customer: ${error.message}`;
       }
-    }
-
-    let stripeInfo = userData.userData.userDetails.stripeInfo[0].data;
-    const stripeData=JSON.parse(stripeInfo)
-    let stripeId = stripeData.id
-    if (!stripeId) {
-      try {
-        const stripeCustomer = await callStripeApi(token, 'addCustomer', { email: userData.userData.userEmail.main[0].email, name: userData.userData.userInfo.displayName });
-        stripeId = stripeCustomer.id;
-        await createRecord(token, { data: { "Id": stripeId }, type: "stripeInfo" }, 'dapiRecordDetails', false);
-      } catch (error) {
-        console.error('Error creating Stripe customer:', error);
-        return `Error creating Stripe customer: ${error.message}`;
-      }
-    }
-    // const totals = computeTotals(workOrderData.lineTotals);
-    // console.log(totals)
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');  // getMonth() is zero-indexed, add 1 to make it 1-indexed
-    const day = String(now.getDate()).padStart(2, '0');
-    const currentDate = `${year}+${month}+${day}`;
-    const dueDate = workOrderData.cleaningDate.replace(/-/g, '+')
-
-    const currentYear = new Date().getFullYear().toString().slice(-2); // Get last two digits of the year
-    const invoiceNumStem = `${qboId}${currentYear}${month}`;
-    
-    const invoiceQuery = await callQBOApi(token, 'queryQBO', {entity: "Invoices", query: [{field: 'DocNumber', value: `${invoiceNumStem}`, operator: 'LIKE'}]});
-    //console.log(invoiceQuery)
-    const count = invoiceQuery.QueryResponse.totalCount ? invoiceQuery.QueryResponse.totalCount + 1 : 1;
-    const invoiceNum = `${invoiceNumStem}${String(count).padStart(3, '0')}`;
-    //console.log(invoiceNum)
-
-    const fmInvoice = await createRecord(token, {fieldData:{"_custID":custID,invoiceNo: invoiceNum,dateDue: dueDate,date: currentDate,dateDay: day,dateMonth: month,dateYear: year}}, 'dapiInvoice', true);
-    const invoiceId = fmInvoice.response.data[0].fieldData["__ID"];
-    const invoiceFMID = fmInvoice.response.data[0].fieldData["~dapiRecordID"];
-    // console.log("invoiceID: ",invoiceId)
-    const qboLines=createQboLineItems(workOrderData, true, orgSellables)
-    // console.log("qboLines: ",qboLines)
-
-    const qboInvoice = await callQBOApi(token, 'createInvoice', {
-      customerId: qboId,
-      txnDate: new Date().toISOString().split('T')[0],
-      lineItems: qboLines,
-      currencyCode: "CAD",
-      docNumber: invoiceNum
-    });
-    console.log("qboInvoice: ",qboInvoice)
-    const qboInvoiceID = qboInvoice.Id;
-    //console.log("qboInvoiceID: ",qboInvoiceID)
-    if(!qboInvoiceID){
-      console.error("qboInvoiceID unset")
-      await deleteRecord(token, 'dapiInvoice', invoiceFMID)
-      throw new Error("qboInvoiceID is unset")
-    }
-
-    const billable = await createRecord(token, { fieldData:{ "_partyID":custID,"_sellableID":sellableID,"_invoiceID": invoiceId, description: workOrderData.activity, totalPrice: workOrderData.price, quantity: 1, unit: "service" }}, 'dapiBillable', true);
-    // console.log("billableObj: ",billable)
-    const billableID = billable.response.data[0].fieldData["__ID"];
-    // console.log("billableID: ",billableID)
-    if(!billableID){
-      console.error("billableID unset")
-      await deleteRecord(token, 'dapiInvoice', invoiceFMID)
-      await callQBOApi(token, 'deleteInvoice', {invoiceId: qboInvoiceID})
-      throw new Error("qboInvoiceID is unset")
-    }
-    const billableFMID = billable.response.data[0].fieldData["~dapirecordID"];
-
-    let createdScopeIDs
+  }
+  
+  //ESTABLISH STRIPE CUSTOMER
+  let stripeInfo = userData.userData.userDetails.stripeInfo[0].data;
+  const stripeData=JSON.parse(stripeInfo)
+  let stripeId = stripeData.id
+  if (!stripeId) {
     try {
-      for (const task of [...workOrderData.tasks.highPriority, ...workOrderData.tasks.lowPriority]) {
+      const stripeCustomer = await callStripeApi(token, 'addCustomer', { email: userData.userData.userEmail.main[0].email, name: userData.userData.userInfo.displayName });
+      stripeId = stripeCustomer.id;
+      await createRecord(token, { data: { "Id": stripeId }, type: "stripeInfo" }, 'dapiRecordDetails', false);
+    } catch (error) {
+      console.error('Error creating Stripe customer:', error);
+      return `Error creating Stripe customer: ${error.message}`;
+    }
+  }
+
+  // CREATE SALE IN QBO
+  // const totals = computeTotals(workOrderData.lineTotals);
+  // console.log(totals)
+
+  /* Get Invoice Details from QBO */
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');  // getMonth() is zero-indexed, add 1 to make it 1-indexed
+  const day = String(now.getDate()).padStart(2, '0');
+  const currentDate = `${year}+${month}+${day}`;
+  const dueDate = workOrderData.cleaningDate.replace(/-/g, '+')
+
+  const currentYear = new Date().getFullYear().toString().slice(-2); // Get last two digits of the year
+  const invoiceNumStem = `${qboId}${currentYear}${month}`;
+  
+  const invoiceQuery = await callQBOApi(token, 'queryQBO', {entity: "Invoices", query: [{field: 'DocNumber', value: `${invoiceNumStem}%`, operator: 'LIKE'}]});
+  console.log(invoiceQuery)
+  const count = invoiceQuery.QueryResponse.totalCount ? invoiceQuery.QueryResponse.totalCount + 1 : 1;
+  const invoiceNum = `${invoiceNumStem}${String(count).padStart(3, '0')}`;
+  // console.log(invoiceNum)
+
+  /* Create FM Invoice Record */
+  const fmInvoice = await createRecord(token, {fieldData:{"_custID":custID,invoiceNo: invoiceNum,dateDue: dueDate,date: currentDate,dateDay: day,dateMonth: month,dateYear: year}}, 'dapiInvoice', true);
+  const invoiceId = fmInvoice.response.data[0].fieldData["__ID"];
+  const invoiceFMID = fmInvoice.response.data[0].fieldData["~dapiRecordID"];
+  // console.log("invoiceID: ",invoiceId)
+
+  /* Create QBO Sale */
+  const qboLines=createQboLineItems(workOrderData, true, orgSellables)
+  // console.log("qboLines: ",qboLines)
+  const qboInvoice = await callQBOApi(token, 'createInvoice', {
+    customerId: qboId,
+    txnDate: new Date().toISOString().split('T')[0],
+    lineItems: qboLines,
+    currencyCode: "CAD",
+    docNumber: invoiceNum
+  });
+  //console.log("qboInvoice: ",qboInvoice)
+  const qboInvoiceID = qboInvoice.Id;
+  console.log("qboInvoiceID: ",qboInvoiceID)
+  if(!qboInvoiceID){
+    console.error("qboInvoiceID unset")
+    await deleteRecord(token, 'dapiInvoice', invoiceFMID)
+    throw new Error("qboInvoiceID is unset")
+  }
+
+  /* Create FM Sale */
+  let billableID
+  let billableFMID
+  const totals = computeTotals(workOrderData.lineTotals)
+  try{
+    const billable = await createRecord(token, { fieldData:{ "_partyID":custID,"_sellableID":sellableID,"_invoiceID": invoiceId, description: workOrderData.activity, totalPrice: totals.total, price: totals.subTotal, gstAmount: totals.GST, quantity: 1, f_taxableGST: 1, unit: "service" }}, 'dapiBillable', true);
+    // console.log("billableObj: ",billable)
+    billableID = billable.response.data[0].fieldData["__ID"];
+    // console.log("billableID: ",billableID)
+    billableFMID = billable.response.data[0].fieldData["~dapiRecordID"];
+    // console.log('billableFMID:',billableFMID,)
+    if(!billableID){throw new Error("billableID is unset");}
+  } catch {
+      console.error("billableID unset")
+      try {
+        await deleteRecord(token, 'dapiInvoice', invoiceFMID);
+      } catch (deleteError) {
+        console.error(`Error deleting invoice with ID ${invoiceFMID}:`, deleteError);
+      }
+      try {
+        await callQBOApi(token, 'deleteInvoice', { invoiceId: qboInvoiceID });
+      } catch (deleteError) {
+        console.error(`Error deleting QBO invoice with ID ${qboInvoiceID}:`, deleteError);
+      }
+      throw new Error("qboInvoiceID is unset")
+  }
+
+  let createdScopeIDs=[]
+  // console.log('billableFMID:',billableFMID)
+  try {
+      for (const task of [...workOrderData.tasks.highPriority, ...workOrderData.tasks.LowPriority]) {
         const detail = workOrderData.tasks.highPriority.includes(task) ? "High Priority" : "Low Priority";
         const result = await createRecord(token, { fieldData: {_fkID: billableID, label: task, detail } }, 'dapiScope', true);
         const resultID = result.response.data[0].fieldData["__ID"];
@@ -192,15 +216,33 @@ async function createSale(userData,workOrderData,token) {
       console.error("Error creating scopes, cleaning up:", error);
       // Cleanup all created scopes on error
       for (const scopeFMID of createdScopeIDs) {
-        await deleteRecord(token, 'dapiScope', scopeFMID);
+        try {
+          await deleteRecord(token, 'dapiScope', scopeFMID);
+        } catch (deleteError) {
+          console.error(`Error deleting scope with ID ${scopeFMID}:`, deleteError);
+        }
       }
+    
       // Additional cleanup for billable and invoice records
-      await deleteRecord(token, 'dapiBillable', billableFMID);
-      await callQBOApi(token, 'deleteInvoice', { invoiceId: qboInvoiceID });
-      await deleteRecord(token, 'dapiInvoice', invoiceFMID);
+      try {
+        await deleteRecord(token, 'dapiBillable', billableFMID);
+      } catch (deleteError) {
+        console.error(`Error deleting billable with ID ${billableFMID}:`, deleteError);
+      }
+      try {
+        await deleteRecord(token, 'dapiInvoice', invoiceFMID);
+      } catch (deleteError) {
+        console.error(`Error deleting invoice with ID ${invoiceFMID}:`, deleteError);
+      }
+      try {
+        await callQBOApi(token, 'deleteInvoice', { invoiceId: qboInvoiceID });
+      } catch (deleteError) {
+        console.error(`Error deleting QBO invoice with ID ${qboInvoiceID}:`, deleteError);
+      }
       throw error;  // Rethrowing the error to be handled by the outer catch block
     }
-    return true;  // Return true indicating success
+    const obj = {success: true, invoiceId, invoiceFMID}
+    return obj;  // Return true indicating success
   } catch (error) {
     console.error('Error processing sale:', error);
     return `Error processing sale: ${error.message}`;  // Return the error message
@@ -208,3 +250,11 @@ async function createSale(userData,workOrderData,token) {
 }
 
 export default createSale;
+
+/**
+ * OUTCOME:
+ *    Customer exists in stripe 
+ *    Customer exists in QBO
+ *    Invoice exists in QBO
+ *    Sale exists in FM
+ */

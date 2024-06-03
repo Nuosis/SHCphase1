@@ -101,11 +101,11 @@ function SignupPage() {
                 throw new Error("User data is not set. Check user context.");
             };
 
-            if (workOrderData && Object.keys(workOrderData).length > 0) {
-                // setPopup({ show: true, message: "Login successful." });
-            } else {
-                throw new Error("Work order data is not set. Check detokenization process.");
-            };
+            // if (workOrderData && Object.keys(workOrderData).length > 0) {
+            //     // setPopup({ show: true, message: "Login successful." });
+            // } else {
+            //     throw new Error("Work order data is not set. Check detokenization process.");
+            // };
     
             setTimeout(() => navigate('/customer-portal'), 500);
         } catch (error) {

@@ -15,20 +15,31 @@ import InformationCard from './Modules/Information.js';
 import WorkOrderCard from './Modules/Workorder.js';
 import WorkOrderReport from './Modules/WorkorderReport.js';
 import CreditCardForm from './Modules/CreditCardInput.js';
+import CreditCardDetails from './Modules/CreditCardDetails.js';
 import MyPets from './Pets/Pet.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
+import { callStripeApi } from './Sales/stripe.js'
+import { createRecord } from './FileMaker/createRecord.js';
 
 
 function CustomerPortal() {
   //STATE
   const { authState } = useAuth();
-  const { workOrderData, newWorkOrderData, setWorkOrderData } = useWorkOrder();
-  const { userData, /*setUserData*/ } = useUser();
+  const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
+  const { userData, getUserData, /*setUserData*/ } = useUser();
   const [popup, setPopup] = useState({ show: false, message: '' });
-  const [activeComponent, setActiveComponent] = useState('WorkOrderCard');
+  const initialComponent = Object.keys(newWorkOrderData).length > 0 ? 'WorkOrderCard':'';
+  const [activeComponent, setActiveComponent] = useState(initialComponent);
+  const [activePanel, setActivePanel] = useState('app');
   console.log({userData},{workOrderData},{newWorkOrderData})
+
+  useEffect(() => {
+    if (activeComponent) {
+      setActivePanel('mid');
+    }
+  }, [activeComponent]);
 
   // Dynamic component map
   const componentMap = {
@@ -39,6 +50,7 @@ function CustomerPortal() {
       WorkOrderCard: WorkOrderCard,
       WorkOrderReport: WorkOrderReport,
       CreditCardForm: CreditCardForm,
+      CreditCardDetails: CreditCardDetails
   };
 
   //FUNCTIONS
@@ -95,7 +107,7 @@ function CustomerPortal() {
   }
 
   const renderActiveComponent = () => {
-    // console.log('Active component:', activeComponent);
+    //console.log('Active component:', activeComponent);
     const Component = componentMap[activeComponent];
     if (!Component) return null;
     const token=authState.token
@@ -108,7 +120,8 @@ function CustomerPortal() {
         ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
         ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
         ...(activeComponent === 'WorkOrderReport' && { workOrderData }),
-        ...(activeComponent === 'CreditCardForm' && { token, userData, setActiveComponent, setWorkOrderData }),
+        ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
+        ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
         // Extend this pattern for other components as needed
     };
 
@@ -153,6 +166,7 @@ function CustomerPortal() {
   };
 
   const handleComponentChange = (componentKey, props = {}) => {
+    //console.log('componenetKey: ',componentKey)
     if (componentMap[componentKey]) {
         setActiveComponent(componentKey);
     }
@@ -174,20 +188,76 @@ function CustomerPortal() {
   };
 
   const handleSubmitWorkOrder = async(json) => {
-      console.log('workOrder Submitted:', workOrderData);
-      const saleData = await CreateSale(userData,workOrderData,authState.token);
-      if (saleData === true) {
+      console.log('workOrder Submitted:', workOrderData);        
+      
+      // confirm CC or collect
+      const stripeData = JSON.parse(userData.userData.userDetails.stripeInfo[0].data)
+      // console.log({stripeData})
+      const hasCreditCard = await callStripeApi(authState.token, 'hasValidCard', {customerId: stripeData.id})
+      // console.log('hasCreditCard: ',hasCreditCard)
+
+      if (hasCreditCard) {
+        const saleData = await CreateSale(userData,workOrderData,authState.token);
+        if (saleData.success) {
+          console.log("Sale process completed successfully.");
+          // Customer created in Stripe and QBO and stored in UserData
+          // Invoice created in FM and QBO
+        } else {
+          console.error("Sale process failed:", saleData);
+          setPopup({ show: true, message: saleData });
+          return
+        }
         console.log("Sale process submitted successfully.");
-        // confirm CC or collect
-        // payment intent
-        // inform card will be charged at 7am on day of the clean
-        // late cancel fee
-        // process to inform cleaners
+
+        // reset newWorkOrderData to null
+        setNewWorkOrderData({});
+
+        // reset billable in userData
+        await getUserData(userData.userData.userInfo.ID)
+
+        handleComponentChange('WorkOrderReport')
+
+        setPopup({ show: true, message: 'Clean booked! Your card will be charged 24 hrs before clean is scheduled to begin. Cancel anytime prior to payment processing. Within 24 hrs, reschedule with 50% credit.' });
+
+        // PROCESS IN STRIPE
+        /**
+         * sale is now complete. if next part fails can reprocess on server
+         * for each billable (for home cleaning) there should be a recordDetail witha payment intent, if not create 
+         */
+        try {
+          let params = {
+            amount: workOrderData.price*100 ,
+            currency: 'CAD',
+            customerId: stripeData.id
+          }
+          let paymentIntent = await callStripeApi(authState.token, 'createPaymentIntent', params)
+          // prcess if returns error >> popup
+          console.log({paymentIntent})
+          if (!paymentIntent || !paymentIntent.clientSecret) {
+            throw new Error(`Error processing payment intent`);
+          }
+          params = {
+            fieldData: {
+              '_fkID': saleData.billableID,
+              data: `{"clientSecret":"${paymentIntent.clientSecret}"`,
+              type: 'stripePaymentIntent'
+            },
+          }
+          console.log({params})
+
+          let response = await createRecord(authState.token, params, 'dapiRecordDetails', false)
+          console.log({response})
+          if(!response.messages || !response.messages[0] || response.messages[0].code !== "0") {
+            throw new Error(`error recording paymentIntention: ${JSON.stringify(response)}`)
+          }
+          // TODO: process to inform/assign cleaners
+        } catch(error) {
+          console.error("Error processing payment: ", error.message);
+        }
       } else {
-        console.error("Sale process failed:", saleData);
-        // revert handled in CreateSale
-        // inform customer
-        // attempt to submit order request via email
+        // render cc input form
+        setPopup({ show: true, message: 'Payment method required' });
+        handleComponentChange('CreditCardForm')
       }
   };
 
@@ -196,81 +266,85 @@ function CustomerPortal() {
       // Process the access instructions here
   };
 
-    //VARIABLES
-    // Prepare activity data
-    const activities = prepareActivityData(workOrderData, userData);
-    // console.log({activities})
+  const handleTabClick = (panel) => {
+    setActivePanel(panel);
+  };
 
-    // Generate activity rows from prepared data
-    const activityRows = generateActivityRows(activities); 
-    
-    const accountRows = [
+  //VARIABLES
+  // Prepare activity data
+  const activities = prepareActivityData(workOrderData, userData);
+  // console.log({activities})
+
+  // Generate activity rows from prepared data
+  const activityRows = generateActivityRows(activities); 
+  
+  const accountRows = [
+    <HeaderRow
+      key="info"
+      icon={<Info />}
+      onClick={() => handleComponentChange('InformationCard')} 
+      text='Information'
+    />,
+    <HeaderRow
+      key="billing"
+      icon={<Payment />}
+      onClick={() => handleComponentChange('CreditCardDetails')}
+      text='Bills & Payments'
+    />,
+  ]
+
+  const settingRows = [
       <HeaderRow
-        key="info"
-        icon={<Info />}
-        onClick={() => handleComponentChange('InformationCard')} 
-        text='Information'
+          key="instructions"
+          icon={<ChecklistRtl />}
+          onClick={() => handleComponentChange('GeneralInstructions')}
+          text='General Instructions'
       />,
       <HeaderRow
-        key="billing"
-        icon={<Payment />}
-        onClick={() => handleComponentChange('CreditCardForm')}
-        text='Bills & Payments'
+          key="pets"
+          icon={<Pets />}
+          onClick={() => handleComponentChange('MyPets')}
+          text='My Pets'
       />,
-    ]
+      <HeaderRow
+          key = "access"
+          icon = {<Key />}
+          onClick ={ () => handleComponentChange('AccessCard')}
+          text= 'Access'
+      />
+  ]
 
-    const settingRows = [
-        <HeaderRow
-            key="instructions"
-            icon={<ChecklistRtl />}
-            onClick={() => handleComponentChange('GeneralInstructions')}
-            text='General Instructions'
-        />,
-        <HeaderRow
-            key="pets"
-            icon={<Pets />}
-            onClick={() => handleComponentChange('MyPets')}
-            text='My Pets'
-        />,
-        <HeaderRow
-            key = "access"
-            icon = {<Key />}
-            onClick ={ () => handleComponentChange('AccessCard')}
-            text= 'Access'
-        />
-    ]
-
-    return (
-      <div className="customerPortal">
-        {/* Overlay and POPUP */}
-        {popup.show && (
-          <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
-              <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
-          </div>
-        )}
-        <div className="leftBackgroundShadowBox">
-          <Portrait imageUrl={altUserImage} />
-          <SimpleCard text = {`Welcome ${userData.userData.userInfo.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
-          <HeaderCard headerText = "Activity">
-            {activityRows}
-          </HeaderCard>
-          <HeaderCard headerText = "Account">
-            {accountRows}
-          </HeaderCard>
+  return (
+    <div className="customerPortal">
+      {/* Overlay and POPUP */}
+      {popup.show && (
+        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
+            <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
         </div>
-        <div className="middleBackgroundShadowBox">
-          {renderActiveComponent()}
-        </div>
-        <div className="rightBackgroundShadowBox">
-          <HeaderCard headerText = "Settings">
-            {settingRows}
-          </HeaderCard>
-          <HeaderCard headerText = "Comunication">
-            
-          </HeaderCard>
-        </div>
+      )}
+      <div className="leftBackgroundShadowBox">
+        <Portrait imageUrl={altUserImage} />
+        <SimpleCard text = {`Welcome ${userData.userData.userInfo.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
+        <HeaderCard headerText = "Activity">
+          {activityRows}
+        </HeaderCard>
+        <HeaderCard headerText = "Account">
+          {accountRows}
+        </HeaderCard>
       </div>
-    );
+      <div className="middleBackgroundShadowBox">
+        {renderActiveComponent()}
+      </div>
+      <div className="rightBackgroundShadowBox">
+        <HeaderCard headerText = "Settings">
+          {settingRows}
+        </HeaderCard>
+        <HeaderCard headerText = "Comunication">
+          
+        </HeaderCard>
+      </div>
+    </div>
+  );
 }
 
 export default CustomerPortal;

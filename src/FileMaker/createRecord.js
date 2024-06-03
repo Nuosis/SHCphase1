@@ -1,7 +1,7 @@
 import {updateRecord} from './updateRecord'
 
 async function createRecord(token, params, layout, returnRecord) {
-    console.log("FileMaker_createRecord called")
+    // console.log("FileMaker_createRecord called")
     // Prepare the data for the API call
     const bodyData = {
         method: "createRecord",

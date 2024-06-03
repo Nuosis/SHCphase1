@@ -1,20 +1,19 @@
 
 
 async function deleteRecord(token, layout, recordID) {
-
-    console.log("FileMaker_deleteRecord called")
     // Prepare the data for the API call
     const payloadData = {
         method: "deleteRecord",
         server: "server.selectjanitorial.com",
         database: "clarityData",
         layout,
-        recordId: recordID,
+        recordID: recordID,
     };
+    console.log("FileMaker_deleteRecord called",{payloadData})
 
     try {
         const response = await fetch('https://server.claritybusinesssolutions.ca:4343/clarityData', {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,

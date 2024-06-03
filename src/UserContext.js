@@ -341,7 +341,7 @@ export const UserProvider = ({ children }) => {
                       ID: bill.fieldData["__ID"],
                       orgID: bill.fieldData["_orgID"],
                       invoiceNum: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::invoiceNo"],
-                      invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::date"],
+                      invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::dateDue"],
                   };
           
                   // Check if the description key exists in billableData

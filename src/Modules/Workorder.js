@@ -138,7 +138,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) =
     });
 };
 
-
   const handleRequestToggle = (service) => {
     setRequests(prev => ({
       ...prev,

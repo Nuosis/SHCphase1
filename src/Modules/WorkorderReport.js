@@ -8,6 +8,15 @@ import { IconButton } from '../UI Elements/Button';
 import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * 
+ * Use this componenet when not displaying sale (displaying history) 
+ * 
+ */
+
+// TODO: cancel clean (if Now>24hrs befor clean)
+// TODO: reschedule clean (if Now is 24hrs prior to clean, 50% cuppon)
+
 const WorkOrderReport = ({ workOrderData }) => {
   // console.log("WorkOrderCard rendering...");
   const cleaningDate = workOrderData.cleaningDate
