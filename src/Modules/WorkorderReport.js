@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
  * 
  */
 
+// TODO: (if Now > cleanDate), add special request
 // TODO: cancel clean (if Now>24hrs befor clean)
 // TODO: reschedule clean (if Now is 24hrs prior to clean, 50% cuppon)
 
