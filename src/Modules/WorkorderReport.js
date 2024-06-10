@@ -22,7 +22,7 @@ const WorkOrderReport = ({ workOrderData }) => {
   // console.log("WorkOrderCard rendering...");
   const cleaningDate = workOrderData.cleaningDate
   const highTasks = workOrderData.tasks.highPriority.map(task => ({ id: uuidv4(), description: task }));
-  const lowTasks = workOrderData.tasks.LowPriority.map(task => ({ id: uuidv4(), description: task }));
+  const lowTasks = workOrderData.tasks.lowPriority.map(task => ({ id: uuidv4(), description: task }));
 
   const lineTotals = workOrderData.lineTotals || [
       { description: 'Home Cleaning', amount: workOrderData.price },

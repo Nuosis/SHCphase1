@@ -202,7 +202,7 @@ async function createSale(userData,workOrderData,token) {
   let createdScopeIDs=[]
   // console.log('billableFMID:',billableFMID)
   try {
-      for (const task of [...workOrderData.tasks.highPriority, ...workOrderData.tasks.LowPriority]) {
+      for (const task of [...workOrderData.tasks.highPriority, ...workOrderData.tasks.lowPriority]) {
         const detail = workOrderData.tasks.highPriority.includes(task) ? "High Priority" : "Low Priority";
         const result = await createRecord(token, { fieldData: {_fkID: billableID, label: task, detail } }, 'dapiScope', true);
         const resultID = result.response.data[0].fieldData["__ID"];

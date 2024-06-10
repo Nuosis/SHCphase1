@@ -72,7 +72,7 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       price: parseFloat(billableRecord.totalPrice),
       tasks: {
         highPriority: scopeData.filter(item => item.detail === "High Priority").map(item => item.label),
-        LowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
+        lowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
       }
     };
     return woData

@@ -14,7 +14,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) =
   const [cleaningDate, setCleaningDate] = useState(workOrderData.cleaningDate);
   const [rate, setRate] = useState(workOrderData.price / workOrderData.hours);
   const [highTasks, setHighTasks] = useState(workOrderData.tasks.highPriority.map(task => ({ id: uuidv4(), description: task })));
-  const [lowTasks, setLowTasks] = useState(workOrderData.tasks.LowPriority.map(task => ({ id: uuidv4(), description: task })));
+  const [lowTasks, setLowTasks] = useState(workOrderData.tasks.lowPriority.map(task => ({ id: uuidv4(), description: task })));
   const [edited, setEdited] = useState({});
   const [provideEquipment, setProvideEquipment] = useState(() => {
     return workOrderData.lineTotals?.some(line => line.description === "Equipment") ?? false;
@@ -89,7 +89,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) =
       cleaningDate,
       tasks: {
         highPriority: highTasks.map(task => task.description),
-        LowPriority: lowTasks.map(task => task.description)
+        lowPriority: lowTasks.map(task => task.description)
       }
     });
   }, [onSubmitWorkOrder, workOrderData, cleaningDate, highTasks, lowTasks]);
