@@ -226,7 +226,7 @@ function SignupPage() {
                     "_fkID": partyID,
                 }
             };
-            const layout = "dapiRecordDetail"
+            const layout = "dapiRecordDetails"
             const recordReturn = false;
             detailResult = await createRecord(authState.token,params,layout, recordReturn);
             console.log(detailResult)
