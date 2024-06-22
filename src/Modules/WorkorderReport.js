@@ -1,9 +1,10 @@
 import React from 'react';
 // import { useUser } from '../UserContext.js';
-import HeaderCard from '../UI Elements/HeaderCard';
-import Totals from '../UI Elements/Totals.js';
+import Card from '../UI Elements/Card.js';
+import CardInput from '../UI Elements/CardInput.js';
+//import Totals from '../UI Elements/Totals.js';
 import { Accordion } from '../UI Elements/Accordion.js';
-import { IconButton } from '../UI Elements/Button';
+//import { IconButton } from '../UI Elements/Button';
 // import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
@@ -110,7 +111,7 @@ const WorkOrderReport = ({ workOrderData }) => {
     return url;
   };
 
-
+/*
 return (
     <>
       <HeaderCard headerText="Information" headerTextStyle={headerTextStyle}>
@@ -130,6 +131,31 @@ return (
       </HeaderCard>
     </>
   );
+};
+*/
+return (
+  <Card 
+    headerText="Work Order"
+    headerHiddenText={{ Hours: workOrderData.lineTotals.length, Date: workOrderData.cleaningDate }}
+    state={workOrderData}
+    setState={null}
+  >
+    <CardInput 
+      label="Number of Hours" 
+      type="number" 
+      id="hours" 
+      childType="input"
+      stateKey="lineTotals.length"
+    />
+    <CardInput 
+      label="Select Date" 
+      type="text"  
+      id="date" 
+      childType="date"
+      stateKey="cleaningDate"
+    />
+  </Card>
+);
 };
 
 export default WorkOrderReport;

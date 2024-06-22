@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Residential Cleaning Web App"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/clarity192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -24,20 +24,60 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Select Home Cleaning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+	  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+	  <link href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" rel="stylesheet" />
+    <style>
+      .header-active .hide-when-active {
+        display: none;
+      }
+      
+      .text-brand-green {
+        color: #55B884;
+      }
+      
+      .text-brand-light-green {
+        color: #9FCE70;
+      }
+      
+      .bg-brand-green {
+        background: #55B884;
+      }
+      
+      .bg-brand-green:hover {
+        background: #419B6B;
+      }
+      
+      h1.text-brand-green:hover {
+        background: rgba(103,166,218,0.2);
+      }
+      
+      .header-active:hover {
+        background: none !important;
+      }
+      
+      label.tag-selected,
+      label.tag-not-selected:hover {
+        background: #67A6DA;
+        color: white;
+        border: 1px solid #67A6DA;
+      }
+      
+      label.tag-not-selected {
+        background: white;
+        color: black;
+        border: 1px solid #67A6DA;
+      }
+      
+      label.tag-selected:hover,
+      label.tag-not-selected:hover {
+        cursor: pointer;
+      }
+    </style>
   </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+  <body>	
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
   </body>
 </html>

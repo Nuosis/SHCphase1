@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { AuthProvider } from './AuthContext'; // Import your AuthContext
 import { WorkOrderProvider } from './WorkOrderContext'; // Import your AuthContext
 import { UserProvider } from './UserContext';
-import SignupPage from './Security/SignupPage';
+import SignupPage from './Modules/SignupPage';
 import CustomerPortal from './CustomerPortal'; // Your protected component
 import ProtectedRoute from './ProtectedRoute'; // Your ProtectedRoute component
 import { loadStripe } from '@stripe/stripe-js';

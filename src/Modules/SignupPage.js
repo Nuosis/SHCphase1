@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext.js';
 import { useWorkOrder, prepareWorkOrderData } from '../WorkOrderContext.js';
 import { useUser } from '../UserContext.js';
-import { sanitizeInput, validateEmail, validatePhoneNumber } from './inputValidation.js';
+import { sanitizeInput, validateEmail, validatePhoneNumber } from '../Security/inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
 import provinces from '../Environment/provinces.json';
@@ -352,114 +352,130 @@ function SignupPage() {
 
     //TODO: create consent to text flag. pop up if checked on creatation explaining sms usage. if user uncheck explain impact
     return (
-        <div className="container mx-auto px-4">
-            {/* Overlay and POPUP */}
-            {popup.show && (
-                <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
-                    <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
-                </div>
-            )}
-            {/* HEADING */}
-            <h2 className="text-2xl font-bold text-center my-8">{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
-            {!isCreatingAccount ? (
-                <form className="space-y-4 max-w-md mx-auto" onSubmit={handleLoginSubmit}>
+      <>
+        <div className="flex flex-col min-h-screen">
+          <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
+            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
+              <a href="#" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
+                <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" class="max-h-12" alt="Select Home Cleaning"/>
+              </a>
+            </div>
+          </nav>
+          <div className="container mx-auto px-4 min-h-max flex-grow">
+              {/* Overlay and POPUP */}
+              {popup.show && (
+                  <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
+                      <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
+                  </div>
+              )}
+              {/* HEADING */}
+              <h2 className="text-2xl font-bold text-center my-8">{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
+              {!isCreatingAccount ? (
+                  <form className="space-y-4 max-w-md mx-auto" onSubmit={handleLoginSubmit}>
 
-                    {/* Login Form */}
+                      {/* Login Form */}
 
-                    <div className="form-control">
-                        <label className="label" htmlFor="email">
-                            <span className="label-text">Email</span>
-                        </label>
-                        <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="password">
-                            <span className="label-text">Password</span>
-                        </label>
-                        <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control mt-6">
-                        <button type="submit" className="btn btn-primary">Log In</button>
-                        <button type="button" onClick={handleChangeForm} className="text-right text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">Create account</button>
-                    </div>
-                </form>
-            ) : (
-                <form className="max-w-md mx-auto" onSubmit={handleCreateAccount}>
+                      <div className="form-control">
+                          <label className="label" htmlFor="email">
+                              <span className="label-text">Email</span>
+                          </label>
+                          <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="password">
+                              <span className="label-text">Password</span>
+                          </label>
+                          <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control mt-6">
+                          <button type="submit" className="btn btn-primary">Log In</button>
+                          <button type="button" onClick={handleChangeForm} className="text-right text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">Create account</button>
+                      </div>
+                  </form>
+              ) : (
+                  <form className="max-w-md mx-auto" onSubmit={handleCreateAccount}>
 
-                    {/* Sign Up Form */}
+                      {/* Sign Up Form */}
 
-                    <div className="form-control">
-                        <label className="label" htmlFor="firstName">
-                            <span className="label-text">First Name</span>
-                        </label>
-                        <input type="text" id="firstName" name="firstName" className="input input-bordered w-full" placeholder="Your" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="lastName">
-                            <span className="label-text">Last Name</span>
-                        </label>
-                        <input type="text" id="lastName" name="lastName" className="input input-bordered w-full" placeholder="Name" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="street">
-                            <span className="label-text">Street Address</span>
-                        </label>
-                        <input type="text" id="street" name="street" className="input input-bordered w-full"  placeholder="123 4th St" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control flex flex-row">
-                        <label className="label w-3/5 gap-2" htmlFor="city">
-                            <span className="label-text">City</span>
-                        </label>
-                        <label className="label  w-2/5 gap-2" htmlFor="province">
-                            <span className="label-text">Province</span>
-                        </label>
-                    </div>
-                    <div className="form-control flex flex-row gap-2">
-                        <input type="text" id="city" name="city" className="input input-bordered w-3/5" value={formFields.city}  onChange={handleChange} />
-                        <select 
-                                id="province" 
-                                name="province" 
-                                className="input input-bordered w-2/5" 
-                                value={formFields.province} 
-                                onChange={handleChange}
-                            >
-                                {provinces.map((province) => (
-                                    <option key={province.code} value={province.code}>
-                                        {province.name}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="email">
-                            <span className="label-text">Email</span>
-                        </label>
-                        <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="phoneNumber">
-                            <span className="label-text">Phone Number</span>
-                        </label>
-                        <input type="tel" id="phoneNumber" name="phoneNumber" className="input input-bordered w-full" placeholder="(123) 456-7890" onChange={handleChange} required />
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="password">
-                            <span className="label-text">Password</span>
-                        </label>
-                        <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control">
-                        <label className="label" htmlFor="password">
-                            <span className="label-text">Re-enter Password</span>
-                        </label>
-                        <input type="password" id="validation_password" name="confirmPassword" className="input input-bordered w-full" placeholder="Re-Enter your password" onChange={handleChange} required/>
-                    </div>
-                    <div className="form-control mt-6">
-                        <button type="submit" className="btn btn-primary">Create Account</button>
-                    </div>
-                </form>
-            )}
+                      <div className="form-control">
+                          <label className="label" htmlFor="firstName">
+                              <span className="label-text">First Name</span>
+                          </label>
+                          <input type="text" id="firstName" name="firstName" className="input input-bordered w-full" placeholder="Your" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="lastName">
+                              <span className="label-text">Last Name</span>
+                          </label>
+                          <input type="text" id="lastName" name="lastName" className="input input-bordered w-full" placeholder="Name" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="street">
+                              <span className="label-text">Street Address</span>
+                          </label>
+                          <input type="text" id="street" name="street" className="input input-bordered w-full"  placeholder="123 4th St" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control flex flex-row">
+                          <label className="label w-3/5 gap-2" htmlFor="city">
+                              <span className="label-text">City</span>
+                          </label>
+                          <label className="label  w-2/5 gap-2" htmlFor="province">
+                              <span className="label-text">Province</span>
+                          </label>
+                      </div>
+                      <div className="form-control flex flex-row gap-2">
+                          <input type="text" id="city" name="city" className="input input-bordered w-3/5" value={formFields.city}  onChange={handleChange} />
+                          <select 
+                                  id="province" 
+                                  name="province" 
+                                  className="input input-bordered w-2/5" 
+                                  value={formFields.province} 
+                                  onChange={handleChange}
+                              >
+                                  {provinces.map((province) => (
+                                      <option key={province.code} value={province.code}>
+                                          {province.name}
+                                      </option>
+                                  ))}
+                          </select>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="email">
+                              <span className="label-text">Email</span>
+                          </label>
+                          <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="phoneNumber">
+                              <span className="label-text">Phone Number</span>
+                          </label>
+                          <input type="tel" id="phoneNumber" name="phoneNumber" className="input input-bordered w-full" placeholder="(123) 456-7890" onChange={handleChange} required />
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="password">
+                              <span className="label-text">Password</span>
+                          </label>
+                          <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control">
+                          <label className="label" htmlFor="password">
+                              <span className="label-text">Re-enter Password</span>
+                          </label>
+                          <input type="password" id="validation_password" name="confirmPassword" className="input input-bordered w-full" placeholder="Re-Enter your password" onChange={handleChange} required/>
+                      </div>
+                      <div className="form-control mt-6">
+                          <button type="submit" className="btn btn-primary">Create Account</button>
+                      </div>
+                  </form>
+              )}
+          </div>
+          <footer className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg mt-4 sticky bottom-0 left-0 right-0 flex items-center justify-center" style={{ borderTop: "1px solid rgba(156, 163, 175, 0.25)" }}>
+              <div className="p-8 md:py-8 md:px-0 max-w-screen-md w-full">
+                  {/* Content here */}
+              </div>
+          </footer>
         </div>
+      </>
     );
 }
 
