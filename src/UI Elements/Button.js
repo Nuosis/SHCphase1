@@ -5,7 +5,7 @@ const icons = {
     HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment
 };
 
-export const IconButton = ({ className, onClick, type, icon, text }) => {
+export const IconButton = ({ className="w-full text-white p-2 px-8 rounded dark:text-gray-300 font-semibold bg-brand-green dark:bg-brand-green-dark", onClick, type, icon, text }) => {
     const IconComponent = icons[icon];
 
     return (
@@ -16,7 +16,7 @@ export const IconButton = ({ className, onClick, type, icon, text }) => {
     );
 };
 
-export const TextButton = ({ className, onClick, type, text }) => {
+export const TextButton = ({ className="w-full text-white p-2 px-8 rounded-lg dark:text-gray-300 font-semibold bg-brand-green dark:bg-brand-green-dark", onClick, type, text }) => {
     return (
         <button className={className} onClick={onClick} type={type}>
             {text}

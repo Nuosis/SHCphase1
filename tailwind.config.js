@@ -2,10 +2,18 @@ module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'media', // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'brand-green': '#55B884',
+        'brand-green-hover': '#419B6B',
+        'brand-green-dark': '#2E7A55', // Dark variant of the green
+      },
+    },
   },
   variants: {
-    extend: {},
+    extend: {
+      backgroundColor: ['dark'],
+    },
   },
   daisyui: {
     themes:[{

@@ -325,6 +325,11 @@ export const UserProvider = ({ children }) => {
             if (Array.isArray(billableObject)) {
               billableObject.forEach(bill => {
                   const description = bill.portalData.dapiBillableSellable[0]["dapiBillableSellable::description"];
+                  // Find the service provider where the field type is 'cleaner'
+                  const serviceProviderEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'cleaner');
+                  const serviceProvider = serviceProviderEntry ? serviceProviderEntry["dapiBillableDetails::data"] : {};
+                  const ratingEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'rating');
+                  const rating = ratingEntry ? ratingEntry["dapiBillableDetails::data"] : {};
                   const billable = {
                       GST: bill.fieldData.f_taxableGST,
                       GSTamount: bill.fieldData.gstAmount,
@@ -342,6 +347,8 @@ export const UserProvider = ({ children }) => {
                       orgID: bill.fieldData["_orgID"],
                       invoiceNum: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::invoiceNo"],
                       invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::dateDue"],
+                      serviceProvider,
+                      rating
                   };
           
                   // Check if the description key exists in billableData

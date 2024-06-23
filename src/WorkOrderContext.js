@@ -46,6 +46,8 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
   }
 
   const ID = billableRecord.ID;
+  const rating = billableRecord.rating;
+  const cleaner = billableRecord.serviceProvider
 
   // Fetch scope data using the ID from the billable record
   const params = {
@@ -65,7 +67,7 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       activity: activity,
       cleaningDate: date,
       lineTotals: [
-        { description: activity, amount: parseFloat(billableRecord.totalPrice) },
+        { description: activity, amount: parseFloat(billableRecord.price) },
         { description: "GST", amount: parseFloat(billableRecord.totalPrice-(billableRecord.totalPrice/1.05)) }
       ],
       invoiceNo: billableRecord.invoiceNum,
@@ -73,7 +75,9 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       tasks: {
         highPriority: scopeData.filter(item => item.detail === "High Priority").map(item => item.label),
         lowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
-      }
+      },
+      rating,
+      cleaner
     };
     return woData
   } catch (error) {

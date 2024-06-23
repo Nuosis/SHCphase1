@@ -4,6 +4,7 @@ import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
 import { useUser } from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
+import Footer from './UI Elements/Footer';
 import Portrait from './UI Elements/Portrait';
 import SimpleCard from './UI Elements/SimpleCard.js'
 import HeaderCard from './UI Elements/HeaderCard.js';
@@ -30,9 +31,24 @@ function CustomerPortal() {
   const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
   const { userData, getUserData, /*setUserData*/ } = useUser();
   const [popup, setPopup] = useState({ show: false, message: '' });
+  const [edited, setEdited] = useState({})
+  const [isPreviousOrdersOpen, setIsPreviousOrdersOpen] = useState(false);
+  const [isAccountNavbarOpen, setIsAccountNavbarOpen] = useState(false);
+  const [isMenubarOpen, setIsMenubarOpen] = useState(false);
   const initialComponent = Object.keys(newWorkOrderData).length > 0 ? 'WorkOrderCard':'';
   const [activeComponent, setActiveComponent] = useState(initialComponent);
   console.log({userData},{workOrderData},{newWorkOrderData})
+
+  useEffect(() => {
+    /**
+     * setEdited passes an object of [action].stateObjectPath  
+     * ACTIONS >> Delete, Update, Create
+    */ 
+
+    const action = Object.keys(edited)
+    const key = edited[action]
+    //TODO: edited interaction with DB
+  },[edited,setEdited])
 
   // Dynamic component map
   const componentMap = {
@@ -78,24 +94,23 @@ function CustomerPortal() {
   
   function generateActivityRows(activities) {
     const sortedActivities = Object.entries(activities).map(([activity, details]) => {
-      // Sort the details array by date from newest to oldest
       const sortedDetails = details.sort((a, b) => new Date(b.date) - new Date(a.date));
       return [activity, sortedDetails];
     });
-  
+
     const activityRows = sortedActivities.map(([activity, details]) => (
-      <HeaderRow key={activity} text={activity} textStyle={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        {details.map(detail => (
-          <HeaderSubrow
-            key={detail.date}
-            text={new Date(detail.date).toISOString().slice(0, 10)}
-            onClick={() => handleWorkOrderChange(detail.date)}
-            isSelected={detail.isSelected}
-          />
-        ))}
-      </HeaderRow>
+      details.map(detail => (
+        <div
+          key={detail.date}
+          text={new Date(detail.date).toISOString().slice(0, 10)}
+          onClick={() => handleWorkOrderChange(detail.date)}
+          isSelected={detail.isSelected}
+        >
+          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">{new Date(detail.date).toISOString().slice(0, 10)}</a>
+        </div>
+      ))
     ));
-  
+
     return activityRows;
   }
 
@@ -107,12 +122,12 @@ function CustomerPortal() {
 
     // Define props here if they are dynamic based on the component
     const componentProps = {
-        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, onSubmitWorkOrder: handleSubmitWorkOrder }),
-        ...(activeComponent === 'InformationCard' && { json: userData.userData, onSubmitInformation: handleSubmitInfo }),
+        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, onSubmitWorkOrder: handleSubmitWorkOrder, setEdited }),
+        ...(activeComponent === 'InformationCard' && { json: userData.userData, onSubmitInformation: handleSubmitInfo, edited, setEdited }),
         ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
         ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
         ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
-        ...(activeComponent === 'WorkOrderReport' && { workOrderData }),
+        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
         // Extend this pattern for other components as needed
@@ -120,10 +135,53 @@ function CustomerPortal() {
 
     return <Component {...componentProps} />;
   };
+
+  const renderFooter = (data) => {
+    // Default footer props to ensure footer renders even if no data or active component
+    let footerProps = {
+      totalPrice: () => '',
+      priceBreakdown: () => [],
+      buttonText: '',
+      buttonClickHandler: () => {},
+    };
+  
+    // Get the component from the activeComponent state
+    const Component = componentMap[activeComponent];
+  
+    // If there is no active component or no data, render the footer with default props
+    if (!Component || !data) {
+      return <Footer {...footerProps} />;
+    } 
+  
+    // Conditional logic based on the active component
+    if (activeComponent === 'WorkOrderCard') {
+      footerProps = {
+        totalPrice: `Total Price: $${data.price.toFixed(2)}`,
+        priceBreakdown: data.lineTotals,
+        buttonText: 'Book Cleaning',
+        buttonClickHandler: handleSubmitWorkOrder,
+      };
+    } else if (activeComponent === 'WorkOrderReport') {
+      footerProps = {
+        totalPrice: `Total Price: $${data.price.toFixed(2)}`,
+        priceBreakdown: data.lineTotals,
+        buttonText: 'Get Receipt',
+        buttonClickHandler: handleGetReceipt,
+      };
+    }
+  
+    // Render the footer with the determined props
+    return <Footer {...footerProps} />;
+  }
+
+  const message = (org) =>{
+
+  }
   
   //HANDLERS
   const handleWorkOrderChange = async (date) => {
     console.log('handleWorkOrderChange:', date);
+    togglePreviousOrders()
     try {
       let woData = null;
       //SET WORKORDERDATA
@@ -158,6 +216,12 @@ function CustomerPortal() {
     }
   };
 
+  const handleComponentSelect = (componentKey, props = {}) => {
+    //console.log('componenetKey: ',componentKey)
+    toggleAccountNavbar()
+    handleComponentChange(componentKey)
+  };
+
   const handleComponentChange = (componentKey, props = {}) => {
     //console.log('componenetKey: ',componentKey)
     if (componentMap[componentKey]) {
@@ -172,6 +236,11 @@ function CustomerPortal() {
 
   const handleSubmitGenInstruct = (instructions) => {
       console.log('General Instructions:', instructions);
+      // Process the access instructions here
+  };
+
+  const handleGetReceipt = (json) => {
+      console.log('getReceipt:', json);
       // Process the access instructions here
   };
 
@@ -259,131 +328,102 @@ function CustomerPortal() {
       // Process the access instructions here
   };
 
+  const togglePreviousOrders = () => setIsPreviousOrdersOpen(!isPreviousOrdersOpen);
+  const toggleAccountNavbar = () => setIsAccountNavbarOpen(!isAccountNavbarOpen);
+  const toggleMenubar = () => setIsMenubarOpen(!isMenubarOpen);
+
+
   //VARIABLES
   // Prepare activity data
   const activities = prepareActivityData(workOrderData, userData);
-  // console.log({activities})
-
-  // Generate activity rows from prepared data
-  const activityRows = generateActivityRows(activities); 
-  
-  const accountRows = [
-    <HeaderRow
-      key="info"
-      icon={<Info />}
-      onClick={() => handleComponentChange('InformationCard')} 
-      text='Information'
-    />,
-    <HeaderRow
-      key="billing"
-      icon={<Payment />}
-      onClick={() => handleComponentChange('CreditCardDetails')}
-      text='Bills & Payments'
-    />,
-  ]
-
-  const settingRows = [
-      <HeaderRow
-          key="instructions"
-          icon={<ChecklistRtl />}
-          onClick={() => handleComponentChange('GeneralInstructions')}
-          text='General Instructions'
-      />,
-      <HeaderRow
-          key="pets"
-          icon={<Pets />}
-          onClick={() => handleComponentChange('MyPets')}
-          text='My Pets'
-      />,
-      <HeaderRow
-          key = "access"
-          icon = {<Key />}
-          onClick ={ () => handleComponentChange('AccessCard')}
-          text= 'Access'
-      />
-  ]
 
   return (
-    <div className="bg-gray-100 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
+    <div className="bg-gray-100 dark:bg-gray-700 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
       <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 sticky top-0" style={{ borderBottom: "1px solid rgba(156,163,175,0.25)" }}>
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
           <a href="https://selecthomecleaning.ca" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-              <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" className="max-h-12" alt="Select Home Cleaning"/>
+            <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" className="max-h-12" alt="Select Home Cleaning" />
           </a>
-          <button data-collapse-toggle="navbar-multi-level" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-multi-level" aria-expanded="false">
-              <span className="sr-only">Menu</span>
-              <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15"/>
-              </svg>
+          <button
+            data-collapse-toggle="navbar-multi-level"
+            type="button"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            aria-controls="navbar-multi-level"
+            aria-expanded={isMenubarOpen}
+            onClick={toggleMenubar}
+          >
+            <span className="sr-only">Menu</span>
+            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
+            </svg>
           </button>
-          <div className="hidden w-full md:block md:w-auto" id="navbar-multi-level">
+          <div className={`w-full md:block md:w-auto ${isMenubarOpen ? '' : 'hidden'}`} id="navbar-multi-level">
             <ul className="flex flex-col font-medium p-4 md:p-0 mx-6 my-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              {
-                //HISTORY
-              }
+              {/* HISTORY */}
               <li>
-                <button id="previousOrdersLink" data-dropdown-toggle="previousOrder" className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto  md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
-                    <i className="iconoir-multiple-pages text-3xl"></i>
-                    <p className="pl-2">Previous Orders</p>
-                    <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                    </svg>
+                <button
+                  id="previousOrdersLink"
+                  data-dropdown-toggle="previousOrder"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto  md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  onClick={togglePreviousOrders}
+                >
+                  <i className="iconoir-multiple-pages text-3xl"></i>
+                  <p className="pl-2">Previous Orders</p>
+                  <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                  </svg>
                 </button>
-                { 
-                  //Dropdown menu
-                }
-                <div id="previousOrder" className="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                <div id="previousOrder" className={`z-10 ${isPreviousOrdersOpen ? '' : 'hidden'} font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
                   <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
-                      <li>
-                          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">4th Jun 2024</a>
-                      </li>
-                      <li>
-                          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">26th May 2024</a>
-                      </li>
-                      <li>
-                          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">12th May 2024</a>
-                      </li>
-                      <li>
-                          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">All Orders</a>
-                      </li>
+                    {generateActivityRows(activities).flat()}
                   </ul>
                 </div>
               </li>
-              { 
-                //ACCOUNT
-              }
+              {/* ACCOUNT */}
               <li>
-                  <button id="accountLink" data-dropdown-toggle="accountNavbar" className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
-                      <img
-                          src={altUserImage}
-                          className="rounded-full"
-                          style={{ height: "32px", width: "32px" }}
-                          alt=""
-                          loading="lazy" />
-                      <p className="pl-2">{userData.userData.userInfo.firstName} {userData.userData.userInfo.lastName}</p>
-                      <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
-                      </svg>
-                  </button>
-                  {
-                    //Dropdown menu
-                  }
-                  <div id="accountNavbar" className="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                      <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="doubleDropdownButton">
-                          <li>
-                              <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Account Details</a>
-                          </li>
-                          <li>
-                              <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">General Instructions</a>
-                          </li>
-                          <li>
-                              <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</a>
-                          </li>
-                      </ul>
-                      <div className="py-1">
-                          <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
-                      </div>
+                <button
+                  id="accountLink"
+                  data-dropdown-toggle="accountNavbar"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  onClick={toggleAccountNavbar}
+                >
+                  <img
+                    src={altUserImage}
+                    className="rounded-full"
+                    style={{ height: "32px", width: "32px" }}
+                    alt=""
+                    loading="lazy"
+                  />
+                  <p className="pl-2">{userData.userData.userInfo.firstName} {userData.userData.userInfo.lastName}</p>
+                  <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                  </svg>
+                </button>
+                <div id="accountNavbar" className={`z-10 ${isAccountNavbarOpen ? '' : 'hidden'} font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
+                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="doubleDropdownButton">
+                    <li>
+                      <button onClick={() => handleComponentSelect('InformationCard')} className="block w-min-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Account Details</button>
+                    </li>
+                    <li>
+                      <button onClick={() => handleComponentSelect('CreditCardDetails')} className="block w-min-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Billing</button>
+                    </li>
+                    <li>
+                      <button onClick={() => handleComponentSelect('GeneralInstructions')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">General Instructions</button>
+                    </li>
+                    <li>
+                      <button onClick={() => handleComponentSelect('MyPets')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">My Pets</button>
+                    </li>
+                    <li>
+                      <button onClick={() => handleComponentSelect('AccessCard')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Access Instructions</button>
+                    </li>
+                    <li>
+                      <button className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</button>
+                    </li>
+                  </ul>
+                  <div className="py-1">
+                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
                   </div>
+                </div>
               </li>
             </ul>
           </div>
@@ -409,43 +449,10 @@ function CustomerPortal() {
         {/* USER SPACE */}
         {renderActiveComponent()}
       </div>
-      {/*
-      <div className="leftBackgroundShadowBox">
-        <Portrait imageUrl={altUserImage} />
-        <SimpleCard text = {`Welcome ${userData.userData.userInfo.firstName}`} textStyle={{ textAlign: 'center', fontWeight: 'bold' , fontSize: '24px' }}/>
-        <HeaderCard headerText = "Activity">
-          {activityRows}
-        </HeaderCard>
-        <HeaderCard headerText = "Account">
-          {accountRows}
-        </HeaderCard>
-      </div>
-      <div className="middleBackgroundShadowBox">
-        {renderActiveComponent()}
-      </div>
-      <div className="rightBackgroundShadowBox">
-        <HeaderCard headerText = "Settings">
-          {settingRows}
-        </HeaderCard>
-        <HeaderCard headerText = "Comunication">
-          
-        </HeaderCard>
-      </div>
-      */}
+      {/* FOOTER */}
       <footer className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg mt-4 md:sticky md:bottom-0 md:left-0 md:right-0 flex items-center justify-center" style={{ borderTop: "1px solid rgba(156,163,175,0.25)" }}>
-        <div className="p-8 md:py-8 md:px-0 max-w-screen-md w-full">
-            <div className="flex justify-between">
-                <div>
-                    <p className="text-lg font-semibold dark:text-gray-200">Total Price: $157.50</p>
-                    <p className="text-xs text-gray-400">Cleaning: $120.00, Provide Equipment: $30.00, GST: $7.50</p>
-                </div>
-                <div className="md:flex items-center space-x-1">
-                    <button type="submit" className="w-full text-white p-2 px-8 rounded font-semibold bg-brand-green">Book Cleaning</button>
-                </div>
-            </div>
-        </div>
+        {renderFooter(workOrderData)}
       </footer>
-
     </div>
   );
 }

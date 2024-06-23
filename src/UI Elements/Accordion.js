@@ -2,8 +2,8 @@ import React from 'react';
 
 export const Accordion = ({ headerText, name, children, id, openState }) => {
     return (
-        <div id={id} className="collapse collapse-arrow bg-base-200">
-            <input type="radio" name={name} defaultChecked={openState} className="peer" />
+        <div id={id} className="collapse collapse-arrow bg-gray-200">
+            <input className="peer" type="radio" name={name} defaultChecked={openState} />
             <div className="collapse-title text-xl font-medium">
                 {headerText}
             </div>

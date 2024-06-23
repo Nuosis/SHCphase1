@@ -2,20 +2,21 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '../UserContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';
 import Totals from '../UI Elements/Totals.js';
+import Card from '../UI Elements/Card.js';
+import CardInput from '../UI Elements/CardInput.js';
 import { Accordion } from '../UI Elements/Accordion.js';
 import { IconButton } from '../UI Elements/Button';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
 
-const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) => {
+const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, setEdited }) => {
   // console.log("WorkOrderCard rendering...");
   const { userData, setUserData } = useUser();
   const [cleaningDate, setCleaningDate] = useState(workOrderData.cleaningDate);
   const [rate, setRate] = useState(workOrderData.price / workOrderData.hours);
   const [highTasks, setHighTasks] = useState(workOrderData.tasks.highPriority.map(task => ({ id: uuidv4(), description: task })));
   const [lowTasks, setLowTasks] = useState(workOrderData.tasks.lowPriority.map(task => ({ id: uuidv4(), description: task })));
-  const [edited, setEdited] = useState({});
   const [provideEquipment, setProvideEquipment] = useState(() => {
     return workOrderData.lineTotals?.some(line => line.description === "Equipment") ?? false;
   });
@@ -171,148 +172,72 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder }) =
         + Add Task
       </button>
     </div>
-  );    
-
-  const renderAccordion = () => {
-    const details = [];
-
-    //WORKORDER DETAILS
-    if (workOrderData) {
-      details.push(
-        <Accordion
-          key="wo-info"
-          name="woGroup"
-          id="woGroup-wo-info"
-          headerText="Work Order"
-          openState={false}
-        >
-          <div className="space-y-4 p-4">
-            <div>
-              <label className="block text-lg font-bold text-gray-700">{workOrderData.activity}</label>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Date</label>
-              <DatePicker
-                selected={cleaningDate}
-                onChange={setCleaningDate}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                dateFormat="MMMM dd, yyyy"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Hours</label>
-              <input
-                type="text"
-                name="hours"
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={workOrderData.hours}
-                onChange={(e) => handleTaskChange(e.target.value, 'hours', 'info')}
-                placeholder="time (in hours)"
-              />
-            </div>
-          </div>
-        </Accordion>
-      );
-    }
-    //CLEANING TASKS
-    if (highTasks.length > 0 || lowTasks.length > 0) {
-      details.push(
-        <Accordion
-          key="tasks"
-          name="woGroup"
-          id="woGroup-tasks"
-          headerText="Cleaning Tasks"
-          openState={false}
-        >
-          <div className="space-y-4 p-4">
-            <TaskEditor
-              tasks={highTasks}
-              onTaskChange={handleTaskChange}
-              onRemoveTask={handleRemoveTask}
-              onAddTask={handleAddTask}
-              taskType="high"
-            />
-            <TaskEditor
-              tasks={lowTasks}
-              onTaskChange={handleTaskChange}
-              onRemoveTask={handleRemoveTask}
-              onAddTask={handleAddTask}
-              taskType="low"
-            />
-          </div>
-        </Accordion>
-      );
-    }
-    //EXTRA SERVICES
-    details.push(
-      <Accordion
-        key="wo-upsell"
-        name="woGroup"
-        id="woGroup-wo-upsell"
-        headerText="Extra Services"
-        openState={true}
-      >
-        <div className="flex items-center mb-4 mt-4">
-            <input
-              type="checkbox"
-              id="provideEquipment"
-              checked={provideEquipment}
-              onChange={handleEquipmentToggle}
-              className="checkbox text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600"
-            />
-            <label htmlFor="provideEquipment" className="ml-2 text-sm font-medium text-gray-900">
-              Provide Equipment (+${10*workOrderData.hours})
-            </label>
-        </div>
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="requestLawncare"
-            checked={requests.lawncare}
-            onChange={() => handleRequestToggle('lawncare')}
-            className="checkbox text-green-600 focus:ring-green-500 dark:focus:ring-green-600"
-          />
-          <label htmlFor="requestLawncare" className="ml-2 text-sm font-medium text-gray-900">
-            Request Quote for Lawn Care/Gardening Services
-          </label>
-        </div>
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="requestCarpetCleaning"
-            checked={requests.carpetCleaning}
-            onChange={() => handleRequestToggle('carpetCleaning')}
-            className="checkbox text-red-600 focus:ring-red-500 dark:focus:ring-red-600"
-          />
-          <label htmlFor="requestCarpetCleaning" className="ml-2 text-sm font-medium text-gray-900">
-            Request Quote for Carpet Cleaning
-          </label>
-        </div>
-      </Accordion>
-
-    );
-
-    return details;
-  };
+  );
 
 
   return (
-    <>
-      <HeaderCard headerText="Information" headerTextStyle={headerTextStyle}>
-        <div className="flex flex-col justify-end gap-4 p-4 min-h-96">
-          {renderAccordion()}
-        </div>
-      </HeaderCard>
-      <HeaderCard headerText="Total" headerTextStyle={headerTextStyle}>
-        <form onSubmit={handleWOSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
-          <Totals totalLines={lineTotals} />
-          <IconButton
-            className="btn btn-primary"
-            type="submit"
-            text="Book Clean"
+    <>  
+      <div class="flex flex-col items-center justify-center flex-grow">
+        <Card 
+          headerText="Work Order"
+          headerHiddenText={{ Hours: workOrderData.lineTotals.length, Date: workOrderData.cleaningDate }}
+          state={workOrderData}
+          setState={null}
+          id="1"
+          persistOpen={false}
+        >
+          <CardInput 
+            label="Hours" 
+            type="text" 
+            id="hours" 
+            childType="input"
+            stateKey="lineTotals.length"
+            setEdited={setEdited}
           />
-        </form>
-      </HeaderCard>
+          <CardInput 
+            label="Date" 
+            type="date" 
+            id="date" 
+            childType="input"
+            stateKey="cleaningDate"
+            setEdited={setEdited}
+          />
+        </Card>
+        <Card 
+        headerText="Cleaning Tasks"
+        headerHiddenText=""
+        state={workOrderData}
+        setState={null}
+        flex="col"
+        id="2"
+        >
+          <CardInput 
+            label="" 
+            type="" 
+            id="cleaningTasks" 
+            childType="chit"
+            stateKey="tasks"
+            setEdited={setEdited}
+          />
+        </Card>
+        {/*
+        <HeaderCard headerText="Information" headerTextStyle={headerTextStyle}>
+          <div className="flex flex-col justify-end gap-4 p-4 min-h-96">
+            {renderAccordion()}
+          </div>
+        </HeaderCard>
+        <HeaderCard headerText="Total" headerTextStyle={headerTextStyle}>
+          <form onSubmit={handleWOSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
+            <Totals totalLines={lineTotals} />
+            <IconButton
+              className="btn btn-primary"
+              type="submit"
+              text="Book Clean"
+            />
+          </form>
+        </HeaderCard>
+        */}
+      </div>
     </>
   );
 };

@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../UserContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';
 import {Accordion} from '../UI Elements/Accordion.js';
 import {IconButton} from '../UI Elements/Button';
+import Card from '../UI Elements/Card.js';
+import CardInput from '../UI Elements/CardInput.js';
 
-const InformationCard = ({json, onSubmitInformation}) => {
+const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
     const { userData, setUserData } = useUser();
     const [infoData, setInfoData] = useState(userData.userData.userInfo);
     const [addressData, setAddressData] = useState(userData.userData.userAddress);
     const [emailData, setEmailData] = useState(userData.userData.userEmail);
     const [phoneData, setPhoneData] = useState(userData.userData.userPhones);
-    const [edited, setEdited] = useState({});
-    const headerTextStyle = {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '24px'
-    };
+
+    useEffect(() => {
+      if (!userData.userAddress) {
+        setUserData((prevState) => ({
+          ...prevState,
+          userAddress: [],
+        }));
+      }
+  
+      Object.entries(addressData).forEach(([key, valueArray]) => {
+        valueArray.forEach((index) => {
+          if (!userData.userAddress[index]) {
+            setUserData((prevState) => {
+              const updatedUserAddress = [...prevState.userAddress];
+              updatedUserAddress[index] = {};
+              return {
+                ...prevState,
+                userAddress: updatedUserAddress,
+              };
+            });
+          }
+          if (!userData.userAddress[index][key]) {
+            setUserData((prevState) => {
+              const updatedUserAddress = [...prevState.userAddress];
+              updatedUserAddress[index][key] = {};
+              return {
+                ...prevState,
+                userAddress: updatedUserAddress,
+              };
+            });
+          }
+        });
+      });
+    }, [addressData, setUserData, userData]);
 
     //HANDLERS
     const handleAddressChange = (type, key, value) => {
@@ -47,6 +77,7 @@ const InformationCard = ({json, onSubmitInformation}) => {
             [`${type}Address`]: { ...prev[`${type}Address`], [key]: true }
         }));
     };
+
     const handleEmailChange = (key, value) => {
         setEmailData(prev => {
             const updatedEmail = {...prev[key][0], email: value};  // Modify only the 'email' field
@@ -251,185 +282,198 @@ const InformationCard = ({json, onSubmitInformation}) => {
 
     //FUNCTIONS
     const renderAccordion = () => {
-        const details = [];
-
-        // Render Info
-        // First, define an Accordion for user info (first and last name)
-        if (infoData) {
-            details.unshift(
-                <Accordion
-                    key="user-info"
-                    name="infoGroup" 
-                    id="inforGroup-user-info"
-                    headerText="Information"
-                    openState={true}  // Set to open by default if desired
-                >
-                    <div className="space-y-4 p-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">First Name</label>
-                            <input
-                                type="text"
-                                name="firstName"
-                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                value={infoData.firstName}
-                                onChange={(e) => handleInfoChange('firstName', e.target.value)}
-                                placeholder="First Name"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                            <input
-                                type="text"
-                                name="lastname"
-                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                value={infoData.lastName}
-                                onChange={(e) => handleInfoChange('lastName', e.target.value)}
-                                placeholder="Last Name"
-                            />
-                        </div>
-                    </div>
-                </Accordion>
-            );
-        }
-
+      const details = [];
     
-        // Render Address Information
-        if (addressData) {
-            Object.entries(addressData).forEach(([key, valueArray]) => {
-                details.push(
-                    <Accordion 
-                        key={`address-${key}`} 
-                        name="infoGroup" 
-                        id={`inforGroup-address-${key}`}
-                        headerText={"Address"} 
-                        openState={false}
-                    >
-                        {valueArray.map((addr, index) => (
-                            <div key={index} className="space-y-2">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Street:</label>
-                                    <input
-                                        type="text"
-                                        name="street"
-                                        value={addr.street || ''}
-                                        onChange={(e) => handleAddressChange(key, 'street', e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">City:</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={addr.city || ''}
-                                        onChange={(e) => handleAddressChange(key, 'city', e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Province:</label>
-                                    <input
-                                        type="text"
-                                        name="province"
-                                        value={addr.province || ''}
-                                        onChange={(e) => handleAddressChange(key, 'province', e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Postal Code:</label>
-                                    <input
-                                        type="text"
-                                        name="postalCode"
-                                        value={addr.postalCode || ''}
-                                        onChange={(e) => handleAddressChange(key, 'postalCode', e.target.value)}
-                                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </Accordion>
+      // Render Info
+      if (infoData) {
+        details.unshift(
+          <Card
+            key="infoGroup-user-info"
+            id="infoGroup-user-info"
+            headerText="Name"
+            headerHiddenText={{ Null: userData.userData.userInfo.displayName }}
+            state={userData}
+            setState={setUserData}
+            setEdited
+            defaultOpen={true}
+            flex="col"
+          >
+            <CardInput
+              label="First Name"
+              type="text"
+              id="firstName"
+              childType="field"
+              state={userData}
+              setState={setUserData}
+              stateKey="userData.userInfo.firstName"
+            />
+            <CardInput
+              label="Last Name"
+              type="text"
+              id="lastName"
+              childType="field"
+              state={userData}
+              setState={setUserData}
+              stateKey="userData.userInfo.lastName"
+            />
+          </Card>
+        );
+      }
+    
+      // Render Address Information
+      if (addressData) {
+        details.push(
+          <Card
+            key="addressCard"
+            id="address"
+            headerText="Address"
+            headerHiddenText={{}}
+            state={userData}
+            setState={setUserData}
+            setEdited
+            flex="col"
+          >
+            {Object.entries(addressData).flatMap(([key, valueArray]) =>
+              valueArray.map((index) => {
+                // Initialize nested objects if not already initialized
+                if (!userData.userAddress[index]) {
+                  setUserData(prevState => {
+                    const updatedUserAddress = [...prevState.userAddress];
+                    updatedUserAddress[index] = {};
+                    return {
+                      ...prevState,
+                      userAddress: updatedUserAddress,
+                    };
+                  });
+                }
+                if (!userData.userAddress[index][key]) {
+                  setUserData(prevState => {
+                    const updatedUserAddress = [...prevState.userAddress];
+                    updatedUserAddress[index][key] = {};
+                    return {
+                      ...prevState,
+                      userAddress: updatedUserAddress,
+                    };
+                  });
+                }
+    
+                return (
+                  <React.Fragment key={`${key}-${index}`}>
+                    <CardInput
+                      label="Street"
+                      type="text"
+                      id={`street-${index}`}
+                      childType="field"
+                      state={userData}
+                      setState={setUserData}
+                      stateKey={`userAddress[${index}].${key}.street`}
+                    />
+                    <CardInput
+                      label="City"
+                      type="text"
+                      id={`city-${index}`}
+                      childType="field"
+                      state={userData}
+                      setState={setUserData}
+                      stateKey={`userAddress[${index}].${key}.city`}
+                    />
+                    <CardInput
+                      label="Province"
+                      type="text"
+                      id={`province-${index}`}
+                      childType="field"
+                      state={userData}
+                      setState={setUserData}
+                      stateKey={`userAddress[${index}].${key}.province`}
+                    />
+                    <CardInput
+                      label="Postal Code"
+                      type="text"
+                      id={`postalCode-${index}`}
+                      childType="field"
+                      state={userData}
+                      setState={setUserData}
+                      stateKey={`userAddress[${index}].${key}.postalCode`}
+                    />
+                  </React.Fragment>
                 );
-            });
-        }
-        
+              })
+            )}
+          </Card>
+        );
+      }
     
-        // Render Email Information
-        if (emailData) {
-            Object.entries(emailData).forEach(([key, emails]) => {
-                details.push(
-                    <Accordion 
-                        key={`email-${key}`} 
-                        name="infoGroup" 
-                        id={`inforGroup-email-${key}`}
-                        headerText={"Email"} 
-                        openState={false}
-                    >
-                        {emails.map((emailDetail, index) => (
-                            <div key={index} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    value={emailDetail.email}
-                                    onChange={(e) => handleEmailChange(key, e.target.value)}
-                                />
-                            </div>
-                        ))}
-                    </Accordion>
-                );
-            });
-        }
-        
+      // Render Email Information
+      if (emailData) {
+        Object.entries(emailData).forEach(([key, emails]) => {
+          details.push(
+            <Accordion
+              key={`email-${key}`}
+              name="infoGroup"
+              id={`infoGroup-email-${key}`}
+              headerText="Email"
+              openState={false}
+            >
+              {emails.map((emailDetail, index) => (
+                <div key={index} className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    value={emailDetail.email}
+                    onChange={(e) => handleEmailChange(key, e.target.value)}
+                  />
+                </div>
+              ))}
+            </Accordion>
+          );
+        });
+      }
     
-        // Render Phone Information
-        if (phoneData) {
-            Object.entries(phoneData).forEach(([key, phones]) => {
-                details.push(
-                    <Accordion 
-                        key={`phone-${key}`} 
-                        name="infoGroup" 
-                        id={`inforGroup-phone-${key}`}
-                        headerText={"Phone"} 
-                        openState={false}
-                    >
-                        {phones.map((phoneDetail, index) => (
-                            <div key={index} className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                                    value={phoneDetail.phone}// Use rawInput if available
-                                    onChange={(e) => handlePhoneChange(key, e.target.value)}
-                                    onBlur={(e) => handlePhoneBlur(key, e.target.value)}
-                                    placeholder="(123) 456-7890"
-                                />
-                            </div>
-                        ))}
-                    </Accordion>
-                );
-            });
-        }
-        
+      // Render Phone Information
+      if (phoneData) {
+        Object.entries(phoneData).forEach(([key, phones]) => {
+          details.push(
+            <Accordion
+              key={`phone-${key}`}
+              name="infoGroup"
+              id={`infoGroup-phone-${key}`}
+              headerText="Phone"
+              openState={false}
+            >
+              {phones.map((phoneDetail, index) => (
+                <div key={index} className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    value={phoneDetail.phone}
+                    onChange={(e) => handlePhoneChange(key, e.target.value)}
+                    onBlur={(e) => handlePhoneBlur(key, e.target.value)}
+                    placeholder="(123) 456-7890"
+                  />
+                </div>
+              ))}
+            </Accordion>
+          );
+        });
+      }
     
-        return details;
+      return details;
     };
+    
     
     //JSX
     return (
-        
-        <HeaderCard headerText="Information" headerTextStyle={headerTextStyle}>
-            <form onSubmit={handleInfoSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
-                {renderAccordion()}
-                <IconButton
-                    className="btn btn-primary"
-                    type="submit"
-                    text="Update"
-                />
-            </form>
-        </HeaderCard>
+      <div class="flex flex-col items-center justify-center flex-grow">
+        {renderAccordion()}
+      </div>
     );
 };
 
