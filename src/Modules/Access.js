@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HeaderCard from '../UI Elements/HeaderCard';
-import {IconButton} from '../UI Elements/Button';
+import {TextButton} from '../UI Elements/Button';
 import 'daisyui';
 
 const AccessCard = ({json, onSubmitAccess}) => {
@@ -21,25 +21,27 @@ const AccessCard = ({json, onSubmitAccess}) => {
 
     const handleAccessSubmit = (e) => {
         e.preventDefault();
-        onSubmitAccess(accessInstructions); // This function should be defined in the parent component or context
+        onSubmitAccess(accessInstructions);
     };
 
     return (
+      <div className="flex flex-col items-center justify-center flex-grow">
         <HeaderCard headerText="Access" headerTextStyle={headerTextStyle}>
             <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
                 <textarea 
-                    className="textarea textarea-bordered w-full flex-grow overflow-y-auto" 
+                    className="textarea textarea-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 w-full flex-grow overflow-y-auto" 
                     placeholder="Type your access instructions here..."
                     value={accessInstructions}
                     onChange={(e) => setAccessInstructions(e.target.value)}
                 />
-                <IconButton
+                <TextButton
                     className="btn btn-primary"
                     type="submit"
                     text="Update"
                 />
             </form>
         </HeaderCard>
+      </div>
     );
 };
 

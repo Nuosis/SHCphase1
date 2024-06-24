@@ -41,6 +41,7 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
     };
 
     return (
+      <div className="flex flex-col items-center justify-center flex-grow">
         <form onSubmit={handleSubmit} className="p-4 space-y-3">
             <Portrait imageUrl={imageUrl} />
             <div>
@@ -122,6 +123,7 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                 />
             </ButtonContainer>
         </form>
+      </div>
     );
 };
 

@@ -346,6 +346,12 @@ function SignupPage() {
         //}, 250); 
     };
 
+    const handleIForgot = async (event) => {
+      setPopup({ show: true, message: "Coming soon" });
+      //confirm user email exists
+      //trigger reset on node
+    }
+
     const handleChangeForm = () => {
         setIsCreatingAccount(true);
     };
@@ -353,11 +359,11 @@ function SignupPage() {
     //TODO: create consent to text flag. pop up if checked on creatation explaining sms usage. if user uncheck explain impact
     return (
       <>
-        <div className="flex flex-col min-h-screen">
-          <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
+        <div className="flex flex-col min-h-screen bg-white shadow-lg dark:bg-gray-600">
+          <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700  sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
               <a href="#" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-                <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" class="max-h-12" alt="Select Home Cleaning"/>
+                <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" className="max-h-12" alt="Select Home Cleaning"/>
               </a>
             </div>
           </nav>
@@ -369,27 +375,29 @@ function SignupPage() {
                   </div>
               )}
               {/* HEADING */}
-              <h2 className="text-2xl font-bold text-center my-8">{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
+              <h2 className="text-2xl font-bold text-center dark:text-gray-200 my-8">{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
               {!isCreatingAccount ? (
                   <form className="space-y-4 max-w-md mx-auto" onSubmit={handleLoginSubmit}>
-
                       {/* Login Form */}
 
                       <div className="form-control">
                           <label className="label" htmlFor="email">
-                              <span className="label-text">Email</span>
+                              <span className="label-text dark:text-gray-400">Email</span>
                           </label>
-                          <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
+                          <input type="email" id="email" name="email" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="john@example.com" onChange={handleChange} required/>
                       </div>
                       <div className="form-control">
                           <label className="label" htmlFor="password">
-                              <span className="label-text">Password</span>
+                              <span className="label-text dark:text-gray-400">Password</span>
                           </label>
-                          <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
+                          <input type="password" id="password" name="password" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="Enter your password" onChange={handleChange} required/>
                       </div>
                       <div className="form-control mt-6">
                           <button type="submit" className="btn btn-primary">Log In</button>
-                          <button type="button" onClick={handleChangeForm} className="text-right text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">Create account</button>
+                          <div className="flex flex-row-reverse">
+                            <button type="button" onClick={handleChangeForm} className="p-2 text-right text-blue-500 dark:text-slate-800 hover:text-blue-700 hover:dark:text-slate-400 transition duration-150 ease-in-out">Create account</button>
+                            <button type="button" onClick={handleIForgot} className="p-2 text-right text-blue-500 dark:text-slate-800 hover:text-blue-700 hover:dark:text-slate-400 transition duration-150 ease-in-out">I Forgot</button>
+                          </div>
                       </div>
                   </form>
               ) : (

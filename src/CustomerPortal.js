@@ -18,6 +18,7 @@ import WorkOrderReport from './Modules/WorkorderReport.js';
 import CreditCardForm from './Modules/CreditCardInput.js';
 import CreditCardDetails from './Modules/CreditCardDetails.js';
 import MyPets from './Pets/Pet.js';
+import CommunicationPortal from './Modules/Commiunication.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
@@ -59,7 +60,8 @@ function CustomerPortal() {
       WorkOrderCard: WorkOrderCard,
       WorkOrderReport: WorkOrderReport,
       CreditCardForm: CreditCardForm,
-      CreditCardDetails: CreditCardDetails
+      CreditCardDetails: CreditCardDetails,
+      CommunicationPortal: CommunicationPortal
   };
 
   //FUNCTIONS
@@ -104,9 +106,11 @@ function CustomerPortal() {
           key={detail.date}
           text={new Date(detail.date).toISOString().slice(0, 10)}
           onClick={() => handleWorkOrderChange(detail.date)}
-          isSelected={detail.isSelected}
+          className={detail.isSelected ? 'selected-class' : ''}
         >
-          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">{new Date(detail.date).toISOString().slice(0, 10)}</a>
+          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+            {new Date(detail.date).toISOString().slice(0, 10)}
+          </a>
         </div>
       ))
     ));
@@ -130,6 +134,7 @@ function CustomerPortal() {
         ...(activeComponent === 'WorkOrderReport' && { workOrderData, message }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
+        ...(activeComponent === 'CommunicationPortal' && { onSubmitMessage: handleSubmitMessage }),
         // Extend this pattern for other components as needed
     };
 
@@ -233,6 +238,11 @@ function CustomerPortal() {
       console.log('Access Instructions:', instructions);
       // Process the access instructions here
   };
+
+  const handleSubmitMessage = (message) => {
+    console.log('Message:', message);
+    // Process the message here
+};
 
   const handleSubmitGenInstruct = (instructions) => {
       console.log('General Instructions:', instructions);
@@ -417,7 +427,7 @@ function CustomerPortal() {
                       <button onClick={() => handleComponentSelect('AccessCard')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Access Instructions</button>
                     </li>
                     <li>
-                      <button className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</button>
+                      <button onClick={() => handleComponentSelect('CommunicationPortal')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</button>
                     </li>
                   </ul>
                   <div className="py-1">
@@ -436,7 +446,7 @@ function CustomerPortal() {
         </div>
       )}
       {/* BODY */}
-      <div  class="flex-grow">
+      <div  className="flex-grow">
         {/* BANNER */}
         <div 
           className="h-[15vw] mb-8 flex items-top shadow-lg" 

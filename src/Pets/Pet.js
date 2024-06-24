@@ -71,7 +71,7 @@ const MyPets = ({json, onSubmit}) => {
     };
 
     return (
-        <>
+        <div className="flex flex-col items-center justify-center flex-grow">
             <HeaderCard headerText="My Pets" headerTextStyle={headerTextStyle}>
                 {showNewPetForm ? (
                     <NewPet
@@ -100,7 +100,7 @@ const MyPets = ({json, onSubmit}) => {
                     />
                 </ButtonContainer>
             )}
-        </>
+        </div>
     );
 };
 

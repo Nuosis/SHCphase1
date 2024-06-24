@@ -70,7 +70,7 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
   };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center flex-grow">
       {popup.show && (
         <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
           <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
@@ -82,7 +82,7 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
             <label className="block text-sm font-medium text-gray-700">Cardholder Name</label>
             <input
               type="text"
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
               required
@@ -90,14 +90,14 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Card Details</label>
-            <CardElement className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+            <CardElement className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
           </div>
           <div className="pt-4">
             <IconButton className="btn btn-primary" type="submit" text="Submit Payment" />
           </div>
         </form>
       </HeaderCard>
-    </>
+      </div>
   );
 };
 

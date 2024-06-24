@@ -177,7 +177,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
 
   return (
     <>  
-      <div class="flex flex-col items-center justify-center flex-grow">
+      <div className="flex flex-col items-center justify-center flex-grow">
         <Card 
           headerText="Work Order"
           headerHiddenText={{ Hours: workOrderData.lineTotals.length, Date: workOrderData.cleaningDate }}

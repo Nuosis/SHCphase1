@@ -471,7 +471,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
     
     //JSX
     return (
-      <div class="flex flex-col items-center justify-center flex-grow">
+      <div className="flex flex-col items-center justify-center flex-grow">
         {renderAccordion()}
       </div>
     );

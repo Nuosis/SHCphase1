@@ -52,21 +52,23 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
 
   return (
     <>
-      {popup.show && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
-          <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
-        </div>
-      )}
-      <HeaderCard headerText="Payment History" headerTextStyle={headerTextStyle}>
-        <div className="space-y-4 p-4">
-          {renderPaymentHistory(userData)}
-        </div>
-      </HeaderCard>
-      <HeaderCard headerText="Manage Credit Card" headerTextStyle={headerTextStyle}>
-          <div className="space-y-4 p-4 pt-4">
-            <IconButton className="btn btn-primary" type="submit" text="Update Credit Card" onClick={()=>{setActiveComponent('CreditCardForm')}} />
+      <div className="flex flex-col items-center justify-center flex-grow">
+        {popup.show && (
+          <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
+            <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
           </div>
-      </HeaderCard>
+        )}
+        <HeaderCard headerText="Payment History" headerTextStyle={headerTextStyle}>
+          <div className="space-y-4 p-4">
+            {renderPaymentHistory(userData)}
+          </div>
+        </HeaderCard>
+        <HeaderCard headerText="Manage Credit Card" headerTextStyle={headerTextStyle}>
+            <div className="space-y-4 p-4 pt-4">
+              <IconButton className="btn btn-primary" type="submit" text="Update Credit Card" onClick={()=>{setActiveComponent('CreditCardForm')}} />
+            </div>
+        </HeaderCard>
+      </div>
     </>
   );
 };
