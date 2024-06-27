@@ -413,26 +413,26 @@ function CustomerPortal() {
                 <div id="accountNavbar" className={`z-10 ${isAccountNavbarOpen ? '' : 'hidden'} absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
                   <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="doubleDropdownButton">
                     <li>
-                      <button onClick={() => handleComponentSelect('InformationCard')} className="block w-min-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Account Details</button>
+                      <button onClick={() => handleComponentSelect('InformationCard')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Account Details</button>
                     </li>
                     <li>
-                      <button onClick={() => handleComponentSelect('CreditCardDetails')} className="block w-min-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Billing</button>
+                      <button onClick={() => handleComponentSelect('CreditCardDetails')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Billing</button>
                     </li>
                     <li>
-                      <button onClick={() => handleComponentSelect('GeneralInstructions')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">General Instructions</button>
+                      <button onClick={() => handleComponentSelect('GeneralInstructions')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">General Instructions</button>
                     </li>
                     <li>
-                      <button onClick={() => handleComponentSelect('MyPets')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">My Pets</button>
+                      <button onClick={() => handleComponentSelect('MyPets')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">My Pets</button>
                     </li>
                     <li>
-                      <button onClick={() => handleComponentSelect('AccessCard')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Access Instructions</button>
+                      <button onClick={() => handleComponentSelect('AccessCard')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Access Instructions</button>
                     </li>
                     <li>
-                      <button onClick={() => handleComponentSelect('CommunicationPortal')} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</button>
+                      <button onClick={() => handleComponentSelect('CommunicationPortal')} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Communication</button>
                     </li>
                   </ul>
                   <div className="py-1">
-                    <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
                   </div>
                 </div>
               </li>
