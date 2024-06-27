@@ -46,6 +46,11 @@ module.exports = {
     }}],
   },
   plugins: [
-    require('daisyui')
+    require('daisyui'),
+    require('flowbite/plugin')
   ],
+  content: [
+    'node_modules/flowbite-react/lib/esm/**/*.js'
+  ]
+
 };
