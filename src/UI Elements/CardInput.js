@@ -13,7 +13,8 @@ const CardInput = (
     setState, 
     setEdited,
     stateKey,
-    onSubmit
+    onSubmit,
+    placeholder
   }
 ) => {
 
@@ -86,7 +87,7 @@ const CardInput = (
     );
   } else if(childType==="star"){
     return (
-      <div className="mr-8">
+      <div className="">
         <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
         <StarRating 
           rating={stateKey.split('.').reduce((acc, key) => acc[key], state)} 
@@ -96,7 +97,7 @@ const CardInput = (
     );
   } else if(childType==="input"){
     return (
-      <div className="mr-8">
+      <div className="">
         <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
         <input 
           type={type} 
@@ -109,7 +110,7 @@ const CardInput = (
     );
   } else if(childType==="pdf"){
     return (
-      <div className="mr-8">
+      <div className="">
         <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
         <input 
           type={type} 
@@ -120,14 +121,27 @@ const CardInput = (
         />
       </div>
     );
+  } else if(childType==="textarea"){
+    return (
+      <div className="">
+        <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
+        <input 
+          id={id} 
+          className="block p-2 border border-gray-200 rounded w-full"
+          placeholder={placeholder}
+          value={stateKey.split('.').reduce((acc, key) => acc[key], state)}
+          onChange={handleChange} 
+        />
+      </div>
+    );
   } else {
   return (
-    <div className="mr-8">
-      <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
+    <div className="">
+      <label htmlFor={id} className="text-gray-400 mb-2 font-medium">{label}</label>
       <input 
         type={type} 
         id={id} 
-        className="max-w-20 p-2 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+        className="p-2 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
         value={stateKey.split('.').reduce((acc, key) => acc[key], state)}
         onChange={handleChange} 
       />

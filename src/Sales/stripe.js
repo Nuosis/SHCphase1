@@ -21,6 +21,7 @@ async function callStripeApi(token, method, params) {
           body: JSON.stringify({ method, params })
       });
 
+      
       if (!response.ok) {
           throw new Error(`HTTP status ${response.status}`);
       }

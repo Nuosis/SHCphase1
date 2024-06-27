@@ -183,10 +183,11 @@ return (
         label="Comment" 
         type="text" 
         id="ratingInput" 
-        childType="input"
+        childType="textarea"
+        placeholder="Comment..."
         stateKey="rating.description"
       />
-      <div className="flex flex-row gap-4 p-2">
+      <div className="flex gap-4 py-8">
         <TextButton onClick={message("cleaner")} type="Button" text="Message Cleaner"/>
         <TextButton onClick={message("company")} type="Button" text="Message Select"/>
       </div>

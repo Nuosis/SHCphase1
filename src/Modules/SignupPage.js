@@ -359,7 +359,7 @@ function SignupPage() {
     //TODO: create consent to text flag. pop up if checked on creatation explaining sms usage. if user uncheck explain impact
     return (
       <>
-        <div className="flex flex-col min-h-screen bg-white shadow-lg dark:bg-gray-600">
+        <div className="flex flex-col min-h-screen dark:bg-gray-600 bg-gray-100">
           <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700  sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
               <a href="#" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
@@ -375,28 +375,28 @@ function SignupPage() {
                   </div>
               )}
               {/* HEADING */}
-              <h2 className="text-2xl font-bold text-center dark:text-gray-200 my-8">{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
+              <h2 className="text-2xl font-bold max-w-md mx-auto dark:text-gray-200 my-8 px-8" style={{ color: '#55B884'}}>{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
               {!isCreatingAccount ? (
-                  <form className="space-y-4 max-w-md mx-auto" onSubmit={handleLoginSubmit}>
+                  <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg" onSubmit={handleLoginSubmit}>
                       {/* Login Form */}
 
-                      <div className="form-control">
+                      <div className="form-control px-8 pt-8 pb-4">
                           <label className="label" htmlFor="email">
                               <span className="label-text dark:text-gray-400">Email</span>
                           </label>
                           <input type="email" id="email" name="email" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="john@example.com" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text dark:text-gray-400">Password</span>
                           </label>
                           <input type="password" id="password" name="password" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="Enter your password" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control mt-6">
+                      <div className="form-control px-8 py-4">
                           <button type="submit" className="btn btn-primary">Log In</button>
-                          <div className="flex flex-row-reverse">
-                            <button type="button" onClick={handleChangeForm} className="p-2 text-right text-blue-500 dark:text-slate-800 hover:text-blue-700 hover:dark:text-slate-400 transition duration-150 ease-in-out">Create account</button>
-                            <button type="button" onClick={handleIForgot} className="p-2 text-right text-blue-500 dark:text-slate-800 hover:text-blue-700 hover:dark:text-slate-400 transition duration-150 ease-in-out">I Forgot</button>
+                          <div className="flex pt-4 pb-4">
+                            <button type="button" onClick={handleChangeForm} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-3 py-1.5 mr-4  dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-70">Create account</button>
+                            <button type="button" onClick={handleIForgot} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-3 py-1.5 mr-4 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-70">Forgot Password</button>
                           </div>
                       </div>
                   </form>
@@ -477,11 +477,6 @@ function SignupPage() {
                   </form>
               )}
           </div>
-          <footer className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg mt-4 sticky bottom-0 left-0 right-0 flex items-center justify-center" style={{ borderTop: "1px solid rgba(156, 163, 175, 0.25)" }}>
-              <div className="p-8 md:py-8 md:px-0 max-w-screen-md w-full">
-                  {/* Content here */}
-              </div>
-          </footer>
         </div>
       </>
     );
