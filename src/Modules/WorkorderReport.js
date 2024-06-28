@@ -4,7 +4,7 @@ import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
 //import Totals from '../UI Elements/Totals.js';
 import { Accordion } from '../UI Elements/Accordion.js';
-import { TextButton } from '../UI Elements/Button.js';
+import { IconButton, TextButton, TextButtonSecondary } from '../UI Elements/Button.js';
 //import { IconButton } from '../UI Elements/Button';
 // import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -15,8 +15,6 @@ import { v4 as uuidv4 } from 'uuid';
  * Use this componenet when not displaying sale (displaying history) 
  * 
  */
-
-
 
 // Function to submit rating to Google My Business
 const submitRatingToGMB = async (rating) => {
@@ -55,9 +53,7 @@ const WorkOrderReport = ({ workOrderData, message }) => {
       { description: 'GST', amount: workOrderData.price * 0.05 }
   ];
   const headerTextStyle = {
-      textAlign: 'center',
-      fontWeight: 'bold',
-      fontSize: '24px'
+
   };
 
   const TaskEditor = ({ tasks, taskType }) => (
@@ -188,8 +184,20 @@ return (
         stateKey="rating.description"
       />
       <div className="flex gap-4 py-8">
-        <TextButton onClick={message("cleaner")} type="Button" text="Message Cleaner"/>
-        <TextButton onClick={message("company")} type="Button" text="Message Select"/>
+        <IconButton
+          icon="Person"
+          className="btn btn-outline dark:btn-outline dark:text-gray-500"
+          onClick={message("cleaner")}
+          type="Button"
+          text="Message Cleaner"
+        />
+        <IconButton
+          icon="Business"
+          className="btn btn-outline dark:btn-outline dark:text-gray-500"
+          onClick={message("company")}
+          type="Button"
+          text="Message Select"
+        />
       </div>
     </Card>
   </div>

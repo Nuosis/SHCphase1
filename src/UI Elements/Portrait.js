@@ -4,7 +4,7 @@ import '../index.css';
 const Portrait = ({ imageUrl }) => {
   return (
     <div className="portraitContainer">
-      <img src={imageUrl} alt="Portrait" className="circularPortraitFrame" />
+      <img src={imageUrl} alt="Portrait" className="circularPortraitFrame mr-8" />
     </div>
   );
 }

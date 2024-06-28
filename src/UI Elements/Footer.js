@@ -1,4 +1,5 @@
 import React from 'react';
+import { IconButton } from '../UI Elements/Button';
 
 const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler }) => {
   return (
@@ -18,9 +19,13 @@ const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler }) 
         </div>
         {buttonText && (
           <div className="md:flex items-center space-x-1">
-            <button type="button" className="w-full text-white dark:text-gray-300 p-2 px-8 rounded font-semibold bg-brand-green dark:bg-brand-green-dark" onClick={buttonClickHandler}>
-              {buttonText}
-            </button>
+             <IconButton
+                    icon="CheckCircle"
+                    className="btn btn-primary"
+                    type="button"
+                    text={buttonText}
+                    onClick={buttonClickHandler}
+                />
           </div>
         )}
       </div>

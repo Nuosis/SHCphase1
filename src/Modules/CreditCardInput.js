@@ -11,9 +11,7 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
   const [popup, setPopup] = useState({ show: false, message: '' });
 
   const headerTextStyle = {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: '24px'
+
   };
 
   const handleSubmit = async (e) => {
@@ -77,9 +75,9 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
         </div>
       )}
       <HeaderCard headerText="Update Credit Card" headerTextStyle={headerTextStyle}>
-        <form onSubmit={handleSubmit} className="space-y-4 p-4">
+        <form onSubmit={handleSubmit} className="space-y-4 pb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Cardholder Name</label>
+            <label className="block text-sm font-bold text-primary dark:text-gray-400">Cardholder Name</label>
             <input
               type="text"
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -89,8 +87,8 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Card Details</label>
-            <CardElement className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+            <label className="block text-sm font-bold text-primary dark:text-gray-400">Card Details</label>
+            <CardElement className="mt-1 min-h-10 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
           </div>
           <div className="pt-4">
             <IconButton className="btn btn-primary" type="submit" text="Submit Payment" />

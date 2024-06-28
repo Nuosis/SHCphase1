@@ -41,27 +41,27 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
     };
 
     return (
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+      <div className="">
+        <form onSubmit={handleSubmit} className="pb-4">
             <Portrait imageUrl={imageUrl} />
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Pet Type</label>
+            <div className="mb-4">
+                <label className="block text-sm font-bold text-primary dark:text-gray-400">Pet Type</label>
                 <select
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-2 px-3 py-2 text-black border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
                     value={petType}
                     onChange={(e) => setPetType(e.target.value)}
                 >
-                    <option value="">Select a type</option>
+                    <option value="">Select a type...</option>
                     <option value="cat">Cat</option>
                     <option value="dog">Dog</option>
                 </select>
             </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Pet's Name</label>
+            <div className="mb-4">
+                <label className="block text-sm font-bold text-primary dark:text-gray-400">Pet's Name</label>
                 <input
                     type="text"
-                    placeholder="Pet's Name"
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Pet's Name..."
+                    className="mt-2 max-w-96 px-3 py-2 text-black border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
                     value={name}
                     onChange={(e) => {
                         setName(e.target.value);
@@ -74,10 +74,10 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                     }}
                 />
             </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Temperment</label>
+            <div className="mb-4">
+                <label className="block text-sm font-bold text-primary dark:text-gray-400">Temperment</label>
                 <textarea
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-2 block w-full px-3 py-2 text-black border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
                     placeholder="Personality"
                     value={temperament}
                     onChange={(e) => {
@@ -91,11 +91,11 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                     }}
                 />
             </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Special Instructions</label>
+            <div class="mb-8">
+                <label className="block text-sm font-bold text-primary dark:text-gray-400">Special Instructions</label>
                 <textarea
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Special Instructions"
+                    className="mt-2 block w-full px-3 py-2 text-black border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+                    placeholder="Special Instructions..."
                     value={specialInstructions}
                     onChange={(e) => {
                         setSpecialInstructions(e.target.value);
@@ -104,22 +104,26 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                 />
             </div>
             <ButtonContainer>
-                <TextButton 
-                    className="btn btn-primary"
-                    type="submit"
-                    text="Submit"
+                <IconButton 
+                    icon="DeleteForever"
+                    className="btn btn-error text-white"
+                    onClick={handleDelete}
+                    type="button"
+                    text="Delete"
                 />
-                <TextButton 
-                    className="btn btn-secondary"
+                <IconButton 
+                    icon="HighlightOff"
+                    className="btn btn-outline"
                     onClick={onCancel}
                     type="button"
                     text="Cancel"
                 />
+                <div class="grow"></div>
                 <IconButton 
-                    icon="HighlightOff"
-                    className="btn btn-error text-slate-800"
-                    onClick={handleDelete}
-                    type="button"
+                    icon="CheckCircle"
+                    className="btn btn-primary"
+                    type="submit"
+                    text="Submit"
                 />
             </ButtonContainer>
         </form>

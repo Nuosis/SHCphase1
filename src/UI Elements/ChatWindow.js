@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef  } from 'react';
 import ChatBubble from './ChatBubble';
+import { IconButton } from '../UI Elements/Button';
 
 const ChatWindow = ({ messages, onSendMessage, userData }) => {
   const [messageText, setMessageText] = useState('');
@@ -62,7 +63,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-12 pb-8">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4">
         {messages.map((message, index) => (
           <ChatBubble 
@@ -81,14 +82,14 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
           value={messageText}
           onChange={handleInputChange}
           placeholder="Type a message"
-          className="flex-grow p-2 border rounded dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+          className="flex-grow p-3 border rounded dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
         />
-        <button
+       <IconButton
+          icon="Send"
           onClick={handleSendMessage}
-          className="p-2 px-4 text-white rounded font-semibold bg-brand-green dark:bg-brand-green-dark"
-        >
-          Send
-        </button>
+          className="btn btn-primary"
+          text="Send"
+        />
       </div>
     </div>
   );

@@ -8,9 +8,6 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
   const [popup, setPopup] = useState({ show: false, message: '' });
 
   const headerTextStyle = {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: '24px'
   };
 
   const handleWorkOrderChange = async (date, activity) => {
@@ -36,15 +33,16 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
     });
     return sortedBills.map(([activity, records]) => (
       <div key={activity}>
-        <div className="text-lg font-bold">{activity}</div>
+        <h2 className="text-lg font-bold mb-4 text-primary dark:text-secondary">{activity}</h2>
         {records.map((record) => (
-          <div
-            key={record.invoiceDate}
-            className="cursor-pointer"
+          <IconButton
+            icon="InsertDriveFile"
+            text={record.invoiceDate}
+            className="btn btn-outline dark:btn-outline dark:text-gray-500 btn-sm mb-4 block"
             onClick={() => handleWorkOrderChange(new Date(record.invoiceDate).toISOString().slice(0, 10), activity)}
           >
             {new Date(record.invoiceDate).toISOString().slice(0, 10)}
-          </div>
+          </IconButton>
         ))}
       </div>
     ));
@@ -59,14 +57,16 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
           </div>
         )}
         <HeaderCard headerText="Payment History" headerTextStyle={headerTextStyle}>
-          <div className="space-y-4 p-4">
             {renderPaymentHistory(userData)}
-          </div>
         </HeaderCard>
         <HeaderCard headerText="Manage Credit Card" headerTextStyle={headerTextStyle}>
-            <div className="space-y-4 p-4 pt-4">
-              <IconButton className="btn btn-primary" type="submit" text="Update Credit Card" onClick={()=>{setActiveComponent('CreditCardForm')}} />
-            </div>
+            <IconButton
+              icon="CreditCard"
+              className="btn btn-primary mb-4"
+              type="submit"
+              text="Update Credit Card"
+              onClick={()=>{setActiveComponent('CreditCardForm')}}
+            />
         </HeaderCard>
       </div>
     </>

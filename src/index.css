@@ -166,4 +166,8 @@
   font-size: 16px;
   color: #18313a;
 }
-  
+
+.btn-outline:hover {
+  background-color: #00787D;
+  border-color: #00787D;
+}

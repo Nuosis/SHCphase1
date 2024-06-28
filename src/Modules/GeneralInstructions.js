@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HeaderCard from '../UI Elements/HeaderCard';
-import {IconButton} from '../UI Elements/Button';
+import { IconButton } from '../UI Elements/Button';
 import 'daisyui'; // Ensure DaisyUI is imported if it is not globally available
 
 const GeneralInstructions = ({json, onSubmitGenInstruct}) => {
@@ -15,9 +15,7 @@ const GeneralInstructions = ({json, onSubmitGenInstruct}) => {
     const [generalInstructions, setGeneralInstructions] = useState(parsedJson[0].details);
 
     const headerTextStyle = {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '24px'
+
     };
 
     const handleAccessSubmit = (e) => {
@@ -28,14 +26,15 @@ const GeneralInstructions = ({json, onSubmitGenInstruct}) => {
     return (
       <div className="flex flex-col items-center justify-center flex-grow">
         <HeaderCard headerText="General Instructions" headerTextStyle={headerTextStyle}>
-            <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
+            <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 min-h-96 mb-4">
                 <textarea 
-                    className="textarea textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
+                    className="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
                     placeholder="Type any additional instructions here. These will be sent to the cleaner for every clean. Your preferences, (scent, areas of focus, etc) are really helpful here."
                     value={generalInstructions}
                     onChange={(e) => setGeneralInstructions(e.target.value)}
                 />
                 <IconButton
+                    icon="CheckCircle"
                     className="btn btn-primary"
                     type="submit"
                     text="Update"

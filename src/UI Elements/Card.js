@@ -35,9 +35,9 @@ const Card = (
 
 
   return (
-    <div className="bg-white dark:bg-gray-600 shadow-lg rounded-lg max-w-screen-md w-full mb-4 overflow-hidden">
+    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg max-w-screen-md w-full mb-4 overflow-hidden">
       <h1 
-        className="text-2xl font-bold text-brand-green px-8 py-4 cursor-pointer" 
+        className="text-2xl font-bold text-primary px-8 py-4 cursor-pointer dark:text-secondary" 
         id={`accordion-collapse-heading-${id}`} 
         data-accordion-target={`#accordion-collapse-body-${id}`} 
         aria-controls={`#accordion-collapse-body-${id}`}

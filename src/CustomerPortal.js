@@ -155,7 +155,7 @@ function CustomerPortal() {
   
     // If there is no active component or no data, render the footer with default props
     if (!Component || !data) {
-      return <Footer {...footerProps} />;
+      // return <Footer {...footerProps} />;
     } 
   
     // Conditional logic based on the active component
@@ -173,7 +173,15 @@ function CustomerPortal() {
         buttonText: 'Get Receipt',
         buttonClickHandler: handleGetReceipt,
       };
-    }
+    } 
+
+    // else if (activeComponent === 'MyPets') {
+    //   footerProps = {
+    //     buttonText: 'New Pet',
+    //     // This button handler doesnt work
+    //     buttonClickHandler: MyPets.handleAddPet,
+    //   };
+    // }
   
     // Render the footer with the determined props
     return <Footer {...footerProps} />;
@@ -348,11 +356,11 @@ function CustomerPortal() {
   const activities = prepareActivityData(workOrderData, userData);
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-700 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
+    <div className="bg-gray-100 dark:bg-gray-800 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
       <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 sticky top-0" style={{ borderBottom: "1px solid rgba(156,163,175,0.25)" }}>
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
           <a href="https://selecthomecleaning.ca" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-            <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" className="max-h-12" alt="Select Home Cleaning" />
+            <img src="select-home-cleaning.png" className="max-h-12" alt="Select Home Cleaning" />
           </a>
           <button
             data-collapse-toggle="navbar-multi-level"
@@ -374,7 +382,7 @@ function CustomerPortal() {
                 <button
                   id="previousOrdersLink"
                   data-dropdown-toggle="previousOrder"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto  md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
                   onClick={togglePreviousOrders}
                 >
                   
@@ -395,7 +403,7 @@ function CustomerPortal() {
                 <button
                   id="accountLink"
                   data-dropdown-toggle="accountNavbar"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
                   onClick={toggleAccountNavbar}
                 >
                   <img
@@ -461,7 +469,7 @@ function CustomerPortal() {
         {renderActiveComponent()}
       </div>
       {/* FOOTER */}
-      <footer className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg mt-4 md:sticky md:bottom-0 md:left-0 md:right-0 flex items-center justify-center" style={{ borderTop: "1px solid rgba(156,163,175,0.25)" }}>
+      <footer className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg mt-4 sticky bottom-0 left-0 right-0 flex items-center justify-center" style={{ borderTop: "1px solid rgba(156,163,175,0.25)" }}>
         {renderFooter(workOrderData)}
       </footer>
     </div>

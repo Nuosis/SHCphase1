@@ -127,7 +127,7 @@ const CardInput = (
         <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
         <input 
           id={id} 
-          className="block p-2 border border-gray-200 rounded w-full"
+          className="block p-2 input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded w-full"
           placeholder={placeholder}
           value={stateKey.split('.').reduce((acc, key) => acc[key], state)}
           onChange={handleChange} 
@@ -141,7 +141,7 @@ const CardInput = (
       <input 
         type={type} 
         id={id} 
-        className="p-2 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+        className="p-2 input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
         value={stateKey.split('.').reduce((acc, key) => acc[key], state)}
         onChange={handleChange} 
       />

@@ -7,6 +7,7 @@ import { sanitizeInput, validateEmail, validatePhoneNumber } from '../Security/i
 import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
 import provinces from '../Environment/provinces.json';
+import { IconButton } from '../UI Elements/Button';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -359,11 +360,11 @@ function SignupPage() {
     //TODO: create consent to text flag. pop up if checked on creatation explaining sms usage. if user uncheck explain impact
     return (
       <>
-        <div className="flex flex-col min-h-screen dark:bg-gray-600 bg-gray-100">
+        <div className="flex flex-col min-h-screen dark:bg-gray-800 bg-gray-100">
           <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700  sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
               <a href="#" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-                <img src="https://selecthomecleaning.ca/wp-content/uploads/2022/09/SelectJanitorial_green_114.png" className="max-h-12" alt="Select Home Cleaning"/>
+                <img src="select-home-cleaning.png" className="max-h-12" alt="Select Home Cleaning"/>
               </a>
             </div>
           </nav>
@@ -374,56 +375,71 @@ function SignupPage() {
                       <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
                   </div>
               )}
-              {/* HEADING */}
-              <h2 className="text-2xl font-bold max-w-md mx-auto dark:text-gray-200 my-8 px-8" style={{ color: '#55B884'}}>{isCreatingAccount ? 'Create Your Account' : 'Welcome to Uber-Clean'}</h2>
               {!isCreatingAccount ? (
-                  <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg" onSubmit={handleLoginSubmit}>
+                  <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg dark:bg-gray-700" onSubmit={handleLoginSubmit}>
+                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Welcome to Uber-Clean</h2>
                       {/* Login Form */}
-
-                      <div className="form-control px-8 pt-8 pb-4">
-                          <label className="label" htmlFor="email">
-                              <span className="label-text dark:text-gray-400">Email</span>
+                      <div className="form-control px-8 pb-4">
+                          <label className="block text-sm font-bold text-primary dark:text-gray-400" htmlFor="email">
+                              <span className="">Email</span>
                           </label>
-                          <input type="email" id="email" name="email" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="john@example.com" onChange={handleChange} required/>
+                          <input type="email" id="email" name="email" className="input mt-2 input-bordered w-full text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="john@example.com" onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="password">
-                              <span className="label-text dark:text-gray-400">Password</span>
+                          <label className="block text-sm font-bold text-primary dark:text-gray-400" htmlFor="password">
+                              <span className="">Password</span>
                           </label>
-                          <input type="password" id="password" name="password" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " placeholder="Enter your password" onChange={handleChange} required/>
+                          <input type="password" id="password" name="password" className="input mt-2 input-bordered w-full text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Enter your password" onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 py-4">
-                          <button type="submit" className="btn btn-primary">Log In</button>
-                          <div className="flex pt-4 pb-4">
-                            <button type="button" onClick={handleChangeForm} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-3 py-1.5 mr-4  dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-70">Create account</button>
-                            <button type="button" onClick={handleIForgot} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-3 py-1.5 mr-4 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-70">Forgot Password</button>
+                        <IconButton
+                            icon="AccountCircle"
+                            className="btn btn-primary"
+                            type="submit"
+                            text="Log In"
+                        />
+                          <div className="flex pt-8 pb-4">
+                            <IconButton
+                                icon="Edit"
+                                className="btn dark:btn-outline dark:text-gray-500 btn-sm mr-4"
+                                onClick={handleChangeForm}
+                                type="button"
+                                text="Create Account"
+                            />
+                            <IconButton
+                                icon="Help"
+                                className="btn dark:btn-outline dark:text-gray-500 btn-sm mr-4"
+                                onClick={handleIForgot}
+                                type="button"
+                                text="Forgot Password"
+                            />
                           </div>
                       </div>
                   </form>
               ) : (
-                  <form className="max-w-md mx-auto" onSubmit={handleCreateAccount}>
-
+                  <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg dark:bg-gray-700" onSubmit={handleCreateAccount}>
+                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Create Your Account</h2>
                       {/* Sign Up Form */}
 
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="firstName">
                               <span className="label-text">First Name</span>
                           </label>
                           <input type="text" id="firstName" name="firstName" className="input input-bordered w-full" placeholder="Your" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="lastName">
                               <span className="label-text">Last Name</span>
                           </label>
                           <input type="text" id="lastName" name="lastName" className="input input-bordered w-full" placeholder="Name" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="street">
                               <span className="label-text">Street Address</span>
                           </label>
                           <input type="text" id="street" name="street" className="input input-bordered w-full"  placeholder="123 4th St" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control flex flex-row">
+                      <div className="form-control px-8 flex flex-row">
                           <label className="label w-3/5 gap-2" htmlFor="city">
                               <span className="label-text">City</span>
                           </label>
@@ -431,7 +447,7 @@ function SignupPage() {
                               <span className="label-text">Province</span>
                           </label>
                       </div>
-                      <div className="form-control flex flex-row gap-2">
+                      <div className="form-control px-8 pb-4 flex flex-row gap-2">
                           <input type="text" id="city" name="city" className="input input-bordered w-3/5" value={formFields.city}  onChange={handleChange} />
                           <select 
                                   id="province" 
@@ -447,31 +463,31 @@ function SignupPage() {
                                   ))}
                           </select>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="email">
                               <span className="label-text">Email</span>
                           </label>
                           <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="phoneNumber">
                               <span className="label-text">Phone Number</span>
                           </label>
                           <input type="tel" id="phoneNumber" name="phoneNumber" className="input input-bordered w-full" placeholder="(123) 456-7890" onChange={handleChange} required />
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text">Password</span>
                           </label>
                           <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control">
+                      <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text">Re-enter Password</span>
                           </label>
                           <input type="password" id="validation_password" name="confirmPassword" className="input input-bordered w-full" placeholder="Re-Enter your password" onChange={handleChange} required/>
                       </div>
-                      <div className="form-control mt-6">
+                      <div className="form-control px-8 pb-8 mt-6">
                           <button type="submit" className="btn btn-primary">Create Account</button>
                       </div>
                   </form>

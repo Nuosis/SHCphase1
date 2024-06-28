@@ -1,15 +1,6 @@
 module.exports = {
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'media', // or 'media' or 'class'
-  theme: {
-    extend: {
-      colors: {
-        'brand-green': '#55B884',
-        'brand-green-hover': '#419B6B',
-        'brand-green-dark': '#2E7A55', // Dark variant of the green
-      },
-    },
-  },
   variants: {
     extend: {
       backgroundColor: ['dark'],
@@ -18,13 +9,15 @@ module.exports = {
   daisyui: {
     themes:[{
     'mainTheme': {                      
-      'primary': '#3E665C',            // Your chosen primary color
-      'primary-focus': '#35524a',      // A darker variant for focused primary elements
+      'primary': '#00787D',            // Your chosen primary color
+      // 'primary': '#8DC642',            // Your chosen primary color
+      'primary-focus': '#005932',      // A darker variant for focused primary elements
       'primary-content': '#ffffff',    // Text color to use on primary color background    
 
-      'secondary': '#A0AEC0',            // Your chosen primary color
-      'primary-focus': '#35524a',      // A darker variant for focused primary elements
-      'primary-content': '#ffffff', 
+      'secondary': '#8DC642',            // Your chosen primary color
+      // 'secondary': '#00787D',            // Your chosen primary color
+      'secondary-focus': '#35524a',      // A darker variant for focused primary elements
+      'secondary-content': '#ffffff', 
 
       'accent': '#4A7A62',             // Your chosen accent color
       'accent-focus': '#3e544e',       // A darker variant for focused accent elements
@@ -37,7 +30,7 @@ module.exports = {
       'base-100': '#FFFFFF',           // Your base color (background color)
       'base-200': '#F1F5F9',           // A lighter variant for secondary background or for hover states
       'base-300': '#E2E8F0',           // An even lighter variant for tertiary backgrounds or stripes
-      'base-content': '#1f2937',       // Text color to use on base color background
+      'base-content': '#9CA3AF',       // Text color to use on base color background
 
       'info': '#3B82F6',               // Your info color
       'success': '#22C55E',            // Your success color
@@ -52,5 +45,4 @@ module.exports = {
   content: [
     'node_modules/flowbite-react/lib/esm/**/*.js'
   ]
-
 };

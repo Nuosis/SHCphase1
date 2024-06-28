@@ -29,9 +29,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
       { description: 'GST', amount: workOrderData.price * 0.05 }
   ]);
   const headerTextStyle = {
-      textAlign: 'center',
-      fontWeight: 'bold',
-      fontSize: '24px'
   };
 
   useEffect(() => {

@@ -60,19 +60,10 @@ const MyPets = ({json, onSubmit}) => {
             setEditablePet({});
         }
     };
-
     
-
-    //VARIABLES
-    const headerTextStyle = {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '24px'
-    };
-
     return (
-        <div className="flex flex-col items-center justify-center flex-grow">
-            <HeaderCard headerText="My Pets" headerTextStyle={headerTextStyle}>
+        <div className="flex flex-col items-center justify-between">
+            <HeaderCard headerText="My Pets">
                 {showNewPetForm ? (
                     <NewPet
                         pet={editablePet}
@@ -89,17 +80,19 @@ const MyPets = ({json, onSubmit}) => {
                         ))}
                     </>
                 )}
+                {!showNewPetForm && (
+                    <div className="flex">
+                        <div class="grow"></div>
+                        <IconButton
+                            icon="AddCircle"
+                            className="btn btn-primary self-end"
+                            type="button"
+                            text="New Pet"
+                            onClick={(handleAddPet)}
+                        />
+                    </div>
+                )}
             </HeaderCard>
-            {!showNewPetForm && ( 
-                <ButtonContainer>
-                    <IconButton
-                        className="btn btn-primary"
-                        type="button"
-                        text="New Pet"
-                        onClick={(handleAddPet)}
-                    />
-                </ButtonContainer>
-            )}
         </div>
     );
 };

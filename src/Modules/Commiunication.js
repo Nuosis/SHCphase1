@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../UserContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';
-import {TextButton} from '../UI Elements/Button';
+import { TextButton, IconButton } from '../UI Elements/Button';
 import ChatWindow from '../UI Elements/ChatWindow.js';
 import 'daisyui';
 
@@ -44,17 +44,27 @@ const CommunicationPortal = ({onSubmitMessage}) => {
 
   //VARIABLES
   const headerTextStyle = {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: '24px'
+
   };
 
   return(
     <div className="flex flex-col items-center justify-center flex-grow">
       <HeaderCard headerText="Communication" headerTextStyle={headerTextStyle} >
-        <div className="flex flex-row gap-4 py-2 px-12 mb-10">
-          <TextButton onClick={() => loadMessage("cleaner")} type="Button" text="Message Cleaner" />
-          <TextButton onClick={() => loadMessage("company")} type="Button" text="Message Select" />
+        <div className="flex flex-row gap-4 mb-4">
+          <IconButton
+            icon="Person"
+            className="btn btn-outline dark:btn-outline dark:text-gray-500"
+            onClick={() => loadMessage("cleaner")}
+            type="Button"
+            text="Message Cleaner"
+          />
+          <IconButton
+            icon="Business"
+            className="btn btn-outline dark:btn-outline dark:text-gray-500"
+            onClick={() => loadMessage("company")}
+            type="Button"
+            text="Message Select"
+          />
         </div>
         <container id="chatContainer">
           <ChatWindow messages={messages} onSendMessage={sendMessage} userData={userData} />
