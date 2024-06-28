@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-    HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help
+    HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help, FileDownload
 } from '@mui/icons-material';
 
+// If the imported icons are not directly referenced the pachage builde compplains
 const icons = {
-    HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help
+    HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help, FileDownload
 };
 
 export const IconButton = ({ className="w-full text-white p-2 px-8 rounded dark:text-gray-300 font-semibold bg-brand-green dark:bg-brand-green-dark", onClick, type, icon, text }) => {

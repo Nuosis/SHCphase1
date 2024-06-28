@@ -148,6 +148,7 @@ function CustomerPortal() {
       priceBreakdown: () => [],
       buttonText: '',
       buttonClickHandler: () => {},
+      icon: '',
     };
   
     // Get the component from the activeComponent state
@@ -165,6 +166,7 @@ function CustomerPortal() {
         priceBreakdown: data.lineTotals,
         buttonText: 'Book Cleaning',
         buttonClickHandler: handleSubmitWorkOrder,
+        icon: 'CheckCircle'
       };
     } else if (activeComponent === 'WorkOrderReport') {
       footerProps = {
@@ -172,6 +174,7 @@ function CustomerPortal() {
         priceBreakdown: data.lineTotals,
         buttonText: 'Get Receipt',
         buttonClickHandler: handleGetReceipt,
+        icon: 'FileDownload'
       };
     } 
 
@@ -346,10 +349,28 @@ function CustomerPortal() {
       // Process the access instructions here
   };
 
-  const togglePreviousOrders = () => setIsPreviousOrdersOpen(!isPreviousOrdersOpen);
-  const toggleAccountNavbar = () => setIsAccountNavbarOpen(!isAccountNavbarOpen);
+
+  // Handle the state of the open dropdown menues
+  const togglePreviousOrders = () => {
+    setIsPreviousOrdersOpen(!isPreviousOrdersOpen);
+    setIsAccountNavbarOpen(false);
+  };
+  const toggleAccountNavbar = () => {
+    setIsAccountNavbarOpen(!isAccountNavbarOpen);
+    setIsPreviousOrdersOpen(false);
+  };
   const toggleMenubar = () => setIsMenubarOpen(!isMenubarOpen);
 
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('nav')){
+      // Click on nav do nothing
+    } else {
+      // if we have and panels open close them
+      if (isAccountNavbarOpen) setIsAccountNavbarOpen(false);
+      if (isPreviousOrdersOpen) setIsPreviousOrdersOpen(false);
+      if (isMenubarOpen) setIsMenubarOpen(false);
+    }
+  }, false);
 
   //VARIABLES
   // Prepare activity data

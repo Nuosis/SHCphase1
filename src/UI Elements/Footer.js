@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton } from '../UI Elements/Button';
 
-const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler }) => {
+const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler, icon }) => {
   return (
     <div className="p-8 md:py-8 md:px-0 max-w-screen-md w-full">
       <div id="footerComponents" className="flex justify-between">
@@ -20,7 +20,7 @@ const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler }) 
         {buttonText && (
           <div className="md:flex items-center space-x-1">
              <IconButton
-                    icon="CheckCircle"
+                    icon={icon}
                     className="btn btn-primary"
                     type="button"
                     text={buttonText}
