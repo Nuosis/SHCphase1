@@ -171,3 +171,16 @@
   background-color: #00787D;
   border-color: #00787D;
 }
+
+.header-image {
+  background-image: url(/src/images/appartment-photo.jpg);
+  background-size: cover;
+  background-position: 50% 55%;
+}
+
+@media ( prefers-color-scheme: dark ) {
+  .header-image {
+    background-image: url(/src/images/appartment-photo-night.jpg);
+    background-position: 50% 60%;
+  }
+}

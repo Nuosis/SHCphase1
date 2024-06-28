@@ -476,14 +476,12 @@ function CustomerPortal() {
         </div>
       )}
       {/* BODY */}
-      <div  className="flex-grow">
+      <div className="flex-grow">
         {/* BANNER */}
         <div 
-          className="h-[15vw] mb-8 flex items-top shadow-lg" 
+          className="h-[15vw] mb-8 flex items-top shadow-lg header-image"
           style={{ 
-            background: "url(https://storage.googleapis.com/gen-atmedia/2/2015/04/52b8d4825906632e7b3252aad33f37de5e3a9581.jpeg)",
-            backgroundSize: 'cover',
-            backgroundPosition: '50% 55%'
+            
           }}
         />
         {/* USER SPACE */}
