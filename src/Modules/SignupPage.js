@@ -425,19 +425,19 @@ function SignupPage() {
                           <label className="label" htmlFor="firstName">
                               <span className="label-text">First Name</span>
                           </label>
-                          <input type="text" id="firstName" name="firstName" className="input input-bordered w-full" placeholder="Your" onChange={handleChange} required/>
+                          <input type="text" id="firstName" name="firstName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="First name..." onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="lastName">
                               <span className="label-text">Last Name</span>
                           </label>
-                          <input type="text" id="lastName" name="lastName" className="input input-bordered w-full" placeholder="Name" onChange={handleChange} required/>
+                          <input type="text" id="lastName" name="lastName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Last name..." onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="street">
                               <span className="label-text">Street Address</span>
                           </label>
-                          <input type="text" id="street" name="street" className="input input-bordered w-full"  placeholder="123 4th St" onChange={handleChange} required/>
+                          <input type="text" id="street" name="street" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"  placeholder="123 4th St..." onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 flex flex-row">
                           <label className="label w-3/5 gap-2" htmlFor="city">
@@ -448,11 +448,11 @@ function SignupPage() {
                           </label>
                       </div>
                       <div className="form-control px-8 pb-4 flex flex-row gap-2">
-                          <input type="text" id="city" name="city" className="input input-bordered w-3/5" value={formFields.city}  onChange={handleChange} />
+                          <input type="text" id="city" name="city" className="input text-black input-bordered w-3/5 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" value={formFields.city}  onChange={handleChange} />
                           <select 
                                   id="province" 
                                   name="province" 
-                                  className="input input-bordered w-2/5" 
+                                  className="input input-bordered w-2/5 text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" 
                                   value={formFields.province} 
                                   onChange={handleChange}
                               >
@@ -467,25 +467,25 @@ function SignupPage() {
                           <label className="label" htmlFor="email">
                               <span className="label-text">Email</span>
                           </label>
-                          <input type="email" id="email" name="email" className="input input-bordered w-full" placeholder="john@example.com" onChange={handleChange} required/>
+                          <input type="email" id="email" name="email" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="john@example.com" onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="phoneNumber">
                               <span className="label-text">Phone Number</span>
                           </label>
-                          <input type="tel" id="phoneNumber" name="phoneNumber" className="input input-bordered w-full" placeholder="(123) 456-7890" onChange={handleChange} required />
+                          <input type="tel" id="phoneNumber" name="phoneNumber" className="inpu text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="(123) 456-7890" onChange={handleChange} required />
                       </div>
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text">Password</span>
                           </label>
-                          <input type="password" id="password" name="password" className="input input-bordered w-full" placeholder="Enter your password" onChange={handleChange} required/>
+                          <input type="password" id="password" name="password" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Enter your password..." onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text">Re-enter Password</span>
                           </label>
-                          <input type="password" id="validation_password" name="confirmPassword" className="input input-bordered w-full" placeholder="Re-Enter your password" onChange={handleChange} required/>
+                          <input type="password" id="validation_password" name="confirmPassword" className="input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Re-Enter your password..." onChange={handleChange} required/>
                       </div>
                       <div className="form-control px-8 pb-8 mt-6">
                           <button type="submit" className="btn btn-primary">Create Account</button>

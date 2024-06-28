@@ -8,7 +8,7 @@ const Footer = ({ totalPrice, priceBreakdown, buttonText, buttonClickHandler }) 
         <div className="flex flex-col">
           {totalPrice && (
             <>
-              <p className="text-lg font-semibold dark:text-gray-200">{totalPrice}</p>
+              <p className="text-lg text-black font-semibold dark:text-gray-200">{totalPrice}</p>
               <p className="flex flex-col text-xs text-gray-400">
                 {Array.isArray(priceBreakdown) && priceBreakdown.map((item, index) => (
                   <span key={index}>{item.description}: ${item.amount.toFixed(2)}{index < priceBreakdown.length - 1 ? ', ' : ''}</span>

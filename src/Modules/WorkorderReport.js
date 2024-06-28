@@ -180,7 +180,7 @@ return (
         type="text" 
         id="ratingInput" 
         childType="textarea"
-        placeholder="Comment..."
+        placeholder="Add comment..."
         stateKey="rating.description"
       />
       <div className="flex gap-4 py-8">
