@@ -24,6 +24,10 @@ import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '
 import CreateSale from './Sales/CreateSale.js'
 import { callStripeApi } from './Sales/stripe.js'
 import { createRecord } from './FileMaker/createRecord.js';
+import {readRecord} from './FileMaker/readRecord.js'
+import {updateRecord} from './FileMaker/updateRecord.js'
+import {deleteRecord} from './FileMaker/deleteRecord.js'
+
 
 
 function CustomerPortal() {
@@ -32,7 +36,7 @@ function CustomerPortal() {
   const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
   const { userData, getUserData, /*setUserData*/ } = useUser();
   const [popup, setPopup] = useState({ show: false, message: '' });
-  const [edited, setEdited] = useState({})
+  const [edited, setEdited] = useState([])
   const [isPreviousOrdersOpen, setIsPreviousOrdersOpen] = useState(false);
   const [isAccountNavbarOpen, setIsAccountNavbarOpen] = useState(false);
   const [isMenubarOpen, setIsMenubarOpen] = useState(false);
@@ -45,11 +49,52 @@ function CustomerPortal() {
      * setEdited passes an object of [action].stateObjectPath  
      * ACTIONS >> Delete, Update, Create
     */ 
-
-    const action = Object.keys(edited)
-    const key = edited[action]
-    //TODO: edited interaction with DB
-  },[edited,setEdited])
+    if (edited.length === 0) return;
+    const processEdit = async () => {
+      try {
+        const { action, path } = edited[0]; // Assumes each edit is an object { action, path }
+        const value = getValue(userData, path);
+        const pathParts = path.split('.');
+        const key = pathParts.pop(); // Gets the last element
+        const metaDataPath = [...pathParts, "metaData"].join('.');
+        const metaData = getValue(userData, metaDataPath);
+  
+        const table = metaData[key]?.table || metaData.table;
+        let recordID = metaData[key]?.recordID || metaData.recordID;
+        const UUID = metaData[key]?.["__ID"] || metaData["__ID"];
+  
+        if (!recordID) {
+          const params = [{"_partyID": UUID}];
+          const layout = table;
+          const data = await readRecord(authState.token, params, layout);
+          if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
+          recordID = data.response.recordId;
+        }
+  
+        let params = { fieldData: { [key]: value } };
+        const layout = table;
+  
+        if (action === 'update') {
+          const data = await updateRecord(authState.token, params, layout, recordID);
+          if (data.messages && data.messages[0].code !== "0") {
+            throw new Error(`Failed to update record: ${data.messages[0].message}`);
+          }
+        } else if (action === 'delete') {
+          const data = await deleteRecord(authState.token, layout, recordID);
+          if (data.messages && data.messages[0].code !== "0") {
+            throw new Error(`Failed to delete record: ${data.messages[0].message}`);
+          }
+        }
+  
+        // Remove the processed edit
+        setEdited(prev => prev.slice(1));
+      } catch (error) {
+        console.error(error);
+        // Optionally handle errors more explicitly here
+      }
+    };
+    processEdit();
+  },[edited, userData, authState.token])
 
   // Dynamic component map
   const componentMap = {
@@ -192,6 +237,23 @@ function CustomerPortal() {
 
   const message = (org) =>{
 
+  }
+
+  const getValue = (state, path) => {
+    // console.log('Initial State:', state);
+    try {
+        const pathParts = path.match(/([^\.\[\]]+|\[\d+\])/g); // This regex matches property names and array indices
+        return pathParts.reduce((acc, part) => {
+            const match = part.match(/\[(\d+)\]/); // Check if the part is an array index
+            if (match) {
+                return acc ? acc[parseInt(match[1])] : undefined; // Access the array index
+            }
+            return acc ? acc[part] : undefined; // Access the property
+        }, state);
+    } catch (error) {
+        console.error(`Error navigating state with key ${path}:`, error);
+        return ''; // Return a default/fallback value
+    }
   }
   
   //HANDLERS
