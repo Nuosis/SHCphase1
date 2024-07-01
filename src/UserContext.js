@@ -23,15 +23,18 @@ export const UserProvider = ({ children }) => {
                 city = address[`${portalStem}::city`], 
                 prov = address[`${portalStem}::prov`], 
                 postalCode = address[`${portalStem}::postalCode`], 
-                country = address[`${portalStem}::country`], 
-                ID = address[`${portalStem}::__ID`],
-                dapiRecordID=address[`${portalStem}::~dapiRecordID`] 
+                country = address[`${portalStem}::country`],
+                metaData = {
+                  table: 'dapiAddress',
+                  ID: address[`${portalStem}::__ID`],
+                  recordID: address[`${portalStem}::~dapiRecordID`],
+                  noMod: [""],
+                }
             } = address;
 
             // Create an object for the address
             const addressDetails = {
-                ID,
-                dapiRecordID,
+                metaData,
                 street: streetAddress,
                 unit: unitNumber,
                 city,
@@ -59,14 +62,17 @@ export const UserProvider = ({ children }) => {
                 label = record[`${portalStem}::label`], 
                 email  = record[`${portalStem}::email`], 
                 primary = record[`${portalStem}::f_primary`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::__ID`]
+                metaData = {
+                  table: 'dapiEmail',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: [""],
+                }
             } = record;
             const details = {
                 email,
-                ID,
-                dapiRecordID,
                 primary,
+                metaData
             };  
 
             if (newObject[label]) {
@@ -86,13 +92,16 @@ export const UserProvider = ({ children }) => {
             const { 
                 type = record[`${portalStem}::type`],
                 data = record[`${portalStem}::data`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::__ID`]
+                metaData = {
+                  table: 'dapiEmail',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: ["data"],
+                }
             } = record;
             const details = {
                 data,
-                ID,
-                dapiRecordID,
+                metaData
             };
 
             if (newObject[type]) {
@@ -139,15 +148,18 @@ export const UserProvider = ({ children }) => {
                 phone = record[`${portalStem}::phone`],
                 primary = record[`${portalStem}::f_primary`],
                 sms = record[`${portalStem}::f_sms`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::__ID`]
+                metaData = {
+                  table: 'dapiEmail',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: [""],
+                }
             } = record;
             const details = {
                 phone,
                 primary,
                 sms,
-                ID,
-                dapiRecordID,
+                metaData
             };
 
             if (newObject[label]) {
@@ -167,14 +179,17 @@ export const UserProvider = ({ children }) => {
                 type = record[`${portalStem}::type`],
                 partyID = record[`${portalStem}::_partyID`],
                 relatedPartyID = record[`${portalStem}::_relatedPartyID`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::__ID`]
+                metaData = {
+                  table: 'dapiRelatedParties_partyID',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: ["type","partyID","relatedPartyID"],
+                }
             } = record;
             const details = {
                 partyID,
                 relatedPartyID,
-                ID,
-                dapiRecordID,
+                metaData,
             };
 
             if (newObject[type]) {
@@ -198,10 +213,14 @@ export const UserProvider = ({ children }) => {
                 GST = record[`${portalStem}::f_taxableGST`],
                 PST = record[`${portalStem}::f_taxablePST`],
                 HST = record[`${portalStem}::f_taxableHST`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
                 qbItemID = record[`${portalStem}::qbItemID`], 
-                qbTaxID = record[`${portalStem}::qbTaxID`], 
-                ID = record[`${portalStem}::__ID`]
+                qbTaxID = record[`${portalStem}::qbTaxID`],
+                metaData = {
+                  table: 'dapiSellable',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: [""],
+                }
             } = record;
             const details = {
                 unit,
@@ -209,8 +228,7 @@ export const UserProvider = ({ children }) => {
                 HST,
                 GST,
                 PST,
-                ID,
-                dapiRecordID,
+                metaData,
                 qbTaxID,
                 qbItemID
             };
@@ -243,9 +261,13 @@ export const UserProvider = ({ children }) => {
                 price = record[`${portalStem}::price`], 
                 priceScheme = record[`${portalStem}::priceScheme`], 
                 usageCap = record[`${portalStem}::usageCap`], 
-                usageScheme = record[`${portalStem}::usageScheme`],
-                dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-                ID = record[`${portalStem}::_moduleID`]
+                usageScheme = record[`${portalStem}::usageScheme`], 
+                metaData = {
+                  table: 'dapiModulesSelected',
+                  ID: record[`${portalStem}::__ID`],
+                  recordID: record[`${portalStem}::~dapiRecordID`],
+                  noMod: [""],
+                }
             } = record;
             const details = {
                 active,
@@ -261,8 +283,7 @@ export const UserProvider = ({ children }) => {
                 priceScheme, 
                 usageCap, 
                 usageScheme,
-                ID,
-                dapiRecordID,
+                metaData,
             };
 
             if (newObject[name]) {
@@ -329,7 +350,18 @@ export const UserProvider = ({ children }) => {
                   const serviceProviderEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'cleaner');
                   const serviceProvider = serviceProviderEntry ? serviceProviderEntry["dapiBillableDetails::data"] : {};
                   const ratingEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'rating');
-                  const rating = ratingEntry ? ratingEntry["dapiBillableDetails::data"] : {};
+                  const ratingData = ratingEntry ? ratingEntry["dapiBillableDetails::data"] : "";
+                  const ratingObj = ratingData ? JSON.parse(ratingData) : {star:""}
+                  const rating = ratingObj.star
+                  const ratingRecordID = ratingEntry ? ratingEntry["dapiBillableDetails::~dapiRecordID"] : "";
+                  const ratingRecordUUID = ratingEntry ? ratingEntry["dapiBillableDetails::__ID"] : "";
+                  const cleanerEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'cleaner');
+                  const cleanerData = cleanerEntry ? cleanerEntry["dapiBillableDetails::data"] : "";
+                  const cleanerObj = cleanerData ? JSON.parse(cleanerData) : {cleaner: "", cleanerId: "", cleanerRecordId: "", cleanerRecordUUID: ""}
+                  const cleaner = cleanerObj.cleaner
+                  const cleanerID = cleanerObj.cleanerId
+                  const cleanerRecordID = cleanerEntry ? cleanerEntry["dapiBillableDetails::~dapiRecordID"] : "";
+                  const cleanerRecordUUID = cleanerEntry ? cleanerEntry["dapiBillableDetails::__ID"] : "" ;
                   const billable = {
                       GST: bill.fieldData.f_taxableGST,
                       GSTamount: bill.fieldData.gstAmount,
@@ -342,13 +374,22 @@ export const UserProvider = ({ children }) => {
                       price: bill.fieldData.price,
                       quantity: bill.fieldData.quantity,
                       totalPrice: bill.fieldData.totalPrice,
-                      dapiRecordID: bill.fieldData["~dapiRecordID"],
-                      ID: bill.fieldData["__ID"],
-                      orgID: bill.fieldData["_orgID"],
                       invoiceNum: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::invoiceNo"],
                       invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::dateDue"],
                       serviceProvider,
-                      rating
+                      rating,
+                      cleaner,
+                      cleanerID,
+                      metaData: {
+                        table: 'dapiBillable',
+                        recordID: bill.fieldData["~dapiRecordID"],
+                        ID: bill.fieldData["__ID"],
+                        noMod: ["invoiceNum"],
+                        // include any editable portal field's table, recordID, and UUID
+                        invoiceDate: {table: 'dapiInvoice', recordID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::~dapiRecordID"], __ID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::__ID"]},
+                        cleaner: {table: 'dapiRecordDetails', recordID: cleanerRecordID, __ID: cleanerRecordUUID},
+                        rating: {table: 'dapiRecordDetails', recordID: ratingRecordID, __ID: ratingRecordUUID}
+                      }
                   };
           
                   // Check if the description key exists in billableData
@@ -373,9 +414,13 @@ export const UserProvider = ({ children }) => {
                 displayName: userObject[0].fieldData.displayName,
                 firstName: userObject[0].fieldData.firstName,
                 lastName: userObject[0].fieldData.lastName,
-                dapiRecordID: userObject[0].fieldData["~dapiRecordID"],
-                ID: userObject[0].fieldData["__ID"],
-                orgID: userObject[0].fieldData["_orgID"],
+                metaData: {
+                  table: 'dapiParty',
+                  dapiRecordID: userObject[0].fieldData["~dapiRecordID"],
+                  ID: userObject[0].fieldData["__ID"],
+                  orgID: userObject[0].fieldData["_orgID"],
+                  noMod: [""],
+                }
             }
             //console.log({userInfo})
             const userAddress = createAddressObject(userObject,"dapiPartyAddress")
@@ -393,7 +438,13 @@ export const UserProvider = ({ children }) => {
             const orgInfo = {
                 displayName: orgObject[0].fieldData.Name,
                 website: orgObject[0].fieldData.website,
-                ID: orgObject[0].fieldData["__ID"]
+                ID: orgObject[0].fieldData["__ID"],
+                metaData: {
+                  table: 'dapiOrganization',
+                  dapiRecordID: orgObject[0].fieldData["~dapiRecordID"],
+                  ID: orgObject[0].fieldData["__ID"],
+                  noMod: ["ID","displayName","website"],
+                }
             };
             //gstNumber
             //wcbNumber

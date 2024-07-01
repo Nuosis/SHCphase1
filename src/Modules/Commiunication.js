@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../UserContext.js';
 import HeaderCard from '../UI Elements/HeaderCard';
-import { TextButton, IconButton } from '../UI Elements/Button';
+import { IconButton } from '../UI Elements/Button';
 import ChatWindow from '../UI Elements/ChatWindow.js';
 import 'daisyui';
 
