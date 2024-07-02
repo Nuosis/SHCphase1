@@ -16,23 +16,29 @@ const RenderCreating = ({id, type, setNewObj, newObj}) => {
   };
 
   return (
-    <div className="flex flex-row gap-2 ml-8 mr-2">
-      <input 
-        id={`label-${id}`} 
-        name="label" // Name attribute is important for identifying the field in handleInputChange
-        className="p-2 input input-bordered w-1/5 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
-        value={newObj.label || ''} // Ensure value is never undefined
-        onChange={handleInputChange}
-        placeholder="label"
-      />
-      <input 
-        id={`field-${id}`} 
-        name="value" // Name attribute for this field
-        className="p-2 input input-bordered w-4/5 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
-        value={newObj.value || ''} // Ensure value is never undefined
-        onChange={handleInputChange}
-        placeholder={`new ${type}`}
-      />
+    <div className="flex flex-row gap-2 ml-8 mr-4">
+      <div class="form-control w-1/5">
+        <label for={`label-${id}`} class="block text-sm font-bold text-primary dark:text-gray-400" >Label</label>
+        <input 
+          id={`label-${id}`} 
+          name="label" // Name attribute is important for identifying the field in handleInputChange
+          className="p-2 mt-2 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+          value={newObj.label || ''} // Ensure value is never undefined
+          onChange={handleInputChange}
+          placeholder="Label..."
+        />
+      </div>
+      <div class="form-control w-4/5">
+      <label for={`field-${id}`} class="block text-sm font-bold text-primary dark:text-gray-400" >{type}</label>
+        <input 
+          id={`field-${id}`} 
+          name="value" // Name attribute for this field
+          className="p-2 mt-2 input input-bordered  text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+          value={newObj.value || ''} // Ensure value is never undefined
+          onChange={handleInputChange}
+          placeholder={`New ${type}...`}
+        />
+      </div>
     </div>
   );
 }
@@ -162,7 +168,7 @@ const Card = ({
           </span>
         )}
       </h1>
-      <form id={`accordion-collapse-body-${id}`} className={`px-8 py-4 ${isOpen ? '' : 'hidden'}`}>
+      <form id={`accordion-collapse-body-${id}`} className={`px-8 pt-4 pb-8 ${isOpen ? '' : 'hidden'}`}>
         <div className={`flex flex-${flex}`}>
           {React.Children.map(children, (child) =>
             React.cloneElement(child, { state, setState, setEdited, rating, setRating, onNew })
@@ -173,12 +179,12 @@ const Card = ({
         <div className="flex mb-4 w-full">
             {isCreating ? (
               <>
-                <div className="grow mr-2">
+                <div className="grow">
                   <RenderCreating id={`new-${id}`} type={headerText} setNewObj={setNewObj} newObj={newObj}/>
                 </div>
                 <IconButton
                   icon="AddCircle"
-                  className="btn btn-primary self-end mr-8"
+                  className="btn btn-primary self-end mr-8 mb-8 mt-7"
                   type="button"
                   onClick={handleNewSubmit}
                   text="Submit"
@@ -186,10 +192,10 @@ const Card = ({
               </>
             ) : (
               <>
-                <div className="grow"/>
+                <div className="grow" />
                 <IconButton
                   icon="AddCircle"
-                  className="btn btn-primary self-end mr-8"
+                  className="btn btn-primary self-end mr-8 mb-8 mt-7"
                   type="button"
                   text="New"
                   onClick={toggleCreating}

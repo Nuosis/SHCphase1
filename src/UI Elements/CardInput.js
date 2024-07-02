@@ -197,11 +197,11 @@ const CardInput = (
 
             return (
               <div key={key} className="flex flex-col">
-                <label className="block text-gray-400 mb-2 font-medium">{titleCaseLabel}</label>
+                <label className="block text-sm font-bold text-primary dark:text-gray-400">{titleCaseLabel}</label>
                 <div className="flex flex-wrap gap-2">
                   {tasks.map((task, index) => (
                     <div className="mb-8" key={index}>
-                      <div className="flex items-center justify-between bg-blue-50 text-slate-400 rounded-full shadow-lg gap-2 px-4 py-2">
+                      <div className=" mt-2 flex items-center justify-between bg-blue-50 text-slate-400 rounded-full shadow-lg gap-2 px-4 py-2">
                         <span>{task}</span>
                         <DeleteIcon className="align-center items-center" onClick={() => handleChitDelete(stateKey, index)}/>
                       </div>
@@ -216,11 +216,11 @@ const CardInput = (
     } else if(childType==="iconGrid"){
       return (
         <div className="mr-8">
-          <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
             id={id} 
-            className="max-w-20 p-2 border rounded" 
+            className="max-w-20 mt-2 p-2 border rounded" 
             onClick={handleIconClick} 
           />
         </div>
@@ -228,7 +228,7 @@ const CardInput = (
     } else if(childType==="star"){
       return (
         <div className="">
-          <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <StarRating 
             rating={stateKey.split('.').reduce((acc, key) => acc[key], state)} 
             setRating={handleChange} 
@@ -243,11 +243,11 @@ const CardInput = (
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
             </div>
           )}
-          <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{toTitleCase(label)}</label>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
           <input 
             type={type} 
             id={id} 
-            className="max-w-full min-h-40 p-2 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className="max-w-full mt-2 min-h-40 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={!value ? getValue(state, stateKey):value}
             onBlur={handleBlur} 
             onChange={handleChange}
@@ -257,11 +257,11 @@ const CardInput = (
     } else if(childType==="pdf"){
       return (
         <div className="">
-          <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{label}</label>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
             id={id} 
-            className="max-w-20 p-2 border rounded" 
+            className="max-w-20 mt-2 p-2 border rounded text-black " 
             onClick={handlePDF_Click} 
           />
         </div>
@@ -277,7 +277,7 @@ const CardInput = (
           <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{toTitleCase(label)}</label>
           <input 
             id={id} 
-            className="block p-2 input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded w-full"
+            className="block mt-2 p-2 input input-bordered dark:bg-gray-600 text-black  dark:text-gray-400 dark:border-gray-700 border rounded w-full"
             placeholder={placeholder}
             value={!value ? getValue(state, stateKey):value}
             onBlur={handleBlur} 
@@ -294,13 +294,13 @@ const CardInput = (
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
             </div>
           )}
-          <label htmlFor={id} className="block text-gray-400 font-medium">{toTitleCase(label)}</label>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
           {onNew ? (
           <div className="flex flex-row">
             <input 
             type={type} 
             id={id} 
-            className="p-2 mb-2 w-11/12 input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className="mt-2 p-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
             onBlur={handleTelBlur} 
             onChange={handleChange}
@@ -310,7 +310,7 @@ const CardInput = (
             <input 
               type={type} 
               id={id} 
-              className="p-2 mb-2 w-full input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              className="mt-2 p-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
               onBlur={handleBlur} 
               onChange={handleChange}
@@ -327,13 +327,13 @@ const CardInput = (
               <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
           </div>
         )}
-        <label htmlFor={id} className="text-gray-400 font-medium">{toTitleCase(label)}</label>
+        <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
         {onNew ? (
           <div className="flex flex-row">
             <input 
             type={type} 
             id={id} 
-            className="p-2 mb-2 w-11/12 input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className="p-2 mt-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded mb-8" 
             value={inputValue}
             onBlur={handleBlur} 
             onChange={handleChange}
@@ -343,7 +343,7 @@ const CardInput = (
             <input 
               type={type} 
               id={id} 
-              className="p-2 mb-2 w-full input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              className="p-2 mt-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
               onBlur={handleBlur} 
               onChange={handleChange}
