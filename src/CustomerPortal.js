@@ -23,8 +23,6 @@ import { readRecord } from './FileMaker/readRecord.js'
 import { updateRecord } from './FileMaker/updateRecord.js'
 import { deleteRecord } from './FileMaker/deleteRecord.js'
 
-
-
 function CustomerPortal() {
   //STATE
   const { authState } = useAuth();
@@ -46,10 +44,12 @@ function CustomerPortal() {
      * ACTIONS >> Delete, Update, Create
     */ 
     if (edited.length === 0) return;
+    const edit = edited[0];
+    console.log("Processing Edit:", edit); // Check the current edit
+    const { action, path, value } = edit; // Assumes each edit is an object { action, path, value }
+    console.log({action},{path},{value})
     const processEdit = async () => {
       try {
-        const { action, path, value } = edited[0]; // Assumes each edit is an object { action, path }
-        const keyValue = !value? getValue(userData, path):value
         const pathParts = path.split('.');
         const key = pathParts.pop(); // Gets the last element
         const metaDataPath = [...pathParts, "metaData"].join('.');
@@ -57,7 +57,7 @@ function CustomerPortal() {
         const table = metaData[key]?.table || metaData.table;
         let recordID = metaData[key]?.recordID || metaData.recordID;
         const UUID = metaData[key]?.ID || metaData.ID;
-        console.log({keyValue},{key},{metaData},{table},{recordID},{UUID})
+        console.log({key},{metaData},{table},{recordID},{UUID})
   
         if (!recordID && !UUID) {
           setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
@@ -69,29 +69,27 @@ function CustomerPortal() {
           if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
           recordID = data.response.recordId;
         }
-  
-        let params = { fieldData: { [key]: keyValue } };
         const layout = table;
   
         if (action === 'update') {
+          const keyValue = !value? getValue(userData, path):value
+          const params = { fieldData: { [key]: keyValue } };
           const data = await updateRecord(authState.token, params, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to update record: ${data.messages[0].message}`);
           }
           console.log("update successful")
         } else if (action === 'delete') {
+          // CAUSING CRASHES
           const data = await deleteRecord(authState.token, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to delete record: ${data.messages[0].message}`);
           }
         }
-  
         // Remove the processed edit
         setEdited(prev => prev.slice(1));
-      } catch ({error, action}) {
-        console.log(`${action} failed`)
-        console.error(error);
-        // Optionally handle errors more explicitly here
+      } catch (error) {
+        console.error(`Error processing ${action}:`, error);
       }
     };
     processEdit();

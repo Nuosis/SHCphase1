@@ -165,7 +165,7 @@ const Card = ({
       <form id={`accordion-collapse-body-${id}`} className={`px-8 py-4 ${isOpen ? '' : 'hidden'}`}>
         <div className={`flex flex-${flex}`}>
           {React.Children.map(children, (child) =>
-            React.cloneElement(child, { state, setState, setEdited, rating, setRating, onSubmit })
+            React.cloneElement(child, { state, setState, setEdited, rating, setRating, onNew })
           )}
         </div>
       </form>

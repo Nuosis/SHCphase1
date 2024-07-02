@@ -87,7 +87,7 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
             state={userData}
             setState={setUserData}
             setEdited={setEdited}
-            defaultOpen={true}
+            defaultOpen={false}
             flex="col"
         >
         {Object.entries(addressData).map(([type, addresses]) => addresses ? addresses.map((address, index) => {

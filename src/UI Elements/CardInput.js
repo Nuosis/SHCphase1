@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Close } from '@mui/icons-material';
+import { useAuth } from '../AuthContext.js';
+import { Close, Delete } from '@mui/icons-material';
 import StarRating from '../UI Elements/StarRating.js';
 import Popup from '../UI Elements/Popup.js'
+import { useUser } from '../UserContext.js';
+import { deleteRecord } from '../FileMaker/deleteRecord.js'
+import { readRecord } from '../FileMaker/readRecord.js'
 
-const icons = {Close};
+const icons = {Close, Delete};
 const getValue = (state, path) => {
   // console.log('Initial State:', state);
   try {
@@ -21,7 +25,6 @@ const getValue = (state, path) => {
       return ''; // Return a default/fallback value
   }
 }
-
 const CardInput = (
     { 
       label, 
@@ -32,7 +35,7 @@ const CardInput = (
       setState, 
       stateKey,
       setEdited,
-      onSubmit,
+      onNew,
       value,
       placeholder
     }
@@ -40,8 +43,8 @@ const CardInput = (
     // Local state to keep track of the input value
     const [inputValue, setInputValue] = useState(!value ? getValue(state, stateKey):value);
     const [popup, setPopup] = useState({ show: false, message: '' });
-    const [showDelete, setShowDelete] = useState(false);
-
+    const { authState } = useAuth();
+    const { getUserData } = useUser();
 
     const handleChange = (e) => {
       // console.log("handleChange", e.target.value)
@@ -164,11 +167,40 @@ const CardInput = (
       setEdited("delete",stateKey);
     };
 
-    const handleDelete = () => {
-      console.log("Delete action triggered"); // Implement delete functionality
-      // Reset inputValue or perform other state updates as necessary
-    };
+    const handleDelete = async () => {
+      try {
+        const pathParts = stateKey.split('.');
+        const key = pathParts.pop(); // Gets the last element
+        const metaDataPath = [...pathParts, "metaData"].join('.');
+        const metaData = getValue(state, metaDataPath);
+        const table = metaData[key]?.table || metaData.table;
+        let recordID = metaData[key]?.recordID || metaData.recordID;
+        const UUID = metaData[key]?.ID || metaData.ID;
+        console.log({key},{metaData},{table},{recordID},{UUID})
+  
+        if (!recordID && !UUID) {
+          setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Delete unsuccessfull" });
+          return
+        } else if (!recordID) {
+          const params = [{"_partyID": UUID}];
+          const layout = table;
+          const data = await readRecord(authState.token, params, layout);
+          if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
+          recordID = data.response.recordId;
+        }
+        const layout = table;
+        const data = await deleteRecord(authState.token, layout, recordID);
+        if (data.messages && data.messages[0].code !== "0") {
+          throw new Error(`Failed to delete record: ${data.messages[0].message}`);
+        }
+      } catch (error) {
+        console.error(`Error processing delete:`, error);
+      }
 
+      const userID = state.userData.userInfo.metaData.ID
+      getUserData(userID)
+    };
+  
     const camelCaseToTitleCase = (str) => {
       return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
     };
@@ -234,7 +266,7 @@ const CardInput = (
           <StarRating 
             rating={stateKey.split('.').reduce((acc, key) => acc[key], state)} 
             setRating={handleChange} 
-            submitRating={onSubmit} />
+          />
         </div>
       );
     } else if(childType==="input"){
@@ -297,14 +329,30 @@ const CardInput = (
             </div>
           )}
           <label htmlFor={id} className="block text-gray-400 font-medium">{toTitleCase(label)}</label>
-          <input 
+          {onNew ? (
+          <div className="flex flex-row">
+            <input 
+            type={type} 
             id={id} 
-            className="block p-2 input mb-2 input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded w-full"
-            placeholder={placeholder}
+            className="p-2 mb-2 w-11/12 input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
             onBlur={handleTelBlur} 
             onChange={handleChange}
-          />
+            />
+            <button className="p-2 mb-2 w-1/12 bg-white dark:bg-gray-700" onClick={handleDelete}>
+              <Delete/>
+            </button>
+          </div>
+          ) : (
+            <input 
+              type={type} 
+              id={id} 
+              className="p-2 mb-2 w-full input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              value={inputValue}
+              onBlur={handleBlur} 
+              onChange={handleChange}
+            />
+        )}
         </div>
       );
     } else {
@@ -317,17 +365,32 @@ const CardInput = (
           </div>
         )}
         <label htmlFor={id} className="text-gray-400 font-medium">{toTitleCase(label)}</label>
-        <input 
-          type={type} 
-          id={id} 
-          className="p-2 mb-2 input input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
-          value={inputValue}
-          onBlur={handleBlur} 
-          onChange={handleChange}
-        />
-        {/**DELETE BUTTON & PROCESS */}
+        {onNew ? (
+          <div className="flex flex-row">
+            <input 
+            type={type} 
+            id={id} 
+            className="p-2 mb-2 w-11/12 input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+            value={inputValue}
+            onBlur={handleBlur} 
+            onChange={handleChange}
+            />
+            <button className="p-2 mb-2 w-1/12 bg-white dark:bg-gray-700" onClick={handleDelete}>
+              <Delete/>
+            </button>
+          </div>
+          ) : (
+            <input 
+              type={type} 
+              id={id} 
+              className="p-2 mb-2 w-full input input-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              value={inputValue}
+              onBlur={handleBlur} 
+              onChange={handleChange}
+            />
+        )}
       </div>
-    )};
+  )};
 };
 
 export default CardInput;
