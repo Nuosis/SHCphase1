@@ -5,6 +5,7 @@ import { useUser } from '../UserContext.js';
 // import {IconButton} from '../UI Elements/Button';
 import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
+import CardDelete  from '../UI Elements/CardDelete.js';
 
 const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
   const { userData, setUserData } = useUser();
@@ -157,7 +158,21 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
             flex="col"
         >
             {Object.entries(emailData).map(([key, emails]) => emails.map((emailDetail, index) => (
-                <CardInput
+              <React.Fragment key={`${key}-${index}`}>
+                <div class="flex flex-grow">
+                  <CardInput
+                      key={`${key}-${index}`}
+                      label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
+                      type="email"
+                      id={`email-${key}-${index}`}
+                      childType="field"
+                      state={userData}
+                      setState={setUserData}
+                      stateKey={`userData.userEmail.${key}[${index}].email`}
+                      setEdited={setEdited}
+                      value={emailDetail.email}
+                  />
+                  <CardDelete
                     key={`${key}-${index}`}
                     label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                     type="email"
@@ -169,7 +184,10 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                     setEdited={setEdited}
                     value={emailDetail.email}
                 />
-            )))}
+              </div>
+              </React.Fragment>
+            )))
+            }
         </Card>
     );
   }
@@ -191,7 +209,9 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
           onNew={true}
       >
           {Object.entries(phoneData).map(([key, phones]) => phones.map((phoneDetail, index) => (
-              <CardInput
+            <React.Fragment key={`${key}-${index}`}>
+            <div class="flex flex-grow">
+            <CardInput
                   key={`${key}-${index}`}
                   label={`${key}`}
                   type="tel"
@@ -204,6 +224,20 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                   value={formatNumber(phoneDetail.phone)}
                   placeholder="(123) 456-7890"
               />
+              <CardDelete
+                key={`${key}-${index}`}
+                label={`${key}`}
+                type="tel"
+                id={`phone-${key}-${index}`}
+                childType="tel"
+                state={userData}
+                setState={setUserData}
+                stateKey={`userData.userPhones.${key}[${index}].phone`}
+                setEdited={setEdited}
+                value={formatNumber(phoneDetail.phone)}
+            />
+          </div>
+          </React.Fragment>
           )))}
       </Card>
     );

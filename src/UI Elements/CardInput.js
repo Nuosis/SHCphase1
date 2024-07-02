@@ -166,40 +166,6 @@ const CardInput = (
       //TODO: update userData state first
       setEdited("delete",stateKey);
     };
-
-    const handleDelete = async () => {
-      try {
-        const pathParts = stateKey.split('.');
-        const key = pathParts.pop(); // Gets the last element
-        const metaDataPath = [...pathParts, "metaData"].join('.');
-        const metaData = getValue(state, metaDataPath);
-        const table = metaData[key]?.table || metaData.table;
-        let recordID = metaData[key]?.recordID || metaData.recordID;
-        const UUID = metaData[key]?.ID || metaData.ID;
-        console.log({key},{metaData},{table},{recordID},{UUID})
-  
-        if (!recordID && !UUID) {
-          setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Delete unsuccessfull" });
-          return
-        } else if (!recordID) {
-          const params = [{"_partyID": UUID}];
-          const layout = table;
-          const data = await readRecord(authState.token, params, layout);
-          if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
-          recordID = data.response.recordId;
-        }
-        const layout = table;
-        const data = await deleteRecord(authState.token, layout, recordID);
-        if (data.messages && data.messages[0].code !== "0") {
-          throw new Error(`Failed to delete record: ${data.messages[0].message}`);
-        }
-      } catch (error) {
-        console.error(`Error processing delete:`, error);
-      }
-
-      const userID = state.userData.userInfo.metaData.ID
-      getUserData(userID)
-    };
   
     const camelCaseToTitleCase = (str) => {
       return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
@@ -321,7 +287,7 @@ const CardInput = (
       );
     } else if(childType==="tel"){
       return (
-        <div className="">
+        <div className="grow">
           {/* Overlay and POPUP */}
           {popup.show && (
             <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
@@ -339,9 +305,6 @@ const CardInput = (
             onBlur={handleTelBlur} 
             onChange={handleChange}
             />
-            <button className="p-2 mb-2 w-1/12 bg-white dark:bg-gray-700" onClick={handleDelete}>
-              <Delete/>
-            </button>
           </div>
           ) : (
             <input 
@@ -357,7 +320,7 @@ const CardInput = (
       );
     } else {
     return (
-      <div className="">
+      <div className="grow">
         {/* Overlay and POPUP */}
         {popup.show && (
           <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
@@ -375,9 +338,6 @@ const CardInput = (
             onBlur={handleBlur} 
             onChange={handleChange}
             />
-            <button className="p-2 mb-2 w-1/12 bg-white dark:bg-gray-700" onClick={handleDelete}>
-              <Delete/>
-            </button>
           </div>
           ) : (
             <input 

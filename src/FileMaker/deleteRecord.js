@@ -21,6 +21,8 @@ async function deleteRecord(token, layout, recordID) {
             body: JSON.stringify(payloadData),
         });
 
+        console.log('delete-response', response);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
