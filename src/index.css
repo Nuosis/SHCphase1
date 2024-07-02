@@ -173,9 +173,9 @@
 }
 
 .header-image {
-  background-image: url(/src/images/appartment-photo.jpg);
+  background-image: url(/src/images/appartment-photo-day.jpg);
   background-size: cover;
-  background-position: 50% 55%;
+  background-position: 50% 80%;
 }
 
 @media ( prefers-color-scheme: dark ) {
