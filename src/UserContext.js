@@ -149,7 +149,7 @@ export const UserProvider = ({ children }) => {
                 primary = record[`${portalStem}::f_primary`],
                 sms = record[`${portalStem}::f_sms`],
                 metaData = {
-                  table: 'dapiEmail',
+                  table: 'dapiPhone',
                   ID: record[`${portalStem}::__ID`],
                   recordID: record[`${portalStem}::~dapiRecordID`],
                   noMod: [""],
@@ -386,9 +386,9 @@ export const UserProvider = ({ children }) => {
                         ID: bill.fieldData["__ID"],
                         noMod: ["invoiceNum"],
                         // include any editable portal field's table, recordID, and UUID
-                        invoiceDate: {table: 'dapiInvoice', recordID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::~dapiRecordID"], __ID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::__ID"]},
-                        cleaner: {table: 'dapiRecordDetails', recordID: cleanerRecordID, __ID: cleanerRecordUUID},
-                        rating: {table: 'dapiRecordDetails', recordID: ratingRecordID, __ID: ratingRecordUUID}
+                        invoiceDate: {table: 'dapiInvoice', recordID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::~dapiRecordID"], ID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::__ID"]},
+                        cleaner: {table: 'dapiRecordDetails', recordID: cleanerRecordID, ID: cleanerRecordUUID},
+                        rating: {table: 'dapiRecordDetails', recordID: ratingRecordID, ID: ratingRecordUUID}
                       }
                   };
           
@@ -416,7 +416,7 @@ export const UserProvider = ({ children }) => {
                 lastName: userObject[0].fieldData.lastName,
                 metaData: {
                   table: 'dapiParty',
-                  dapiRecordID: userObject[0].fieldData["~dapiRecordID"],
+                  recordID: userObject[0].fieldData["~dapiRecordID"],
                   ID: userObject[0].fieldData["__ID"],
                   orgID: userObject[0].fieldData["_orgID"],
                   noMod: [""],
@@ -441,7 +441,7 @@ export const UserProvider = ({ children }) => {
                 ID: orgObject[0].fieldData["__ID"],
                 metaData: {
                   table: 'dapiOrganization',
-                  dapiRecordID: orgObject[0].fieldData["~dapiRecordID"],
+                  recordID: orgObject[0].fieldData["~dapiRecordID"],
                   ID: orgObject[0].fieldData["__ID"],
                   noMod: ["ID","displayName","website"],
                 }

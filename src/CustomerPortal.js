@@ -5,11 +5,6 @@ import { useUser } from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
 import Footer from './UI Elements/Footer';
-import Portrait from './UI Elements/Portrait';
-import SimpleCard from './UI Elements/SimpleCard.js'
-import HeaderCard from './UI Elements/HeaderCard.js';
-import HeaderRow from './UI Elements/HeaderRow.js';
-import HeaderSubrow from './UI Elements/HeaderSubrow.js';
 import AccessCard from './Modules/Access.js'
 import GeneralInstructions from './Modules/GeneralInstructions.js';
 import InformationCard from './Modules/Information.js';
@@ -20,13 +15,13 @@ import CreditCardDetails from './Modules/CreditCardDetails.js';
 import MyPets from './Pets/Pet.js';
 import CommunicationPortal from './Modules/Commiunication.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
-import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
+// import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
 import { callStripeApi } from './Sales/stripe.js'
 import { createRecord } from './FileMaker/createRecord.js';
-import {readRecord} from './FileMaker/readRecord.js'
-import {updateRecord} from './FileMaker/updateRecord.js'
-import {deleteRecord} from './FileMaker/deleteRecord.js'
+import { readRecord } from './FileMaker/readRecord.js'
+import { updateRecord } from './FileMaker/updateRecord.js'
+import { deleteRecord } from './FileMaker/deleteRecord.js'
 
 
 
@@ -44,26 +39,30 @@ function CustomerPortal() {
   const [activeComponent, setActiveComponent] = useState(initialComponent);
   console.log({userData},{workOrderData},{newWorkOrderData})
 
+  // push edits to fileMkaer
   useEffect(() => {
     /**
-     * setEdited passes an object of [action].stateObjectPath  
+     * setEdited passes an object of {action, path}   
      * ACTIONS >> Delete, Update, Create
     */ 
     if (edited.length === 0) return;
     const processEdit = async () => {
       try {
-        const { action, path } = edited[0]; // Assumes each edit is an object { action, path }
-        const value = getValue(userData, path);
+        const { action, path, value } = edited[0]; // Assumes each edit is an object { action, path }
+        const keyValue = !value? getValue(userData, path):value
         const pathParts = path.split('.');
         const key = pathParts.pop(); // Gets the last element
         const metaDataPath = [...pathParts, "metaData"].join('.');
         const metaData = getValue(userData, metaDataPath);
-  
         const table = metaData[key]?.table || metaData.table;
         let recordID = metaData[key]?.recordID || metaData.recordID;
-        const UUID = metaData[key]?.["__ID"] || metaData["__ID"];
+        const UUID = metaData[key]?.ID || metaData.ID;
+        console.log({keyValue},{key},{metaData},{table},{recordID},{UUID})
   
-        if (!recordID) {
+        if (!recordID && !UUID) {
+          setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
+          return
+        } else if (!recordID) {
           const params = [{"_partyID": UUID}];
           const layout = table;
           const data = await readRecord(authState.token, params, layout);
@@ -71,7 +70,7 @@ function CustomerPortal() {
           recordID = data.response.recordId;
         }
   
-        let params = { fieldData: { [key]: value } };
+        let params = { fieldData: { [key]: keyValue } };
         const layout = table;
   
         if (action === 'update') {
@@ -79,6 +78,7 @@ function CustomerPortal() {
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to update record: ${data.messages[0].message}`);
           }
+          console.log("update successful")
         } else if (action === 'delete') {
           const data = await deleteRecord(authState.token, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
@@ -88,7 +88,8 @@ function CustomerPortal() {
   
         // Remove the processed edit
         setEdited(prev => prev.slice(1));
-      } catch (error) {
+      } catch ({error, action}) {
+        console.log(`${action} failed`)
         console.error(error);
         // Optionally handle errors more explicitly here
       }
@@ -110,6 +111,29 @@ function CustomerPortal() {
   };
 
   //FUNCTIONS
+  const renderActiveComponent = () => {
+    //console.log('Active component:', activeComponent);
+    const Component = componentMap[activeComponent];
+    if (!Component) return null;
+    const token=authState.token
+
+    // Define props here if they are dynamic based on the component
+    const componentProps = {
+        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, onSubmitWorkOrder: handleSubmitWorkOrder, setEdited }),
+        ...(activeComponent === 'InformationCard' && { onSubmitInformation: handleSubmitInfo, edited, setEdited }),
+        ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
+        ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
+        ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
+        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message }),
+        ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
+        ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
+        ...(activeComponent === 'CommunicationPortal' && { onSubmitMessage: handleSubmitMessage }),
+        // Extend this pattern for other components as needed
+    };
+
+    return <Component {...componentProps} />;
+  };
+
   function prepareActivityData() {
       const activities = {};
   
@@ -162,29 +186,6 @@ function CustomerPortal() {
 
     return activityRows;
   }
-
-  const renderActiveComponent = () => {
-    //console.log('Active component:', activeComponent);
-    const Component = componentMap[activeComponent];
-    if (!Component) return null;
-    const token=authState.token
-
-    // Define props here if they are dynamic based on the component
-    const componentProps = {
-        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, onSubmitWorkOrder: handleSubmitWorkOrder, setEdited }),
-        ...(activeComponent === 'InformationCard' && { json: userData.userData, onSubmitInformation: handleSubmitInfo, edited, setEdited }),
-        ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
-        ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
-        ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
-        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message }),
-        ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
-        ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
-        ...(activeComponent === 'CommunicationPortal' && { onSubmitMessage: handleSubmitMessage }),
-        // Extend this pattern for other components as needed
-    };
-
-    return <Component {...componentProps} />;
-  };
 
   const renderFooter = (data) => {
     // Default footer props to ensure footer renders even if no data or active component
@@ -410,8 +411,7 @@ function CustomerPortal() {
       console.log('Pets:', Pets);
       // Process the access instructions here
   };
-
-
+  
   // Handle the state of the open dropdown menues
   const togglePreviousOrders = () => {
     setIsPreviousOrdersOpen(!isPreviousOrdersOpen);
@@ -422,7 +422,6 @@ function CustomerPortal() {
     setIsPreviousOrdersOpen(false);
   };
   const toggleMenubar = () => setIsMenubarOpen(!isMenubarOpen);
-
   document.addEventListener('click', function (event) {
     if (event.target.closest('nav')){
       // Click on nav do nothing
@@ -465,7 +464,7 @@ function CustomerPortal() {
                 <button
                   id="previousOrdersLink"
                   data-dropdown-toggle="previousOrder"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
                   onClick={togglePreviousOrders}
                 >
                   
@@ -486,7 +485,7 @@ function CustomerPortal() {
                 <button
                   id="accountLink"
                   data-dropdown-toggle="accountNavbar"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
                   onClick={toggleAccountNavbar}
                 >
                   <img

@@ -1,4 +1,4 @@
-import React, { useState, /*useEffect*/ } from 'react';
+import React, { /*useState, /*useEffect*/ } from 'react';
 import { useUser } from '../UserContext.js';
 // import HeaderCard from '../UI Elements/HeaderCard';
 // import {Accordion} from '../UI Elements/Accordion.js';
@@ -6,80 +6,16 @@ import { useUser } from '../UserContext.js';
 import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
 
-const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
+const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
   const { userData, setUserData } = useUser();
-  const [infoData, setInfoData] = useState(userData.userData.userInfo);
-  const [addressData, setAddressData] = useState(userData.userData.userAddress);
-  const [emailData, setEmailData] = useState(userData.userData.userEmail);
-  const [phoneData, setPhoneData] = useState(userData.userData.userPhones);
+  const infoData = userData.userData.userInfo;
+  const addressData = userData.userData.userAddress;
+  const emailData = userData.userData.userEmail;
+  const phoneData = userData.userData.userPhones;
 
   //console.log({addressData})
 
   //HANDLERS
-  const handleAddressChange = (type, key, value) => {
-      // Update local address data
-      setAddressData(prev => {
-          // Assuming there's always at least one object under the 'home' key
-          const updatedAddress = {...prev[type][0], [key]: value};  // Update only the specified field
-          return {
-              ...prev,
-              [type]: [updatedAddress]  // Replace the existing array with the new address object
-          };
-      });
-
-      // Update global user data
-      setUserData(prevUserData => ({
-          ...prevUserData,
-          userData: {
-              ...prevUserData.userData,
-              userAddress: {
-                  ...prevUserData.userData.userAddress,
-                  [type]: [{...prevUserData.userData.userAddress[type][0], [key]: value}]  // Update the address in the global state
-              }
-          }
-      }));
-
-      // Updating 'edited' to indicate a specific field has been edited
-      setEdited(prev => ({
-          ...prev,
-          [`${type}Address`]: { ...prev[`${type}Address`], [key]: true }
-      }));
-  };
-
-  const handleEmailChange = (key, value) => {
-      setEmailData(prev => {
-          const updatedEmail = {...prev[key][0], email: value};  // Modify only the 'email' field
-          return {
-              ...prev,
-              [key]: [updatedEmail]
-          }
-      });    
-      // This step integrates the updated email data back into the global user context state
-      setUserData(prevUserData => ({
-          ...prevUserData,
-          userData: {
-              ...prevUserData.userData,
-              userEmail: {
-                  ...prevUserData.userData.userEmail,
-                  [key]: [{...prevUserData.userData.userEmail[key][0], email: value}] // Update the email in the global state
-              }
-          }
-      }));
-  
-      // Updating 'edited' to indicate a specific field has been edited
-      setEdited(prev => ({
-          ...prev,
-          email: { ...prev.email, [key]: true }
-      }));
-  };
-
-  const handlePhoneChange = (key, value) => {
-    // Update phone data with the raw input for ongoing edits
-    setPhoneData(prev => ({
-        ...prev,
-        [key]: [{...prev[key][0], phone: value, rawInput: value}]  // Store the raw input for editing
-    }));
-  };
 
   function formatNumber(phoneNumber) {
     // Remove all non-digit characters from the string
@@ -97,163 +33,6 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
         return cleanNumber;
     }
   }
-  
-  const handlePhoneBlur = (key, value) => {
-    const formattedValue = formatNumber(value);
-    setPhoneData(prev => ({
-      ...prev,
-      [key]: [{...prev[key][0], phone: formattedValue}] 
-    }));
-    
-    // This step integrates the updated phone data back into the global user context state
-    setUserData(prevUserData => ({
-      ...prevUserData,
-      userData: {
-          ...prevUserData.userData,
-          userPhones: {
-              ...prevUserData.userData.userPhones,
-              [key]: [{...prevUserData.userData.userPhones[key][0], phone: formattedValue}]
-          }
-      }
-    }));
-
-    // Updating 'edited' to indicate a specific field has been edited
-    setEdited(prev => ({
-        ...prev,
-        phone: { ...prev.phone, [key]: true }
-    }));
-  };
-
-  const handleInfoChange = (fieldKey, value) => {
-      // Update local component state for immediate UI feedback
-      setInfoData(prevInfoData => ({
-          ...prevInfoData,
-          [fieldKey]: value,
-          displayName: fieldKey === 'firstName' ? `${value} ${prevInfoData.lastName}` :
-                        fieldKey === 'lastName' ? `${prevInfoData.firstName} ${value}` : prevInfoData.displayName
-  
-      }));
-  
-      setUserData(prevUserData => {
-          // Update the specific field and construct a new display name
-          const updatedFirstName = fieldKey === 'firstName' ? value : prevUserData.userData.userInfo.firstName;
-          const updatedLastName = fieldKey === 'lastName' ? value : prevUserData.userData.userInfo.lastName;
-          const updatedDisplayName = `${updatedFirstName} ${updatedLastName}`;
-  
-          return {
-              ...prevUserData,
-              userData: {
-                  ...prevUserData.userData,
-                  userInfo: {
-                      ...prevUserData.userData.userInfo,
-                      firstName: updatedFirstName,
-                      lastName: updatedLastName,
-                      displayName: updatedDisplayName
-                  }
-              }
-          };
-      });
-  
-      // Updating 'edited' to indicate specific fields have been edited
-      setEdited(prev => ({
-          ...prev,
-          userInfo: { ...prev.userInfo, [fieldKey]: true }
-      }));
-  };
-
-  const handleInfoSubmit = (e) => {
-    e.preventDefault();
-
-    // Function to check if phone number matches the required format
-    const isPhoneFormatCorrect = (phoneNumber) => {
-        const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
-        return phonePattern.test(phoneNumber);
-    };
-
-    let firstInvalidElement = null;
-    let firstInvalidPanelId = null;
-
-    // Check each phone number format
-    Object.entries(phoneData).forEach(([key, phones]) => {
-        phones.forEach((phoneDetail, index) => {
-            if (!isPhoneFormatCorrect(phoneDetail.phone)) {
-                // Format using the blur handler logic if not correct
-                handlePhoneBlur(key, phoneDetail.phone);
-
-                // After formatting, check again
-                if (!isPhoneFormatCorrect(phoneDetail.phone)) {
-                    // Find the input element that corresponds to this phone number
-                    const phoneInput = document.querySelector(`input[name="phone"][data-key="${key}"][data-index="${index}"]`);
-                    if (phoneInput && !firstInvalidElement) {
-                        firstInvalidElement = phoneInput;
-                        firstInvalidPanelId = `infoGroup-phone-${key}`;
-                    }
-                }
-            }
-        });
-    });
-
-    // If any invalid phone was found, focus and open the corresponding accordion
-    if (firstInvalidElement) {
-        // Check the radio button to open the accordion for the phone
-        if (firstInvalidPanelId) {
-            const accordionRadio = document.getElementById(`radio-${firstInvalidPanelId}`);
-            if (accordionRadio) {
-                accordionRadio.checked = true;
-            }
-        }
-        setTimeout(() => {
-            firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstInvalidElement.focus();
-        }, 300);
-
-        return; // Prevent form submission if there is an invalid input
-    }
-
-    // Proceed to find any other invalid input if no invalid phone found
-    if (!firstInvalidElement) {
-        const elements = e.target.elements;
-        for (let i = 0; i < elements.length; i++) {
-            if (elements[i].willValidate && !elements[i].validity.valid) {
-                firstInvalidElement = elements[i];
-                firstInvalidPanelId = firstInvalidElement.closest('.collapse')?.querySelector('input[type="radio"]')?.id;
-                break;
-            }
-        }
-    }
-
-    if (firstInvalidElement && firstInvalidPanelId) {
-        const accordionRadio = document.getElementById(firstInvalidPanelId);
-        if (accordionRadio) {
-            accordionRadio.checked = true; // Check the radio button to open the accordion
-        }
-        setTimeout(() => {
-            firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstInvalidElement.focus();
-        }, 300);
-
-        return; // Prevent form submission if there is an invalid input
-    }
-
-    // Proceed with submission logic if all inputs are valid
-    onSubmitInformation({
-        userInfo: infoData,
-        userAddress: addressData,
-        userEmail: emailData,
-        userPhones: phoneData
-    }, edited);
-  };
-
-  const handleNewPhone = (e) => {
-    console.log(`new phone clicked`)
-  };
-
-  const handleNewEmail = (e) => {
-    console.log(`new email clicked`)
-  };
-
-  
-
 
   //FUNCTIONS
   const renderAccordion = () => {
@@ -269,7 +48,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
         headerHiddenText={{ Null: userData.userData.userInfo.displayName }}
         state={userData}
         setState={setUserData}
-        setEdited
+        setEdited={setEdited}
         defaultOpen={false}
         flex="col"
       >
@@ -281,6 +60,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
           state={userData}
           setState={setUserData}
           stateKey="userData.userInfo.firstName"
+          setEdited={setEdited}
         />
         <CardInput
           label="Last Name"
@@ -290,6 +70,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
           state={userData}
           setState={setUserData}
           stateKey="userData.userInfo.lastName"
+          setEdited={setEdited}
         />
       </Card>
     );
@@ -305,12 +86,14 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
             headerHiddenText={{}}
             state={userData}
             setState={setUserData}
-            setEdited
+            setEdited={setEdited}
             defaultOpen={true}
             flex="col"
         >
-        {Object.entries(addressData).map(([type, addresses]) => addresses.map((address, index) => (
-            <React.Fragment key={`${type}-${index}`}>
+        {Object.entries(addressData).map(([type, addresses]) => addresses ? addresses.map((address, index) => {
+          //console.log("addressRender",type, addresses); // Log each type and its addresses
+          return (
+          <React.Fragment key={`${type}-${index}`}>
                 <CardInput
                     label="Street"
                     type="text"
@@ -319,6 +102,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.userAddress.${type}[${index}].street`}
+                    setEdited={setEdited}
                 />
                 <CardInput
                     label="City"
@@ -328,6 +112,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.userAddress.${type}[${index}].city`}
+                    setEdited={setEdited}
                 />
                 <CardInput
                     label="Province"
@@ -337,6 +122,7 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.userAddress.${type}[${index}].province`}
+                    setEdited={setEdited}
                 />
                 <CardInput
                     label="Postal Code"
@@ -346,9 +132,11 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.userAddress.${type}[${index}].postalCode`}
+                    setEdited={setEdited}
                 />
             </React.Fragment>
-        )))}
+          );
+        }) : null)}
     </Card>
     )
   };
@@ -363,23 +151,23 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
             headerHiddenText={{}}
             state={userData}
             setState={setUserData}
-            setEdited
+            setEdited={setEdited}
             defaultOpen={false}
-            onNew={handleNewEmail}
+            onNew={true}
             flex="col"
         >
             {Object.entries(emailData).map(([key, emails]) => emails.map((emailDetail, index) => (
                 <CardInput
                     key={`${key}-${index}`}
-                    label={`${key.charAt(0).toUpperCase() + key.slice(1)} Email`}
+                    label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                     type="email"
                     id={`email-${key}-${index}`}
                     childType="field"
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.userEmail.${key}[${index}].email`}
+                    setEdited={setEdited}
                     value={emailDetail.email}
-                    onChange={(e) => handleEmailChange(key, e.target.value)}
                 />
             )))}
         </Card>
@@ -397,24 +185,23 @@ const InformationCard = ({json, onSubmitInformation, edited, setEdited}) => {
           headerHiddenText={{}}
           state={userData}
           setState={setUserData}
-          setEdited
+          setEdited={setEdited}
           defaultOpen={false}
           flex="col"
-          onNew={handleNewPhone}
+          onNew={true}
       >
           {Object.entries(phoneData).map(([key, phones]) => phones.map((phoneDetail, index) => (
               <CardInput
                   key={`${key}-${index}`}
-                  label={`${key} Phone`}
+                  label={`${key}`}
                   type="tel"
                   id={`phone-${key}-${index}`}
-                  childType="field"
+                  childType="tel"
                   state={userData}
                   setState={setUserData}
                   stateKey={`userData.userPhones.${key}[${index}].phone`}
+                  setEdited={setEdited}
                   value={formatNumber(phoneDetail.phone)}
-                  onChange={(e) => handlePhoneChange(key, e.target.value)}
-                  onBlur={(e) => handlePhoneBlur(key, e.target.value)}
                   placeholder="(123) 456-7890"
               />
           )))}
