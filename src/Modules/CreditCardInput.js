@@ -75,13 +75,13 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
         </div>
       )}
       <HeaderCard headerText="Update Credit Card" headerTextStyle={headerTextStyle}>
-        <form onSubmit={handleSubmit} className="space-y-4 pb-4">
+        <form onSubmit={handleSubmit} className="space-y-4 pb-4 flex flex-col justify-end gap-4">
           <div>
             <label className="block text-sm font-bold text-primary dark:text-gray-400">Cardholder Name</label>
             <input
               type="text"
               placeholder="Card number..."
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
               required
@@ -89,11 +89,14 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
           </div>
           <div>
             <label className="block text-sm font-bold text-primary dark:text-gray-400">Card Details</label>
-            <CardElement className="mt-1 min-h-10 block w-full px-3 py-2 bg-white border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+            <CardElement className="mt-1 min-h-10 block w-full px-3 py-2 bg-white border border-gray-300 text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
           </div>
-          <div className="pt-4">
-            <IconButton className="btn btn-primary" type="submit" text="Submit Payment" />
-          </div>
+          <IconButton 
+            icon="CreditCard"
+            className="btn btn-primary mb-4 block"
+            type="submit"
+            text="Submit Payment" 
+            />
         </form>
       </HeaderCard>
       </div>

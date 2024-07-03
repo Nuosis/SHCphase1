@@ -81,14 +81,14 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
           type="text"
           value={messageText}
           onChange={handleInputChange}
-          placeholder="Type a message"
-          className="flex-grow p-3 border rounded dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+          placeholder="Message cleaner..."
+          className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-400 dark:border-gray-700"
         />
        <IconButton
           icon="Send"
           onClick={handleSendMessage}
           className="btn btn-primary"
-          text="Send"
+          text="Send to Cleaner"
         />
       </div>
     </div>

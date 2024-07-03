@@ -53,7 +53,7 @@ const CommunicationPortal = ({onSubmitMessage}) => {
         <div className="flex flex-row gap-4 mb-4">
           <IconButton
             icon="Person"
-            className="btn btn-outline dark:btn-outline dark:text-gray-500"
+            className="btn btn-primary"
             onClick={() => loadMessage("cleaner")}
             type="Button"
             text="Message Cleaner"
