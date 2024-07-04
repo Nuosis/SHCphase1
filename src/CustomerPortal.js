@@ -17,6 +17,7 @@ import CommunicationPortal from './Modules/Commiunication.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
 // import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
+import Create from './FileMaker/CRUD/Create.js'
 import { callStripeApi } from './Sales/stripe.js'
 import { createRecord } from './FileMaker/createRecord.js';
 import { readRecord } from './FileMaker/readRecord.js'
@@ -27,7 +28,7 @@ function CustomerPortal() {
   //STATE
   const { authState } = useAuth();
   const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
-  const { userData, getUserData, /*setUserData*/ } = useUser();
+  const { userData, getUserData, setUserData } = useUser();
   const [popup, setPopup] = useState({ show: false, message: '' });
   const [edited, setEdited] = useState([])
   const [isPreviousOrdersOpen, setIsPreviousOrdersOpen] = useState(false);
@@ -48,39 +49,64 @@ function CustomerPortal() {
     console.log("Processing Edit:", edit); // Check the current edit
     const { action, path, value } = edit; // Assumes each edit is an object { action, path, value }
     console.log({action},{path},{value})
+    let payload = value ? value : ""
     const processEdit = async () => {
       try {
         const pathParts = path.split('.');
         const key = pathParts.pop(); // Gets the last element
         const metaDataPath = [...pathParts, "metaData"].join('.');
         const metaData = getValue(userData, metaDataPath);
-        const table = metaData[key]?.table || metaData.table;
-        let recordID = metaData[key]?.recordID || metaData.recordID;
-        const UUID = metaData[key]?.ID || metaData.ID;
-        console.log({key},{metaData},{table},{recordID},{UUID})
+        const isPortalRecord = typeof metaData[key] === 'object' && metaData[key] !== null;
+        const table = isPortalRecord? metaData[key].table : metaData.table;
+        const metaDataField = isPortalRecord? metaData[key].field : key;
+        const UUID = isPortalRecord? metaData[key].ID : metaData.ID;
+        let recordID = isPortalRecord? metaData[key].recordID : metaData.recordID;
+        const fieldParts = metaDataField.split('.')
+        const field = fieldParts[0];
+        const fieldObjKey = fieldParts[1] ?  fieldParts[1] : null ;
+        console.log({key},{payload},{metaData},{table},{field},{recordID},{UUID})
   
         if (!recordID && !UUID) {
+          // recordID and UUID being empty indicates the record does not yet exist and needs to be created
+          const record = Create(table,userData,{fkID:metaData.ID,type:"rating"})
+          recordID=record.response.recordId
+          if (!recordID){
           setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-          return
+          return}
         } else if (!recordID) {
-          const params = [{"_partyID": UUID}];
+          const params = [{"__ID": UUID}];
           const layout = table;
+          console.log("getting recordID ...")
           const data = await readRecord(authState.token, params, layout);
           if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
           recordID = data.response.recordId;
         }
+
+        if (fieldObjKey !== null){
+          /*  data is set in field as part of a json object. 
+              Get Object, update fieldObjKey with value and set
+              value to json to be sent back
+          */
+              const params = [{"__ID": UUID}];
+              const layout = table;
+              console.log("getting field json ...")
+              const data = await readRecord(authState.token, params, layout);
+              if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
+              const json = data.response[0].fieldData.field;
+              payload=json[fieldObjKey]
+        }
+
         const layout = table;
   
         if (action === 'update') {
-          const keyValue = !value? getValue(userData, path):value
-          const params = { fieldData: { [key]: keyValue } };
+          const keyValue = !payload? getValue(userData, path):payload
+          const params = { fieldData: { [field]: keyValue } };
           const data = await updateRecord(authState.token, params, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to update record: ${data.messages[0].message}`);
           }
           console.log("update successful")
         } else if (action === 'delete') {
-          // CAUSING CRASHES
           const data = await deleteRecord(authState.token, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to delete record: ${data.messages[0].message}`);
@@ -122,7 +148,7 @@ function CustomerPortal() {
         ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
         ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
         ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
-        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message }),
+        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message, edited, setEdited, userData, setUserData  }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
         ...(activeComponent === 'CommunicationPortal' && { onSubmitMessage: handleSubmitMessage }),

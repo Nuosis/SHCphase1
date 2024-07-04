@@ -1,8 +1,5 @@
 import React, { /*useState, /*useEffect*/ } from 'react';
 import { useUser } from '../UserContext.js';
-// import HeaderCard from '../UI Elements/HeaderCard';
-// import {Accordion} from '../UI Elements/Accordion.js';
-// import {IconButton} from '../UI Elements/Button';
 import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
 import CardDelete  from '../UI Elements/CardDelete.js';
@@ -159,9 +156,9 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
         >
             {Object.entries(emailData).map(([key, emails]) => emails.map((emailDetail, index) => (
               <React.Fragment key={`${key}-${index}`}>
-                <div class="flex flex-grow">
+                <div className="flex flex-grow">
                   <CardInput
-                      key={`${key}-${index}`}
+                      key={`email-${key}-${index}`}
                       label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                       type="email"
                       id={`email-${key}-${index}`}
@@ -173,7 +170,7 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                       value={emailDetail.email}
                   />
                   <CardDelete
-                    key={`${key}-${index}`}
+                    key={`email-${key}-${index}`}
                     label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                     type="email"
                     id={`email-${key}-${index}`}
@@ -210,9 +207,9 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
       >
           {Object.entries(phoneData).map(([key, phones]) => phones.map((phoneDetail, index) => (
             <React.Fragment key={`${key}-${index}`}>
-            <div class="flex flex-grow">
-            <CardInput
-                  key={`${key}-${index}`}
+            <div className="flex flex-grow">
+              <CardInput
+                  key={`tel-${key}-${index}`}
                   label={`${key}`}
                   type="tel"
                   id={`phone-${key}-${index}`}
@@ -225,7 +222,7 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                   placeholder="(123) 456-7890"
               />
               <CardDelete
-                key={`${key}-${index}`}
+                key={`tel-${key}-${index}`}
                 label={`${key}`}
                 type="tel"
                 id={`phone-${key}-${index}`}

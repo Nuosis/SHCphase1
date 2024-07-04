@@ -17,8 +17,8 @@ const RenderCreating = ({id, type, setNewObj, newObj}) => {
 
   return (
     <div className="flex flex-row gap-2 ml-8 mr-4">
-      <div class="form-control w-1/5">
-        <label for={`label-${id}`} class="block text-sm font-bold text-primary dark:text-gray-400" >Label</label>
+      <div className="form-control w-1/5">
+        <label for={`label-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400" >Label</label>
         <input 
           id={`label-${id}`} 
           name="label" // Name attribute is important for identifying the field in handleInputChange
@@ -28,8 +28,8 @@ const RenderCreating = ({id, type, setNewObj, newObj}) => {
           placeholder="Label..."
         />
       </div>
-      <div class="form-control w-4/5">
-      <label for={`field-${id}`} class="block text-sm font-bold text-primary dark:text-gray-400" >{type}</label>
+      <div className="form-control w-4/5">
+      <label for={`field-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400" >{type}</label>
         <input 
           id={`field-${id}`} 
           name="value" // Name attribute for this field
@@ -43,7 +43,6 @@ const RenderCreating = ({id, type, setNewObj, newObj}) => {
   );
 }
 
-
 const Card = ({
   id,
   headerText,
@@ -51,8 +50,6 @@ const Card = ({
   state,
   setState,
   setEdited,
-  rating,
-  setRating,
   children,
   persistOpen,
   defaultOpen = false,
@@ -171,7 +168,7 @@ const Card = ({
       <form id={`accordion-collapse-body-${id}`} className={`px-8 pt-4 pb-8 ${isOpen ? '' : 'hidden'}`}>
         <div className={`flex flex-${flex}`}>
           {React.Children.map(children, (child) =>
-            React.cloneElement(child, { state, setState, setEdited, rating, setRating, onNew })
+            React.cloneElement(child)
           )}
         </div>
       </form>

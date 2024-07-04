@@ -353,6 +353,7 @@ export const UserProvider = ({ children }) => {
                   const ratingData = ratingEntry ? ratingEntry["dapiBillableDetails::data"] : "";
                   const ratingObj = ratingData ? JSON.parse(ratingData) : {star:""}
                   const rating = ratingObj.star
+                  const ratingDescription = ratingObj.description
                   const ratingRecordID = ratingEntry ? ratingEntry["dapiBillableDetails::~dapiRecordID"] : "";
                   const ratingRecordUUID = ratingEntry ? ratingEntry["dapiBillableDetails::__ID"] : "";
                   const cleanerEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'cleaner');
@@ -378,6 +379,7 @@ export const UserProvider = ({ children }) => {
                       invoiceDate: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::dateDue"],
                       serviceProvider,
                       rating,
+                      ratingDescription,
                       cleaner,
                       cleanerID,
                       metaData: {
@@ -388,7 +390,8 @@ export const UserProvider = ({ children }) => {
                         // include any editable portal field's table, recordID, and UUID
                         invoiceDate: {table: 'dapiInvoice', recordID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::~dapiRecordID"], ID: bill.portalData.dapiBillableInvoice[0]["dapiBillableInvoice::__ID"]},
                         cleaner: {table: 'dapiRecordDetails', recordID: cleanerRecordID, ID: cleanerRecordUUID},
-                        rating: {table: 'dapiRecordDetails', recordID: ratingRecordID, ID: ratingRecordUUID}
+                        rating: {table: 'dapiRecordDetails', recordID: ratingRecordID, ID: ratingRecordUUID, field: "data.star"},
+                        ratingDescription: {table: 'dapiRecordDetails', recordID: ratingRecordID, ID: ratingRecordUUID,field: "data.description"}
                       }
                   };
           
@@ -487,4 +490,22 @@ export const UserProvider = ({ children }) => {
             {children}
         </UserContext.Provider>
     );
+}
+
+export const getValue = (state, path) => {
+  // console.log('getValue ...', state,path);
+  try {
+      // eslint-disable-next-line no-useless-escape
+      const pathParts = path.match(/([^\.\[\]]+|\[\d+\])/g); // This regex matches property names and array indices
+      return pathParts.reduce((acc, part) => {
+          const match = part.match(/\[(\d+)\]/); // Check if the part is an array index
+          if (match) {
+              return acc ? acc[parseInt(match[1])] : undefined; // Access the array index
+          }
+          return acc ? acc[part] : undefined; // Access the property
+      }, state);
+  } catch (error) {
+      console.error(`Error navigating state with key ${path}:`, error);
+      return ''; // Return a default/fallback value
+  }
 }

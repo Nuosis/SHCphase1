@@ -26,28 +26,58 @@ export const WorkOrderProvider = ({ children }) => {
 };
 
 export const prepareWorkOrderData = async (token, userData, date, activity) => {
-  console.log('prepareWorkOrderData:')
-  // console.log({token},{userData},date,activity)
+  console.log('prepareWorkOrderData:');
+  console.log(date, activity);
 
-  const dateFormat = /\d{1,2}\/\d{1,2}\/\d{4}/; // Pattern to match MM/DD/YYYY format
+  const normalizeDate = (date) => {
+    const dateParts = date.split(/[-/]/);
+    if (dateParts.length === 3) {
+      const [part1, part2, part3] = dateParts;
+      if (part1.length === 4) {
+        // Date is in YYYY-MM-DD format
+        return new Date(`${part1}-${part2.padStart(2, '0')}-${part3.padStart(2, '0')}`).toISOString().split('T')[0];
+      } else {
+        // Date is in MM/DD/YYYY or M/D/YYYY format
+        const year = part3;
+        const month = part1.padStart(2, '0');
+        const day = part2.padStart(2, '0');
+        return new Date(`${year}-${month}-${day}`).toISOString().split('T')[0];
+      }
+    }
+    return null;
+  };
+
+  const normalizedDate = normalizeDate(date);
+  if (!normalizedDate) {
+    console.error('Invalid date format');
+    return;
+  }
 
   // Find the billable record based on date and activity
   const billableRecords = userData.billableData[activity];
-  const billableRecord = billableRecords.find(record => {
-    const formattedDate = new Date(record.invoiceDate);
-    return dateFormat.test(record.invoiceDate) 
-      ? `${formattedDate.getFullYear()}-${(formattedDate.getMonth() + 1).toString().padStart(2, '0')}-${formattedDate.getDate().toString().padStart(2, '0')}` === date
-      : record.invoiceDate === date;
+  const billableRecordIndex = billableRecords.findIndex(record => {
+    const recordDate = normalizeDate(record.invoiceDate);
+    return recordDate === normalizedDate;
   });
+
+  if (billableRecordIndex === -1) {
+    console.error('No matching billable record found');
+    return;
+  }
+
+  const billableRecord = billableRecords[billableRecordIndex];
+  const path = `billableData.${activity}[${billableRecordIndex}]`
 
   if (!billableRecord) {
     console.error('No matching billable record found');
     return;
   }
+  console.log({billableRecord});
 
-  const ID = billableRecord.ID;
-  const rating = billableRecord.rating;
-  const cleaner = billableRecord.serviceProvider
+  const ID = billableRecord.metaData.ID;
+  const rating = billableRecord.rating ? billableRecord.rating : 0 ;
+  const ratingDescription = billableRecord.ratingDescription ? billableRecord.ratingDescription : "" ;
+  const cleaner = billableRecord.cleaner;
 
   // Fetch scope data using the ID from the billable record
   const params = {
@@ -77,7 +107,9 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
         lowPriority: scopeData.filter(item => item.detail === "Low Priority").map(item => item.label)
       },
       rating,
-      cleaner
+      ratingDescription,
+      cleaner,
+      path
     };
     return woData
   } catch (error) {

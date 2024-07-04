@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { useAuth } from '../AuthContext.js';
 import { Close, Delete } from '@mui/icons-material';
 import StarRating from '../UI Elements/StarRating.js';
 import Popup from '../UI Elements/Popup.js'
-import { useUser } from '../UserContext.js';
-import { deleteRecord } from '../FileMaker/deleteRecord.js'
-import { readRecord } from '../FileMaker/readRecord.js'
 
 const icons = {Close, Delete};
 const getValue = (state, path) => {
-  // console.log('Initial State:', state);
+  // console.log('getValue ...', state,path);
   try {
       // eslint-disable-next-line no-useless-escape
       const pathParts = path.match(/([^\.\[\]]+|\[\d+\])/g); // This regex matches property names and array indices
@@ -43,8 +39,6 @@ const CardInput = (
     // Local state to keep track of the input value
     const [inputValue, setInputValue] = useState(!value ? getValue(state, stateKey):value);
     const [popup, setPopup] = useState({ show: false, message: '' });
-    const { authState } = useAuth();
-    const { getUserData } = useUser();
 
     const handleChange = (e) => {
       // console.log("handleChange", e.target.value)
@@ -52,8 +46,8 @@ const CardInput = (
     };
 
     const handleBlur = (e) => {
-      console.log("handleBlur...")
-      const newValue = e.target.value;
+      console.log("handleBlur...",{e})
+      const newValue = e && e.target && e.target.value !== undefined ? e.target.value : e;
       const oldValue = getValue(state, stateKey);
   
       // Check if the value has changed before updating the global state and setting edited
@@ -216,7 +210,7 @@ const CardInput = (
     } else if(childType==="iconGrid"){
       return (
         <div className="mr-8">
-          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
+          <label htmlFor={`${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
             id={id} 
@@ -226,12 +220,15 @@ const CardInput = (
         </div>
       );
     } else if(childType==="star"){
+      // console.log("star rating",inputValue, {state}, {stateKey})
+      const rate = getValue(state,stateKey)
+      console.log(rate)
       return (
         <div className="">
           <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <StarRating 
-            rating={stateKey.split('.').reduce((acc, key) => acc[key], state)} 
-            setRating={handleChange} 
+            rating={rate}
+            setRating={handleBlur} 
           />
         </div>
       );
@@ -243,10 +240,10 @@ const CardInput = (
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
             </div>
           )}
-          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
+          <label htmlFor={`label-${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
           <input 
             type={type} 
-            id={id} 
+            id={`${type}-${label}-${id}`}
             className="max-w-full mt-2 min-h-40 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={!value ? getValue(state, stateKey):value}
             onBlur={handleBlur} 
@@ -260,7 +257,7 @@ const CardInput = (
           <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
-            id={id} 
+            id={`${type}-${label}-${id}`} 
             className="max-w-20 mt-2 p-2 border rounded text-black " 
             onClick={handlePDF_Click} 
           />
@@ -274,9 +271,9 @@ const CardInput = (
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
             </div>
           )}
-          <label htmlFor={id} className="block text-gray-400 mb-2 font-medium">{toTitleCase(label)}</label>
+          <label htmlFor={`label-${type}-${label}-${id}`} className="block text-gray-400 mb-2 font-medium">{toTitleCase(label)}</label>
           <input 
-            id={id} 
+            id={`${type}-${label}-${id}`} 
             className="block mt-2 p-2 input input-bordered dark:bg-gray-600 text-black  dark:text-gray-400 dark:border-gray-700 border rounded w-full"
             placeholder={placeholder}
             value={!value ? getValue(state, stateKey):value}
@@ -294,12 +291,12 @@ const CardInput = (
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
             </div>
           )}
-          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
+          <label htmlFor={`label-${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
           {onNew ? (
           <div className="flex flex-row">
             <input 
             type={type} 
-            id={id} 
+            id={`${type}-${label}-${id}`} 
             className="mt-2 p-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
             onBlur={handleTelBlur} 
@@ -309,7 +306,7 @@ const CardInput = (
           ) : (
             <input 
               type={type} 
-              id={id} 
+              id={`${type}-${label}-${id}`} 
               className="mt-2 p-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
               onBlur={handleBlur} 
@@ -327,13 +324,13 @@ const CardInput = (
               <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
           </div>
         )}
-        <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
+        <label htmlFor={`label-${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
         {onNew ? (
           <div className="flex flex-row">
             <input 
             type={type} 
-            id={id} 
-            className="p-2 mt-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded mb-8" 
+            id={`${type}-${label}-${id}`}
+            className="p-2 mt-2 mb-8 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
             onBlur={handleBlur} 
             onChange={handleChange}
@@ -342,8 +339,8 @@ const CardInput = (
           ) : (
             <input 
               type={type} 
-              id={id} 
-              className="p-2 mt-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              id={`${type}-${label}-${id}`} 
+              className="p-2 mt-2 mb-8 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
               onBlur={handleBlur} 
               onChange={handleChange}

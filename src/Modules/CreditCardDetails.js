@@ -11,6 +11,7 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
   };
 
   const handleWorkOrderChange = async (date, activity) => {
+    console.log({date},{activity})
     try {
       const woData = await prepareWorkOrderData(token, userData, date, activity);
       if (woData) {
@@ -37,9 +38,9 @@ const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderDa
         {records.map((record) => (
           <IconButton
             icon="InsertDriveFile"
-            text={record.invoiceDate}
+            text={new Date(record.invoiceDate).toISOString().slice(0, 10)}
             className="btn btn-outline dark:btn-outline dark:text-gray-500 btn-sm mb-4 block"
-            onClick={() => handleWorkOrderChange(new Date(record.invoiceDate).toISOString().slice(0, 10), activity)}
+            onClick={() => handleWorkOrderChange(record.invoiceDate, activity)}
           >
             {new Date(record.invoiceDate).toISOString().slice(0, 10)}
           </IconButton>
