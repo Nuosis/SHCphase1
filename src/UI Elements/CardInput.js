@@ -26,6 +26,7 @@ const CardInput = (
       label, 
       type = 'text', 
       id, 
+      key,
       childType, 
       state, 
       setState, 
@@ -40,13 +41,13 @@ const CardInput = (
     const [inputValue, setInputValue] = useState(!value ? getValue(state, stateKey):value);
     const [popup, setPopup] = useState({ show: false, message: '' });
 
-    const handleChange = (e) => {
-      // console.log("handleChange", e.target.value)
+    const handleLocalChange = (e) => {
+      console.log("handleLocalChange", e.target.value)
         setInputValue(e.target.value); // Update local state immediately
     };
 
-    const handleBlur = (e) => {
-      console.log("handleBlur...",{e})
+    const handleStateChange = (e) => {
+      console.log("handleStateChange...")
       const newValue = e && e.target && e.target.value !== undefined ? e.target.value : e;
       const oldValue = getValue(state, stateKey);
   
@@ -157,8 +158,8 @@ const CardInput = (
     const handleIconClick = (e) => {console.log("icon click")}
 
     const handleChitDelete = (key, task) => {
-      //TODO: update userData state first
       setEdited("delete",stateKey);
+      //TODO: update userData state
     };
   
     const camelCaseToTitleCase = (str) => {
@@ -222,13 +223,13 @@ const CardInput = (
     } else if(childType==="star"){
       // console.log("star rating",inputValue, {state}, {stateKey})
       const rate = getValue(state,stateKey)
-      console.log(rate)
+      // console.log(rate)
       return (
         <div className="">
           <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <StarRating 
             rating={rate}
-            setRating={handleBlur} 
+            setRating={handleStateChange} 
           />
         </div>
       );
@@ -246,8 +247,8 @@ const CardInput = (
             id={`${type}-${label}-${id}`}
             className="max-w-full mt-2 min-h-40 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={!value ? getValue(state, stateKey):value}
-            onBlur={handleBlur} 
-            onChange={handleChange}
+            onBlur={handleStateChange} 
+            onChange={handleLocalChange}
           />
         </div>
       );
@@ -276,9 +277,9 @@ const CardInput = (
             id={`${type}-${label}-${id}`} 
             className="block mt-2 p-2 input input-bordered dark:bg-gray-600 text-black  dark:text-gray-400 dark:border-gray-700 border rounded w-full"
             placeholder={placeholder}
-            value={!value ? getValue(state, stateKey):value}
-            onBlur={handleBlur} 
-            onChange={handleChange}
+            value={inputValue}
+            onBlur={handleStateChange} 
+            onChange={handleLocalChange}
           />
         </div>
       );
@@ -300,7 +301,7 @@ const CardInput = (
             className="mt-2 p-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
             onBlur={handleTelBlur} 
-            onChange={handleChange}
+            onChange={handleLocalChange}
             />
           </div>
           ) : (
@@ -309,8 +310,8 @@ const CardInput = (
               id={`${type}-${label}-${id}`} 
               className="mt-2 p-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
-              onBlur={handleBlur} 
-              onChange={handleChange}
+              onBlur={handleStateChange} 
+              onChange={handleLocalChange}
             />
         )}
         </div>
@@ -329,21 +330,23 @@ const CardInput = (
           <div className="flex flex-row">
             <input 
             type={type} 
-            id={`${type}-${label}-${id}`}
+            id={id}
+            key={key}
             className="p-2 mt-2 mb-8 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={inputValue}
-            onBlur={handleBlur} 
-            onChange={handleChange}
+            onBlur={handleStateChange} 
+            onChange={handleLocalChange}
             />
           </div>
           ) : (
             <input 
               type={type} 
-              id={`${type}-${label}-${id}`} 
+              id={id}
+              key={key}
               className="p-2 mt-2 mb-8 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
               value={inputValue}
-              onBlur={handleBlur} 
-              onChange={handleChange}
+              onBlur={handleStateChange} 
+              onChange={handleLocalChange}
             />
         )}
       </div>

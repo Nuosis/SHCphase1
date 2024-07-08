@@ -1,7 +1,13 @@
 
 
 async function readRecord(token, params, layout) {
-    console.log("FileMaker Read called")
+    console.log("FileMaker Read called")    
+    
+    // Check if params is an array and not an object with a 'query' property
+    if (Array.isArray(params) && !params.query) {
+        params = { query: params };
+    }
+    
     // Prepare the data for the API call
     const payloadData = {
         method: "findRecord",
@@ -10,6 +16,7 @@ async function readRecord(token, params, layout) {
         layout,
         params
     };
+    // console.log({payloadData})
 
     try {
         const response = await fetch('https://server.claritybusinesssolutions.ca:4343/clarityData', {
@@ -37,7 +44,7 @@ async function readRecord(token, params, layout) {
 
     } catch (error) {
         console.log("Find unsuccessfull");
-        console.error("Error creating account: ", error.message);
+        console.error("Error reading record: ", error.message);
         throw error; // Rethrow the error to be handled by the caller
     }
 }

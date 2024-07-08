@@ -8,7 +8,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
   
   useEffect(() => {
     // Establish WebSocket connection
-    socketRef.current = new WebSocket('wss://your-websocket-server-url');
+    socketRef.current = new WebSocket('wss://server.claritybusinesssolutions.ca:4343');
 
     socketRef.current.onopen = () => {
       console.log('WebSocket connection established');
@@ -27,7 +27,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
     return () => {
       socketRef.current.close();
     };
-  }, []);
+  }, [onSendMessage]);
 
   const getCurrentLocalTime = () => {
     const date = new Date();
@@ -49,6 +49,8 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
 
   const handleSendMessage = () => {
     const currentTime = getCurrentLocalTime()
+    // update state
+    // send to webApp
     if (messageText.trim() !== '') {
       const message = {
         name: userData.userData.userInfo.firstName,
@@ -57,7 +59,10 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
         status: "sent",
         sendDirection: "out"
       }
+      console.log({message})
+      /*
       socketRef.current.send(JSON.stringify(message));
+      */
       setMessageText('');
     }
   };
@@ -82,7 +87,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
           value={messageText}
           onChange={handleInputChange}
           placeholder="Message cleaner..."
-          className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-gray-400 dark:border-gray-700"
+          className="flex-grow p-3 border border-gray-300 rounded dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600"
         />
         <IconButton
           icon="Send"

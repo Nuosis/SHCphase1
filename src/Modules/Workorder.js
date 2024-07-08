@@ -6,8 +6,6 @@ import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
 import { Accordion } from '../UI Elements/Accordion.js';
 import { IconButton } from '../UI Elements/Button';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
 
 const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, setEdited }) => {

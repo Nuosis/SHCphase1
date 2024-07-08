@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
-import { useUser } from './UserContext.js';
+import { useUser, getValue} from './UserContext.js';
 import { /*useNavigate, useLocation*/  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
 import Footer from './UI Elements/Footer';
@@ -29,13 +29,13 @@ function CustomerPortal() {
   const { authState } = useAuth();
   const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
   const { userData, getUserData, setUserData } = useUser();
-  const [popup, setPopup] = useState({ show: false, message: '' });
-  const [edited, setEdited] = useState([])
-  const [isPreviousOrdersOpen, setIsPreviousOrdersOpen] = useState(false);
-  const [isAccountNavbarOpen, setIsAccountNavbarOpen] = useState(false);
-  const [isMenubarOpen, setIsMenubarOpen] = useState(false);
+  const [ popup, setPopup ] = useState({ show: false, message: '' });
+  const [ edited, setEdited ] = useState([])
+  const [ isPreviousOrdersOpen, setIsPreviousOrdersOpen ] = useState(false);
+  const [ isAccountNavbarOpen, setIsAccountNavbarOpen ] = useState(false);
+  const [ isMenubarOpen, setIsMenubarOpen ] = useState(false);
   const initialComponent = Object.keys(newWorkOrderData).length > 0 ? 'WorkOrderCard':'';
-  const [activeComponent, setActiveComponent] = useState(initialComponent);
+  const [ activeComponent, setActiveComponent ] = useState(initialComponent);
   console.log({userData},{workOrderData},{newWorkOrderData})
 
   // push edits to fileMkaer
@@ -48,8 +48,10 @@ function CustomerPortal() {
     const edit = edited[0];
     console.log("Processing Edit:", edit); // Check the current edit
     const { action, path, value } = edit; // Assumes each edit is an object { action, path, value }
-    console.log({action},{path},{value})
+    // console.log({action},{path},{value})
     let payload = value ? value : ""
+
+
     const processEdit = async () => {
       try {
         const pathParts = path.split('.');
@@ -59,48 +61,68 @@ function CustomerPortal() {
         const isPortalRecord = typeof metaData[key] === 'object' && metaData[key] !== null;
         const table = isPortalRecord? metaData[key].table : metaData.table;
         const metaDataField = isPortalRecord? metaData[key].field : key;
-        const UUID = isPortalRecord? metaData[key].ID : metaData.ID;
+        let UUID = isPortalRecord? metaData[key].ID : metaData.ID;
         let recordID = isPortalRecord? metaData[key].recordID : metaData.recordID;
         const fieldParts = metaDataField.split('.')
         const field = fieldParts[0];
         const fieldObjKey = fieldParts[1] ?  fieldParts[1] : null ;
-        console.log({key},{payload},{metaData},{table},{field},{recordID},{UUID})
+        console.log({key},{payload},{metaData},{table},{field},{fieldObjKey},{recordID},{UUID})
+        let record
   
         if (!recordID && !UUID) {
           // recordID and UUID being empty indicates the record does not yet exist and needs to be created
-          const record = Create(table,userData,{fkID:metaData.ID,type:"rating"})
-          recordID=record.response.recordId
+          console.log("calling create record ...",{key})
+          record = await Create(authState.token ,table,userData,{fkID:metaData.ID,type:"rating"})
+          recordID=record.response.data[0].recordId?record.response.data[0].recordId:null
+          UUID=record.response.data[0].fieldData["__ID"]?record.response.data[0].fieldData["__ID"]:null
+          // console.log("record received ...",{recordID, UUID})
           if (!recordID){
-          setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-          return}
+            setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
+            return
+          }
         } else if (!recordID) {
-          const params = [{"__ID": UUID}];
+          const query = [{"__ID": UUID}];
           const layout = table;
           console.log("getting recordID ...")
-          const data = await readRecord(authState.token, params, layout);
-          if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
-          recordID = data.response.recordId;
+          record = await readRecord(authState.token, {query}, layout);
+          if (record.length === 0) throw new Error("Error getting recordID from FileMaker");
+          recordID = record.response.recordId?record.response.recordId:null
+          if (!recordID){
+            setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
+            return
+          }
+        } else if (isPortalRecord) {
+          const query = [{"__ID": UUID}];
+          const layout = table;
+          console.log("getting record ...",{query},{layout})
+          record = await readRecord(authState.token, {query}, layout);
+          if (record.length === 0 || record === undefined) throw new Error("Error getting portal record from FileMaker");
         }
+        console.log({record})
+
 
         if (fieldObjKey !== null){
           /*  data is set in field as part of a json object. 
               Get Object, update fieldObjKey with value and set
               value to json to be sent back
           */
-              const params = [{"__ID": UUID}];
-              const layout = table;
-              console.log("getting field json ...")
-              const data = await readRecord(authState.token, params, layout);
-              if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
-              const json = data.response[0].fieldData.field;
-              payload=json[fieldObjKey]
+            console.log("getting field json ...",{fieldObjKey})
+            const data = record.response.data[0].fieldData;
+            const jsonObj=JSON.parse(data[field])
+            console.log({jsonObj})
+            jsonObj[fieldObjKey]=value
+            payload = jsonObj
+            console.log("payload set",payload)
         }
 
         const layout = table;
   
         if (action === 'update') {
-          const keyValue = !payload? getValue(userData, path):payload
-          const params = { fieldData: { [field]: keyValue } };
+          const keyValue = !payload ? getValue(userData, path) : payload;
+          const stringValue = typeof keyValue === 'string' ? keyValue : JSON.stringify(keyValue);          
+          const params = { fieldData: { [field]: stringValue } };
+          // console.log({params})
+          // console.log({layout,recordID})
           const data = await updateRecord(authState.token, params, layout, recordID);
           if (data.messages && data.messages[0].code !== "0") {
             throw new Error(`Failed to update record: ${data.messages[0].message}`);
@@ -151,7 +173,7 @@ function CustomerPortal() {
         ...(activeComponent === 'WorkOrderReport' && { workOrderData, message, edited, setEdited, userData, setUserData  }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
-        ...(activeComponent === 'CommunicationPortal' && { onSubmitMessage: handleSubmitMessage }),
+        ...(activeComponent === 'CommunicationPortal' && { userData, onSubmitMessage: handleSubmitMessage }),
         // Extend this pattern for other components as needed
     };
 
@@ -264,23 +286,6 @@ function CustomerPortal() {
 
   }
 
-  const getValue = (state, path) => {
-    // console.log('Initial State:', state);
-    try {
-        const pathParts = path.match(/([^\.\[\]]+|\[\d+\])/g); // This regex matches property names and array indices
-        return pathParts.reduce((acc, part) => {
-            const match = part.match(/\[(\d+)\]/); // Check if the part is an array index
-            if (match) {
-                return acc ? acc[parseInt(match[1])] : undefined; // Access the array index
-            }
-            return acc ? acc[part] : undefined; // Access the property
-        }, state);
-    } catch (error) {
-        console.error(`Error navigating state with key ${path}:`, error);
-        return ''; // Return a default/fallback value
-    }
-  }
-  
   //HANDLERS
   const handleWorkOrderChange = async (date) => {
     console.log('handleWorkOrderChange:', date);

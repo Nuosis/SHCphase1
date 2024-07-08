@@ -1,8 +1,8 @@
-import { useAuth } from '/Users/marcusswift/JavaScript Libraries/uber-clean/src/AuthContext.js';
 import { getValue } from '/Users/marcusswift/JavaScript Libraries/uber-clean/src/UserContext.js';
 import { createRecord } from '/Users/marcusswift/JavaScript Libraries/uber-clean/src/FileMaker/createRecord.js';
 
 const getSettings = (table, state, requiredValues) => {
+  console.log("getSettings...",{table,state,requiredValues})
   if (table === "dapiRecordDetails") {
     if (!requiredValues.fkID) {
       throw new Error("fkID is required");
@@ -10,27 +10,32 @@ const getSettings = (table, state, requiredValues) => {
     if (!requiredValues.type) {
       throw new Error("type is required");
     }
-    return {
-      params: {
-        fieldData: {
-          "_fkID": requiredValues.fkID,
-          "_orgID": getValue(state, "userData.orgData.orgInfo.metaData.ID"),
-          data: "{\"star\":\"\",\"description\":\"\"}",
-          type: requiredValues.type
-        }
-      },
-      layout: table
-    };
+    if(requiredValues.type==="rating"){
+      return {
+        params: {
+          fieldData: {
+            "_fkID": requiredValues.fkID,
+            "_orgID": getValue(state, "userData.orgData.orgInfo.metaData.ID"),
+            data: "{\"star\":\"\",\"description\":\"\"}",
+            type: requiredValues.type
+          }
+        },
+        layout: table
+      };
+  } else {
+    throw new Error(`Unsupported type: ${requiredValues.type}`);
+  }
   } else {
     throw new Error(`Unsupported table: ${table}`);
   }
 };
 
-const Create = async (table, state, requiredValues) => {
-  const { authState } = useAuth();
+const Create = async (token, table, state, requiredValues) => {
+  console.log("Create called ...")
   
   let settings;
   try {
+    console.log("calling getSettings ...")
     settings = getSettings(table, state, requiredValues); // returns params, layout {database} {server}
   } catch (error) {
     console.error("Error getting settings:", error.message);
@@ -42,7 +47,8 @@ const Create = async (table, state, requiredValues) => {
   
   let data;
   try {
-    data = await createRecord(authState.token, params, layout, true);
+    console.log("Calling CreateRecord ...")
+    data = await createRecord(token, params, layout, true);
   } catch (error) {
     console.error("Error creating record:", error.message);
     throw new Error(`Failed to create ${table} record in FileMaker: ${error.message}`);
@@ -54,7 +60,7 @@ const Create = async (table, state, requiredValues) => {
     throw new Error(errorMessage);
   }
 
-  return data.response.data;
+  return data;
 };
 
 export default Create;

@@ -56,7 +56,7 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
       if (response.ok) {
           const result = await response.json();
           setPopup({ show: true, message: 'Payment method added successfully!' });
-          onSubmit();  // Ensure onSubmit is defined and does something meaningful
+          onSubmit();
       } else {
           const error = await response.json();
           throw new Error(error.error || 'Failed to add payment method');

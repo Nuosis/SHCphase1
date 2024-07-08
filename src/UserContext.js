@@ -113,31 +113,50 @@ export const UserProvider = ({ children }) => {
         return newObject
     };
 
-    // function createMessagesObject(userObject, portalStem) {
-    //     const newObject = {};
-    //     userObject[0].portalData[portalStem].forEach(record => {
-    //         const { 
-    //             type = record[`${portalStem}::type`],
-    //             message = record[`${portalStem}::message`],
-    //             status = record[`${portalStem}::status`],
-    //             dapiRecordID = record[`${portalStem}::~dapiRecordID`], 
-    //             ID = record[`${portalStem}::__ID`]
-    //         } = record;
-    //         const details = {
-    //             message,
-    //             status,
-    //             ID,
-    //             dapiRecordID,
-    //         };
+    async function createConversationObject(userObject) {
+        //GET MEMEBRSHIP INFO FROM CONVO OBJ
+        const layout = "dapiConversationsObject"
+        const memberQuery = [
+            {"dapiConversationMembers::_memberID": userObject[0].fieldData["__ID"]}
+        ];
 
-    //         if (newObject[type]) {
-    //             newObject[type].push(details);
-    //         } else {
-    //             newObject[type] = [details];
-    //         }
-    //     })
-    //     return newObject
-    // };
+        const conversationObject = await readRecord(authState.token,{query: memberQuery},layout)
+        if(conversationObject.length===0){
+            throw new Error("Error on getting organization info from FileMaker")
+        }
+        const data = conversationObject.response.data
+        console.log("conversation data",{data},{conversationObject})
+        const conversations = [];
+        data.forEach(record => {
+          const { fieldData, portalData } = record;
+          
+          // Check if the record is active
+          if (fieldData.f_active !== 0 ) {  // Assuming f_active is a string
+              const conversation = {
+                  id: fieldData.__ID,
+                  recordID: fieldData["~dapiRecordID"],
+                  members: []
+              };
+  
+              // Extract members if they exist in portalData
+              if (portalData && portalData.dapiConversationMembers) {
+                  portalData.dapiConversationMembers.forEach(member => {
+                    if(member[`dapiConversationMembers::_memberID`] !==userObject[0].fieldData["__ID"]){
+                      conversation.members.push({
+                          memberId: member["dapiConversationMembers::_memberID"],
+                          memberName: member["dapiConversationMembers::memberName"]
+                      });
+                    }
+                  });
+              }
+  
+              // Push the filled conversation object into the conversations array
+              conversations.push(conversation);
+          }
+      });
+
+        return conversations
+    };
 
     function createPhonesObject(userObject, portalStem) {
         const newObject = {};
@@ -435,6 +454,7 @@ export const UserProvider = ({ children }) => {
             const userPhones = createPhonesObject(userObject,"dapiPartyPhone")
             //console.log({userPhones})
             const userRelated = createRelatedObject(userObject,"dapiPartyRelatedParties_partyID")
+            const userConversations = await createConversationObject(userObject)
 
             //ORG 
             //info
@@ -469,7 +489,7 @@ export const UserProvider = ({ children }) => {
             //Modules
 
 
-            const userData = {userInfo,userDetails,userAddress,userEmail,/*userMessages,*/userPhones,userRelated}
+            const userData = {userInfo,userDetails,userAddress,userEmail,userConversations,userPhones,userRelated}
             const orgData = {orgInfo,orgDetails,orgAddress,orgEmail,/*orgMessages,*/orgPhones,orgSellables,orgModules,orgRelated}
 
             setUserData({userData,orgData,billableData});

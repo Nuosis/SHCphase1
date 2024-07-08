@@ -170,10 +170,10 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                       value={emailDetail.email}
                   />
                   <CardDelete
-                    key={`email-${key}-${index}`}
+                    key={`email-delete-${key}-${index}`}
                     label={`${key.charAt(0).toUpperCase() + key.slice(1)}`}
                     type="email"
-                    id={`email-${key}-${index}`}
+                    id={`email-delete-${key}-${index}`}
                     childType="field"
                     state={userData}
                     setState={setUserData}
@@ -222,10 +222,10 @@ const InformationCard = ({onSubmitInformation, edited, setEdited}) => {
                   placeholder="(123) 456-7890"
               />
               <CardDelete
-                key={`tel-${key}-${index}`}
+                key={`tel-delete-${key}-${index}`}
                 label={`${key}`}
                 type="tel"
-                id={`phone-${key}-${index}`}
+                id={`phone-delete-${key}-${index}`}
                 childType="tel"
                 state={userData}
                 setState={setUserData}
