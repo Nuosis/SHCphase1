@@ -4,8 +4,8 @@ import { IconButton } from '../UI Elements/Button';
 
 const ChatWindow = ({ messages, onSendMessage, userData }) => {
   const [messageText, setMessageText] = useState('');
-  const socketRef = useRef(null);
-  
+  // const socketRef = useRef(null);
+  /*
   useEffect(() => {
     // Establish WebSocket connection
     socketRef.current = new WebSocket('wss://server.claritybusinesssolutions.ca:4343');
@@ -16,8 +16,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
 
     socketRef.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      // Assuming onSendMessage handles updating the messages state
-      onSendMessage(message);
+      console.log('socketMessage', message)
     };
 
     socketRef.current.onclose = () => {
@@ -27,7 +26,8 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
     return () => {
       socketRef.current.close();
     };
-  }, [onSendMessage]);
+  }, [onSendMessage]); 
+  */
 
   const getCurrentLocalTime = () => {
     const date = new Date();
@@ -56,14 +56,15 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
         name: userData.userData.userInfo.firstName,
         timeText: currentTime,
         chatText: messageText,
-        status: "sent",
+        status: "delivered",
         sendDirection: "out"
       }
       console.log({message})
-      /*
-      socketRef.current.send(JSON.stringify(message));
-      */
+
+      // socketRef.current.send(JSON.stringify(message));
+
       setMessageText('');
+      onSendMessage(message);
     }
   };
 

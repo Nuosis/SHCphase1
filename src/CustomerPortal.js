@@ -173,7 +173,7 @@ function CustomerPortal() {
         ...(activeComponent === 'WorkOrderReport' && { workOrderData, message, edited, setEdited, userData, setUserData  }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
-        ...(activeComponent === 'CommunicationPortal' && { userData, onSubmitMessage: handleSubmitMessage }),
+        ...(activeComponent === 'CommunicationPortal' && { userData }),
         // Extend this pattern for other components as needed
     };
 
@@ -341,11 +341,6 @@ function CustomerPortal() {
       console.log('Access Instructions:', instructions);
       // Process the access instructions here
   };
-
-  const handleSubmitMessage = (message) => {
-    console.log('Message:', message);
-    // Process the message here
-};
 
   const handleSubmitGenInstruct = (instructions) => {
       console.log('General Instructions:', instructions);
