@@ -1,5 +1,5 @@
-import { getValue } from '/Users/marcusswift/JavaScript Libraries/uber-clean/src/UserContext.js';
-import { createRecord } from '/Users/marcusswift/JavaScript Libraries/uber-clean/src/FileMaker/createRecord.js';
+import { getValue } from '../../UserContext.js';
+import { createRecord } from '../createRecord.js';
 
 const getSettings = (table, state, requiredValues) => {
   console.log("getSettings...",{table,state,requiredValues})
