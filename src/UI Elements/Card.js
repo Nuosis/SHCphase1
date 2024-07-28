@@ -62,7 +62,7 @@ const Card = ({
   const [isCreating, setIsCreating] = useState(false)
   const [newObj, setNewObj] = useState({label: "",value:""})
   const { authState } = useAuth();
-  const [popup, setPopup] = useState({ show: false, message: '' });
+  const [ popup, setPopup ] = useState({ show: false, message: '' });
   const { getUserData } = useUser();
 
   // Update isOpen state when persistOpen prop changes

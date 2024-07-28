@@ -165,7 +165,7 @@ function CustomerPortal() {
 
     // Define props here if they are dynamic based on the component
     const componentProps = {
-        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, onSubmitWorkOrder: handleSubmitWorkOrder, setEdited }),
+        ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, handleComponentSelect, setEdited }),
         ...(activeComponent === 'InformationCard' && { onSubmitInformation: handleSubmitInfo, edited, setEdited }),
         ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
         ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
@@ -254,7 +254,7 @@ function CustomerPortal() {
     // Conditional logic based on the active component
     if (activeComponent === 'WorkOrderCard') {
       footerProps = {
-        totalPrice: `Total Price: $${data.price.toFixed(2)}`,
+        // totalPrice: `Total Price: $${data.price.toFixed(2)}`,
         priceBreakdown: data.lineTotals,
         buttonText: 'Book Cleaning',
         buttonClickHandler: handleSubmitWorkOrder,
@@ -262,7 +262,7 @@ function CustomerPortal() {
       };
     } else if (activeComponent === 'WorkOrderReport') {
       footerProps = {
-        totalPrice: `Total Price: $${data.price.toFixed(2)}`,
+        // totalPrice: `Total Price: $${data.price.toFixed(2)}`,
         priceBreakdown: data.lineTotals,
         buttonText: 'Get Receipt',
         buttonClickHandler: handleGetReceipt,
@@ -493,7 +493,7 @@ function CustomerPortal() {
                 >
                   
                   <i className="iconoir-multiple-pages text-3xl"></i>
-                  <p className="pl-2">Previous Orders</p>
+                  <p className="pl-2">Work Orders</p>
                   <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                   </svg>

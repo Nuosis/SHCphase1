@@ -1,15 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '../UserContext.js';
-import HeaderCard from '../UI Elements/HeaderCard';
-import Totals from '../UI Elements/Totals.js';
 import Card from '../UI Elements/Card.js';
 import CardInput from '../UI Elements/CardInput.js';
-import { Accordion } from '../UI Elements/Accordion.js';
-import { IconButton } from '../UI Elements/Button';
 import { v4 as uuidv4 } from 'uuid';
+import {TextButton} from '../UI Elements/Button';
 
-const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, setEdited }) => {
+const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect, setEdited }) => {
   // console.log("WorkOrderCard rendering...");
+  // console.log({workOrderData});
+
   const { userData, setUserData } = useUser();
   const [cleaningDate, setCleaningDate] = useState(workOrderData.cleaningDate);
   const [rate, setRate] = useState(workOrderData.price / workOrderData.hours);
@@ -22,22 +21,18 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
     lawncare: false,
     carpetCleaning: false
   });
-  const [lineTotals, setLineTotals] = useState(workOrderData.lineTotals || [
-      { description: 'Home Cleaning', amount: workOrderData.price },
-      { description: 'GST', amount: workOrderData.price * 0.05 }
-  ]);
-  const headerTextStyle = {
-  };
+
+  const [lineTotals, setLineTotals] = useState(workOrderData.lineTotals);
 
   useEffect(() => {
-      // Update workOrderData.lineTotals whenever lineTotals changes
-      if (lineTotals !== workOrderData.lineTotals) {
-          setWorkOrderData(prev => ({
-              ...prev,
-              lineTotals: lineTotals
-          }));
-      }
-  }, [lineTotals, setWorkOrderData]);
+    if (lineTotals.length !== 0 && lineTotals !== workOrderData.lineTotals) {
+      console.log("workOrderLines updating...");
+      setWorkOrderData(prev => ({
+        ...prev,
+        lineTotals: lineTotals
+      }));
+    }
+  }, [lineTotals, workOrderData, setWorkOrderData]);
 
   const handleCleaningDateChange = useCallback((newDate) => {
     setCleaningDate(newDate);
@@ -77,18 +72,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
     const setTasks = taskType === 'high' ? setHighTasks : setLowTasks;
     setTasks(tasks => tasks.filter(task => task.id !== id));
   }, []);
-
-  const handleWOSubmit = useCallback((e) => {
-    e.preventDefault();
-    onSubmitWorkOrder({
-      ...workOrderData,
-      cleaningDate,
-      tasks: {
-        highPriority: highTasks.map(task => task.description),
-        lowPriority: lowTasks.map(task => task.description)
-      }
-    });
-  }, [onSubmitWorkOrder, workOrderData, cleaningDate, highTasks, lowTasks]);
 
   const handleEquipmentToggle = () => {
     setProvideEquipment(prevState => !prevState);
@@ -173,20 +156,24 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
   return (
     <>  
       <div className="flex flex-col items-center justify-center flex-grow">
+        {
+          //console.log("workOrderData at render:", workOrderData)
+        }
         <Card 
           headerText="Work Order"
-          headerHiddenText={{ Hours: workOrderData.lineTotals.length, Date: workOrderData.cleaningDate }}
+          headerHiddenText={{ Hours: workOrderData.hours, Date: workOrderData.cleaningDate }}
           state={workOrderData}
           setState={null}
           id="1"
-          persistOpen={false}
+
         >
           <CardInput 
             label="Hours" 
             type="text" 
             id="hours" 
             childType="input"
-            stateKey="lineTotals.length"
+            state={workOrderData}
+            stateKey="hours"
             setEdited={setEdited}
           />
           <CardInput 
@@ -194,13 +181,14 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
             type="date" 
             id="date" 
             childType="input"
+            state={workOrderData}
             stateKey="cleaningDate"
             setEdited={setEdited}
           />
         </Card>
         <Card 
         headerText="Cleaning Tasks"
-        headerHiddenText=""
+          headerHiddenText={{ToDo: "Ability to add item inline"}}
         state={workOrderData}
         setState={null}
         flex="col"
@@ -211,27 +199,50 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, onSubmitWorkOrder, set
             type="" 
             id="cleaningTasks" 
             childType="chit"
+            state={workOrderData}
             stateKey="tasks"
             setEdited={setEdited}
           />
         </Card>
-        {/*
-        <HeaderCard headerText="Information" headerTextStyle={headerTextStyle}>
-          <div className="flex flex-col justify-end gap-4 p-4 min-h-96">
-            {renderAccordion()}
-          </div>
-        </HeaderCard>
-        <HeaderCard headerText="Total" headerTextStyle={headerTextStyle}>
-          <form onSubmit={handleWOSubmit} className="flex flex-col justify-end gap-4 p-4 min-h-96">
-            <Totals totalLines={lineTotals} />
-            <IconButton
-              className="btn btn-primary"
-              type="submit"
-              text="Book Clean"
+        <Card 
+          headerText="Additional Details"
+          headerHiddenText={{ToDo: 'here we need to add icon grid for up-sell and !!includeEquipment!! This should be default open'}}
+          state={workOrderData}
+          setState={null}
+          id="3"
+        />
+        <Card 
+          headerText="Add Comment"
+          headerHiddenText={{ToDo: "Let's add a comment input"}}
+          state={workOrderData}
+          setState={null}
+          id="3"
+        />
+        <div className="flex">
+          <div class="flex flex-grow w-full gap-4 justify-items-start">
+            <TextButton
+                icon="AddCircle"
+                className="btn btn-primary self-end"
+                type="button"
+                text="My Pets"
+                onClick={() => handleComponentSelect('MyPets')}
             />
-          </form>
-        </HeaderCard>
-        */}
+            <TextButton
+                icon="AddCircle"
+                className="btn btn-primary self-end"
+                type="button"
+                text="General Instructions"
+                onClick={() => handleComponentSelect('GeneralInstructions')}
+            />
+            <TextButton
+                icon="AddCircle"
+                className="btn btn-primary self-end"
+                type="button"
+                text="Access Instructions"
+                onClick={() => handleComponentSelect('AccessCard')}
+            />
+          </div>
+        </div>
       </div>
     </>
   );

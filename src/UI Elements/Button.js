@@ -3,7 +3,7 @@ import {
     Group, HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help, FileDownload
 } from '@mui/icons-material';
 
-// If the imported icons are not directly referenced the pachage builde compplains
+// If the imported icons are not directly referenced the package build complains
 const icons = {
   Group, HighlightOff, Delete, Info, Pets, Key, ChecklistRtl, RadioButtonChecked, Payment, AddCircle, Edit, InsertDriveFile, CreditCard, CheckCircle, DeleteForever, Send, Person, Business, AccountCircle, Help, FileDownload
 };

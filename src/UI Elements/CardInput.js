@@ -38,6 +38,7 @@ const CardInput = (
     }
   ) => {
     // Local state to keep track of the input value
+    console.log("CardInput is rendering...",{state,stateKey,childType})
     const [inputValue, setInputValue] = useState(!value ? getValue(state, stateKey):value);
     const [popup, setPopup] = useState({ show: false, message: '' });
 
@@ -177,7 +178,15 @@ const CardInput = (
 
     if (childType === "chit") {
       const DeleteIcon = icons.Close;
-      const keys = stateKey.split('.').reduce((acc, key) => acc[key], state);
+      const keys = stateKey.split('.').reduce((acc, key) => {
+        if (acc && acc[key] !== undefined) {
+          return acc[key];
+        } else {
+          // Handle the case where the key does not exist
+          console.error(`Key ${key} does not exist in state ${state}`);
+          return undefined;
+        }
+      }, state);
 
       return (
         <>
@@ -245,7 +254,7 @@ const CardInput = (
           <input 
             type={type} 
             id={`${type}-${label}-${id}`}
-            className="max-w-full mt-2 min-h-40 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className="max-w-full mt-2 min-h-12 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
             value={!value ? getValue(state, stateKey):value}
             onBlur={handleStateChange} 
             onChange={handleLocalChange}

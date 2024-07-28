@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext.js';
-import { useWorkOrder, prepareWorkOrderData } from '../WorkOrderContext.js';
+import { useWorkOrder, /*prepareWorkOrderData*/ } from '../WorkOrderContext.js';
 import { useUser } from '../UserContext.js';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from '../Security/inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
@@ -41,6 +41,11 @@ function SignupPage() {
                     if (!data) {
                         throw new Error("Form data fetch failed");
                     }
+                    data.decoded.data.lineTotals = [
+                      { description: data.decoded.data.activity, amount: data.decoded.data.price, hours: data.decoded.data.hours },
+                      { description: 'GST', amount: data.decoded.data.price * 0.05 }
+                    ];
+                    console.log('decoded data',data)
                     setWorkOrderData(data.decoded.data);
                     setNewWorkOrderData(data.decoded.data); // Set newWorkOrderData as well
                 } catch (error) {
