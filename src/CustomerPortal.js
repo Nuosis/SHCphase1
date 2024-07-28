@@ -23,6 +23,13 @@ import { createRecord } from './FileMaker/createRecord.js';
 import { readRecord } from './FileMaker/readRecord.js'
 import { updateRecord } from './FileMaker/updateRecord.js'
 import { deleteRecord } from './FileMaker/deleteRecord.js'
+import { HouseOutlined } from '@mui/icons-material';
+
+// If the imported icons are not directly referenced the package build complains
+const icons = {
+  HouseOutlined,  
+};
+
 
 function CustomerPortal() {
   //STATE
@@ -435,6 +442,11 @@ function CustomerPortal() {
       console.log('Pets:', Pets);
       // Process the access instructions here
   };
+
+  const handleNewOrder = () => {
+    //window.location.href = 'https://www.selecthomecleaning.ca'; //render in same tab
+    window.open('https://www.selecthomecleaning.ca', '_blank'); //open in new tab
+  };
   
   // Handle the state of the open dropdown menues
   const togglePreviousOrders = () => {
@@ -483,6 +495,15 @@ function CustomerPortal() {
           </button>
           <div className={`w-full md:block md:w-auto  ${isMenubarOpen ? '' : 'hidden'}`} id="navbar-multi-level">
             <ul className="flex flex-col font-medium p-4 md:p-0 mx-6 my-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+              {/* NEW ORDER */}
+              <button
+                  id="newOrder"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  onClick={handleNewOrder}
+                >
+                <HouseOutlined style={{ fontSize: '2.1rem' }}></HouseOutlined>
+                <p className="pl-2">New Order</p>
+              </button>
               {/* HISTORY */}
               <li>
                 <button
