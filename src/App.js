@@ -4,6 +4,8 @@ import { AuthProvider } from './AuthContext'; // Import your AuthContext
 import { WorkOrderProvider } from './WorkOrderContext'; // Import your AuthContext
 import { UserProvider } from './UserContext';
 import SignupPage from './Modules/SignupPage';
+import CleanerPortal from './CleanerPortal'; // Your protected component
+import ProviderPortal from './ProviderPortal'; // Your protected component
 import CustomerPortal from './CustomerPortal'; // Your protected component
 import ProtectedRoute from './ProtectedRoute'; // Your ProtectedRoute component
 import { loadStripe } from '@stripe/stripe-js';
@@ -30,6 +32,16 @@ function App() {
                   <Elements stripe={stripePromise}>
                     <CustomerPortal />
                   </Elements>
+                </ProtectedRoute>
+              } />
+              <Route path="/cleaner-portal" element={
+                <ProtectedRoute>
+                  <CleanerPortal />
+                </ProtectedRoute>
+              } />
+              <Route path="/provider-portal" element={
+                <ProtectedRoute>
+                  <ProviderPortal />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<Navigate to="/login" />} />

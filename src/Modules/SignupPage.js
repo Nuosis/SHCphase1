@@ -20,6 +20,7 @@ function SignupPage() {
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
     const [formFields, setFormFields] = useState({
+        accountType: '',
         firstName: '',
         lastName: '',
         street: '',
@@ -34,27 +35,27 @@ function SignupPage() {
     const formToken = useQuery().get('form');
 
     useEffect(() => {
-        async function fetchAndSetFormData() {
-            if (formToken) {
-                try {
-                    const data = await detokenize(formToken);
-                    if (!data) {
-                        throw new Error("Form data fetch failed");
-                    }
-                    data.decoded.data.lineTotals = [
-                      { description: data.decoded.data.activity, amount: data.decoded.data.price, hours: data.decoded.data.hours },
-                      { description: 'GST', amount: data.decoded.data.price * 0.05 }
-                    ];
-                    console.log('decoded data',data)
-                    setWorkOrderData(data.decoded.data);
-                    setNewWorkOrderData(data.decoded.data); // Set newWorkOrderData as well
-                } catch (error) {
-                    console.error("Detokenization failed: ", error.message);
-                    setPopup({ show: true, message: "Failed to load form data. Please try again." });
-                }
-            }
-        }
-        fetchAndSetFormData();
+      async function fetchAndSetFormData() {
+          if (formToken) {
+              try {
+                  const data = await detokenize(formToken);
+                  if (!data) {
+                      throw new Error("Form data fetch failed");
+                  }
+                  data.decoded.data.lineTotals = [
+                    { description: data.decoded.data.activity, amount: data.decoded.data.price, hours: data.decoded.data.hours },
+                    { description: 'GST', amount: data.decoded.data.price * 0.05 }
+                  ];
+                  console.log('decoded data',data)
+                  setWorkOrderData(data.decoded.data);
+                  setNewWorkOrderData(data.decoded.data); // Set newWorkOrderData as well
+              } catch (error) {
+                  console.error("Detokenization failed: ", error.message);
+                  setPopup({ show: true, message: "Failed to load form data. Please try again." });
+              }
+          }
+      }
+      fetchAndSetFormData();
     }, [formToken, setWorkOrderData, setNewWorkOrderData]);
 
     async function detokenize(token) {
@@ -86,6 +87,7 @@ function SignupPage() {
     };
 
     const handleLoginSubmit = async (event) => {
+      console.log("login initialized ...")
         event.preventDefault();
     
         const email = formFields.email;
@@ -103,17 +105,23 @@ function SignupPage() {
             const filemakerId = responseData.filemakerId
             const userDataInit = await getUserData(filemakerId)
 
-            if (!userDataInit) {
+            if (userDataInit.success !== true) {
                 throw new Error("User data is not set. Check user context.");
             };
 
-            // if (workOrderData && Object.keys(workOrderData).length > 0) {
-            //     // setPopup({ show: true, message: "Login successful." });
-            // } else {
-            //     throw new Error("Work order data is not set. Check detokenization process.");
-            // };
-    
-            setTimeout(() => navigate('/customer-portal'), 500);
+            const type = userDataInit.userData.userDetails.partyType[0].data
+
+            if (type === 'Cleaner') {
+              console.log('User type is cleaner');              
+              setTimeout(() => navigate('/cleaner-portal'), 500);
+            } else if (type === 'Provider') {
+              console.log('User type is provider');              
+              setTimeout(() => navigate('/provider-portal'), 500);
+            } else {
+              console.log('User type is customer');
+              setTimeout(() => navigate('/customer-portal'), 500);
+            }
+            
         } catch (error) {
             console.error("Login or detokenization failed: ", error.message);
             setAuthState(prevState => ({
@@ -227,7 +235,7 @@ function SignupPage() {
         try {
             const params = {
                 fieldData: {
-                    data: "customer",
+                    data: sanitizedFormData.accountType,
                     type: "partyType",
                     "_fkID": partyID,
                 }
@@ -313,8 +321,8 @@ function SignupPage() {
         // update AuthUser with FileMakerID
         console.log("Updating Auth User")
         const data = {newFileMakerID: partyID, userToken: authState.userToken}
-        console.log({data})
-        try {        
+        console.log({authState})
+        try {       
             const response = await fetch(`${authState.server}/updateUser`, {
                 method: 'POST',
                 headers: {
@@ -340,11 +348,7 @@ function SignupPage() {
             return
         }
 
-        if (workOrderData && Object.keys(workOrderData).length > 0) {
-            setPopup({ show: true, message: "Account Created!" });
-        } else {
-            throw new Error("Work order data is not set. Check detokenization process.");
-        }
+        setPopup({ show: true, message: "Account Created!" });
         
         //redirect user to customer portal
         //setTimeout(() => {  // Delay navigation
@@ -382,7 +386,7 @@ function SignupPage() {
               )}
               {!isCreatingAccount ? (
                   <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg dark:bg-gray-700" onSubmit={handleLoginSubmit}>
-                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Welcome to Uber-Clean</h2>
+                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Welcome to Select Home Cleaning</h2>
                       {/* Login Form */}
                       <div className="form-control px-8 pb-4">
                           <label className="block text-sm font-bold text-primary dark:text-gray-400" htmlFor="email">
@@ -423,63 +427,82 @@ function SignupPage() {
                   </form>
               ) : (
                   <form className="max-w-md mx-auto bg-white shadow-lg rounded-lg dark:bg-gray-700" onSubmit={handleCreateAccount}>
-                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Create Your Account</h2>
+                    <h2 className="text-2xl font-bold max-w-md mx-auto text-primary dark:text-secondary my-8 px-8 pt-8">Create Your {formFields.accountType} Account</h2>
                       {/* Sign Up Form */}
-
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="firstName">
-                              <span className="label-text">First Name</span>
-                          </label>
-                          <input type="text" id="firstName" name="firstName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="First name..." onChange={handleChange} required/>
+                        <label className="label" htmlFor="accountType">
+                          <span className="label-text">Account Type</span>
+                        </label>
+                        <select
+                          id="accountType"
+                          name="accountType"
+                          className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+                          onChange={handleChange}
+                          value={formFields.accountType}
+                          required
+                        >
+                          <option value="" disabled>Account Type...</option>
+                          <option value="Customer">Customer</option>
+                          <option value="Cleaner">Cleaner</option>
+                          {/*<option value="Provider">Provider</option>*/}
+                        </select>
                       </div>
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="lastName">
-                              <span className="label-text">Last Name</span>
-                          </label>
-                          <input type="text" id="lastName" name="lastName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Last name..." onChange={handleChange} required/>
+                        <label className="label" htmlFor="firstName">
+                          <span className="label-text">First Name</span>
+                        </label>
+                        <input type="text" id="firstName" name="firstName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="First Name..." onChange={handleChange} autoComplete="given-name" required />
                       </div>
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="street">
-                              <span className="label-text">Street Address</span>
-                          </label>
-                          <input type="text" id="street" name="street" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"  placeholder="123 4th St..." onChange={handleChange} required/>
+                        <label className="label" htmlFor="lastName">
+                          <span className="label-text">Last Name</span>
+                        </label>
+                        <input type="text" id="lastName" name="lastName" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="Last Name..." onChange={handleChange} autoComplete="family-name" required />
+                      </div>
+                      <div className="form-control px-8 pb-4">
+                        <label className="label" htmlFor="street">
+                          <span className="label-text">Street Address</span>
+                        </label>
+                        <input type="text" id="street" name="street" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="123 4th St..." onChange={handleChange} autoComplete="street-address" required />
                       </div>
                       <div className="form-control px-8 flex flex-row">
-                          <label className="label w-3/5 gap-2" htmlFor="city">
-                              <span className="label-text">City</span>
-                          </label>
-                          <label className="label  w-2/5 gap-2" htmlFor="province">
-                              <span className="label-text">Province</span>
-                          </label>
+                        <label className="label w-3/5 gap-2" htmlFor="city">
+                          <span className="label-text">City</span>
+                        </label>
+                        <label className="label w-2/5 gap-2" htmlFor="province">
+                          <span className="label-text">Province</span>
+                        </label>
                       </div>
                       <div className="form-control px-8 pb-4 flex flex-row gap-2">
-                          <input type="text" id="city" name="city" className="input text-black input-bordered w-3/5 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" value={formFields.city}  onChange={handleChange} />
-                          <select 
-                                  id="province" 
-                                  name="province" 
-                                  className="input input-bordered w-2/5 text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" 
-                                  value={formFields.province} 
-                                  onChange={handleChange}
-                              >
-                                  {provinces.map((province) => (
-                                      <option key={province.code} value={province.code}>
-                                          {province.name}
-                                      </option>
-                                  ))}
-                          </select>
+                        <input type="text" id="city" name="city" className="input text-black input-bordered w-3/5 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" value={formFields.city} onChange={handleChange} autoComplete="address-level2" />
+                        <select
+                          id="province"
+                          name="province"
+                          className="input input-bordered w-2/5 text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+                          value={formFields.province}
+                          onChange={handleChange}
+                          autoComplete="address-level1"
+                        >
+                          {provinces.map((province) => (
+                            <option key={province.code} value={province.code}>
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="email">
-                              <span className="label-text">Email</span>
-                          </label>
-                          <input type="email" id="email" name="email" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="john@example.com" onChange={handleChange} required/>
+                        <label className="label" htmlFor="email">
+                          <span className="label-text">Email</span>
+                        </label>
+                        <input type="email" id="email" name="email" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="john@example.com" onChange={handleChange} autoComplete="email" required />
                       </div>
                       <div className="form-control px-8 pb-4">
-                          <label className="label" htmlFor="phoneNumber">
-                              <span className="label-text">Phone Number</span>
-                          </label>
-                          <input type="tel" id="phoneNumber" name="phoneNumber" className="inpu text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="(123) 456-7890" onChange={handleChange} required />
+                        <label className="label" htmlFor="phoneNumber">
+                          <span className="label-text">Phone Number</span>
+                        </label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" className="input text-black input-bordered w-full dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700" placeholder="(123) 456-7890" onChange={handleChange} autoComplete="tel" required />
                       </div>
+
                       <div className="form-control px-8 pb-4">
                           <label className="label" htmlFor="password">
                               <span className="label-text">Password</span>

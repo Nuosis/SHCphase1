@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
 import { useUser, getValue} from './UserContext.js';
-import { /*useNavigate, useLocation*/  } from 'react-router-dom';
 import Popup from './UI Elements/Popup.js'
 import Footer from './UI Elements/Footer';
 import AccessCard from './Modules/Access.js'
@@ -15,7 +14,6 @@ import CreditCardDetails from './Modules/CreditCardDetails.js';
 import MyPets from './Pets/Pet.js';
 import CommunicationPortal from './Modules/Commiunication.js';
 import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
-// import { Info, Pets, Key, ChecklistRtl, /*RadioButtonChecked,*/ Payment } from '@mui/icons-material';
 import CreateSale from './Sales/CreateSale.js'
 import Create from './FileMaker/CRUD/Create.js'
 import { callStripeApi } from './Sales/stripe.js'
@@ -177,7 +175,7 @@ function CustomerPortal() {
         ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
         ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
         ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
-        ...(activeComponent === 'WorkOrderReport' && { workOrderData, message, edited, setEdited, userData, setUserData  }),
+        ...(activeComponent === 'WorkOrderReport' && { workOrderData, setMessage, edited, setEdited, userData, setUserData  }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
         ...(activeComponent === 'CommunicationPortal' && { userData }),
@@ -289,7 +287,7 @@ function CustomerPortal() {
     return <Footer {...footerProps} />;
   }
 
-  const message = (org) =>{
+  const setMessage = (org) =>{
 
   }
 
@@ -453,11 +451,14 @@ function CustomerPortal() {
     setIsPreviousOrdersOpen(!isPreviousOrdersOpen);
     setIsAccountNavbarOpen(false);
   };
+
   const toggleAccountNavbar = () => {
     setIsAccountNavbarOpen(!isAccountNavbarOpen);
     setIsPreviousOrdersOpen(false);
   };
+
   const toggleMenubar = () => setIsMenubarOpen(!isMenubarOpen);
+
   document.addEventListener('click', function (event) {
     if (event.target.closest('nav')){
       // Click on nav do nothing

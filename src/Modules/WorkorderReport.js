@@ -33,7 +33,7 @@ const submitRatingToGMB = async (rating) => {
 // TODO: cancel clean (if Now>24hrs before clean)
 // TODO: reschedule clean (if Now is 24hrs prior to clean, 50% coupon)
 
-const WorkOrderReport = ({ workOrderData, message, edited, setEdited, userData, setUserData }) => {
+const WorkOrderReport = ({ workOrderData, setMessage, edited, setEdited, userData, setUserData }) => {
   // console.log("WorkOrderCard rendering...");
 
   const handleReceiptRequest = () => {
@@ -107,14 +107,14 @@ const WorkOrderReport = ({ workOrderData, message, edited, setEdited, userData, 
           <IconButton
             icon="Person"
             className="btn btn-outline dark:btn-outline dark:text-gray-500"
-            onClick={message("cleaner")}
+            onClick={setMessage("cleaner")}
             type="Button"
             text="Message Cleaner"
           />
           <IconButton
             icon="Business"
             className="btn btn-outline dark:btn-outline dark:text-gray-500"
-            onClick={message("company")}
+            onClick={setMessage("company")}
             type="Button"
             text="Message Select"
           />
