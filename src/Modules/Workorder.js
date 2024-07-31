@@ -35,15 +35,15 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     },
     {
       "id": 3,
-      "name": "Request Maintenence Quote",
+      "name": "Request Maintenance Quote",
       "price": 0,
       "imagePath": "equipment-tools.png"
     }
   ];
 
   const [lineTotals, setLineTotals] = useState(workOrderData.lineTotals);
-
   const inputRefs = useRef({});  // Use refs to keep track of input elements
+  const [focusedTaskId, setFocusedTaskId] = useState(null); // State to track the newly added task's id
 
   const handleTaskChange = useCallback((id, description, taskType) => {
     const setTasks = taskType === 'high' ? setHighTasks : setLowTasks;
@@ -62,6 +62,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     } else {
       setLowTasks(tasks => [...tasks, newTask]);
     }
+    setFocusedTaskId(newTask.id); // Set the id of the newly added task to focus
   }, []);
 
   // Function to check if equipment is selected
@@ -123,45 +124,52 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   }, [setWorkOrderData]);
 
   useEffect(() => {
-    const focusedId = inputRefs.current.focusedId;
-    if (focusedId && inputRefs.current[focusedId]) {
-      inputRefs.current[focusedId].focus();
+    if (focusedTaskId && inputRefs.current[focusedTaskId]) {
+      inputRefs.current[focusedTaskId].focus();
     }
-  });
+  }, [focusedTaskId]);
 
   const handleFocus = (id) => {
     inputRefs.current.focusedId = id;
+    setFocusedTaskId(id);
   };
 
-  const TaskEditor = ({ tasks, taskType }) => (
-    <div className="space-y-4 mr-8">
-      <div className="text-lg">
-        {taskType === 'high' ? 'High Priority Tasks' : 'Low Priority Tasks'}
-      </div>
-      {tasks.map((task) => (
-        <div key={task.id} className="flex items-center space-x-3">
-          <input
-            ref={(input) => inputRefs.current[task.id] = input}
-            type="text"
-            className="flex-grow block w-full px-3 py-2 bg-white text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            value={task.description}
-            onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
-            onFocus={() => handleFocus(task.id)}
-          />
-          <button
-            type="button"
-            className="btn dark:btn-outline dark:text-gray-500 btn-sm ml-4 p-2 min-h-10"
-            onClick={() => handleRemoveTask(task.id, taskType)}
-          >
-            <Delete/>
-          </button>
+  const TaskEditor = ({ tasks, taskType }) => {
+    return (
+      <div className="space-y-4 mr-8">
+        <div className="text-lg">
+          {taskType === 'high' ? 'High Priority Tasks' : 'Low Priority Tasks'}
         </div>
-      ))}
-      <button type="button" className="bg-primary text-white px-4 py-2 inline-flex rounded-md " style={{"margin-top":"2rem"}} onClick={() => handleAddTask(taskType)}>
-        <AddCircle/>&nbsp;&nbsp;Add Task
-      </button>
-    </div>
-  );
+        {tasks.map((task) => (
+          <div key={task.id} className="flex items-center space-x-3">
+            <input
+              ref={(input) => {
+                inputRefs.current[task.id] = input;
+                if (focusedTaskId === task.id) {
+                  input?.focus();
+                }
+              }}
+              type="text"
+              className="flex-grow block w-full px-3 py-2 bg-white text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={task.description}
+              onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
+              onFocus={() => handleFocus(task.id)}
+            />
+            <button
+              type="button"
+              className="btn animate-none dark:btn-outline dark:text-gray-500 btn-sm ml-4 p-2 min-h-10"
+              onClick={() => handleRemoveTask(task.id, taskType)}
+            >
+              <Delete/>
+            </button>
+          </div>
+        ))}
+        <button type="button" className="bg-primary text-white px-4 py-2 inline-flex rounded-md" style={{"margin-top":"2rem"}} onClick={() => handleAddTask(taskType)}>
+          <AddCircle/>&nbsp;&nbsp;Add Task
+        </button>
+      </div>
+    );
+  };
 
   const EquipmentEditor = ({ provideEquipment }) => (
     <div className="space-y-4">
@@ -170,11 +178,12 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
           let isSelected = isEquipmentSelected(workOrderData, equipment);
           return (
             <a
-              className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''}`}
+              key={equipment.id}
+              className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary text-black hover:cursor-pointer dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''}`}
               onClick={() => handleSelectEquipment(workOrderData, equipment)}
             >
-              <img src={equipment.imagePath} className="w-12" alt={equipment.name} />
-              <label className="px-2">
+              <img src={equipment.imagePath} className="w-12 hover:cursor-pointer" alt={equipment.name} />
+              <label className="px-2 hover:cursor-pointer">
               {equipment.name}
               { equipment.price > 0 ? <em> (+ ${equipment.price})</em> : '' }
               </label>

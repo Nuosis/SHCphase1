@@ -74,7 +74,7 @@ const Card = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg max-w-screen-md w-full mb-4 overflow-hidden">
+    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg max-w-screen-md w-full mb-6 overflow-hidden">
       {popup.show && (
         <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
           <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
@@ -98,7 +98,7 @@ const Card = ({
           </span>
         )}
       </h1>
-      <form id={`accordion-collapse-body-${id}`} className={`px-8 pt-4 pb-8 ${isOpen ? '' : 'hidden'}`}>
+      <form id={`accordion-collapse-body-${id}`} className={`px-8 pt-0 pb-8 ${isOpen ? '' : 'hidden'}`}>
         <div className={`flex flex-${flex}`}>
           {React.Children.map(children, (child) =>
             React.cloneElement(child)
