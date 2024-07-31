@@ -34,7 +34,9 @@ const CardInput = (
       setEdited,
       onNew,
       value,
-      placeholder
+      placeholder,
+      inputClass,
+      parentClass
     }
   ) => {
     // Local state to keep track of the input value
@@ -219,7 +221,7 @@ const CardInput = (
       );
     } else if(childType==="iconGrid"){
       return (
-        <div className="mr-8">
+        <div className={parentClass}>
           <label htmlFor={`${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
@@ -234,7 +236,7 @@ const CardInput = (
       const rate = getValue(state,stateKey)
       // console.log(rate)
       return (
-        <div className="">
+        <div className={parentClass}>
           <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <StarRating 
             rating={rate}
@@ -244,7 +246,7 @@ const CardInput = (
       );
     } else if(childType==="input"){
       return (
-        <div className="">
+        <div className={parentClass}>
           {popup.show && (
             <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
@@ -254,7 +256,7 @@ const CardInput = (
           <input 
             type={type} 
             id={`${type}-${label}-${id}`}
-            className="max-w-full mt-2 min-h-12 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className={"max-w-full mt-2 min-h-12 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded " + inputClass }
             value={!value ? getValue(state, stateKey):value}
             onBlur={handleStateChange} 
             onChange={handleLocalChange}
@@ -263,19 +265,19 @@ const CardInput = (
       );
     } else if(childType==="pdf"){
       return (
-        <div className="">
+        <div className={parentClass}>
           <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
           <input 
             type={type} 
             id={`${type}-${label}-${id}`} 
-            className="max-w-20 mt-2 p-2 border rounded text-black " 
+            className={"max-w-20 mt-2 p-2 border rounded text-black " + inputClass }
             onClick={handlePDF_Click} 
           />
         </div>
       );
     } else if(childType==="textarea"){
       return (
-        <div className="">
+        <div className={parentClass}>
           {popup.show && (
             <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
                 <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
@@ -284,7 +286,7 @@ const CardInput = (
           <label htmlFor={`label-${type}-${label}-${id}`} className="block text-gray-400 mb-2 font-medium">{toTitleCase(label)}</label>
           <input 
             id={`${type}-${label}-${id}`} 
-            className="block mt-2 p-2 input input-bordered dark:bg-gray-600 text-black  dark:text-gray-400 dark:border-gray-700 border rounded w-full"
+            className={"block mt-2 p-2 input input-bordered dark:bg-gray-600 text-black  dark:text-gray-400 dark:border-gray-700 border rounded " + inputClass }
             placeholder={placeholder}
             value={inputValue}
             onBlur={handleStateChange} 
@@ -294,7 +296,7 @@ const CardInput = (
       );
     } else if(childType==="tel"){
       return (
-        <div className="grow">
+        <div className={parentClass}>
           {/* Overlay and POPUP */}
           {popup.show && (
             <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
@@ -303,21 +305,19 @@ const CardInput = (
           )}
           <label htmlFor={`label-${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
           {onNew ? (
-          <div className="flex flex-row">
             <input 
             type={type} 
             id={`${type}-${label}-${id}`} 
-            className="mt-2 p-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+            className={"mt-2 p-2 mb-2 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded " + inputClass }
             value={inputValue}
             onBlur={handleTelBlur} 
             onChange={handleLocalChange}
             />
-          </div>
           ) : (
             <input 
               type={type} 
               id={`${type}-${label}-${id}`} 
-              className="mt-2 p-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
+              className={"mt-2 p-2 mb-2 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded " + inputClass } 
               value={inputValue}
               onBlur={handleStateChange} 
               onChange={handleLocalChange}
@@ -327,7 +327,7 @@ const CardInput = (
       );
     } else {
     return (
-      <div className="grow">
+      <div className={parentClass}>
         {/* Overlay and POPUP */}
         {popup.show && (
           <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
@@ -335,29 +335,15 @@ const CardInput = (
           </div>
         )}
         <label htmlFor={`label-${type}-${label}-${id}`} className="block text-sm font-bold text-primary dark:text-gray-400">{toTitleCase(label)}</label>
-        {onNew ? (
-          <div className="flex flex-row">
-            <input 
-            type={type} 
-            id={id}
-            key={key}
-            className="p-2 mt-2 mb-8 w-11/12 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
-            value={inputValue}
-            onBlur={handleStateChange} 
-            onChange={handleLocalChange}
-            />
-          </div>
-          ) : (
-            <input 
-              type={type} 
-              id={id}
-              key={key}
-              className="p-2 mt-2 mb-8 w-full input input-bordered text-black  dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded" 
-              value={inputValue}
-              onBlur={handleStateChange} 
-              onChange={handleLocalChange}
-            />
-        )}
+        <input 
+          type={type} 
+          id={id}
+          key={key}
+          className={"p-2 mt-2 mb-8 input input-bordered text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border rounded " + inputClass }
+          value={inputValue}
+          onBlur={handleStateChange} 
+          onChange={handleLocalChange}
+        />
       </div>
   )};
 };

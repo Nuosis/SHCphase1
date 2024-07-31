@@ -583,7 +583,7 @@ function CustomerPortal() {
         </div>
       )}
       {/* BODY */}
-      <div className="flex-grow">
+      <div className="flex-grow flex-col flex">
         {/* BANNER */}
         <div 
           className="h-[15vw] mb-8 flex items-top shadow-lg header-image"

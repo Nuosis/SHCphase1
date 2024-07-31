@@ -68,7 +68,7 @@ const CreditCardForm = ({ token, userData, onSubmit }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-grow">
+    <div className="flex flex-col items-start justify-center flex-grow">
       {popup.show && (
         <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
           <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />

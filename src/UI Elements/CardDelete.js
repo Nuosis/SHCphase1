@@ -81,7 +81,7 @@ const CardDelete = (
 
   return (
     <div className="mt-8">
-        <a className="btn dark:btn-outline dark:text-gray-500 btn-sm ml-4" onClick={handleDeleteEvent}>
+        <a className="btn dark:btn-outline dark:text-gray-500 btn-sm ml-4 p-2 min-h-10" onClick={handleDeleteEvent}>
           <Delete/>
         </a>
     </div>

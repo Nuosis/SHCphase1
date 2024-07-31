@@ -23,24 +23,26 @@ const AccessCard = ({json, onSubmitAccess}) => {
     };
 
     return (
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <HeaderCard headerText="Access" headerTextStyle={headerTextStyle}>
-            <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end min-h-96">
-                <textarea 
-                    className="textarea text-black textarea-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 w-full flex-grow overflow-y-auto" 
-                    placeholder="Type your access instructions here..."
-                    value={accessInstructions}
-                    onChange={(e) => setAccessInstructions(e.target.value)}
-                />
-                <IconButton
-                    icon="CheckCircle"
-                    className="btn btn-primary my-4"
-                    type="submit"
-                    text="Update"
-                />
-            </form>
-        </HeaderCard>
-      </div>
+        <div className="flex-grow items-stretch justify-center flex-grow">
+            <div className="flex flex-col items-center justify-center flex-grow">
+                <HeaderCard headerText="Access" headerTextStyle={headerTextStyle}>
+                    <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end min-h-96">
+                        <textarea 
+                            className="textarea text-black textarea-bordered dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 w-full flex-grow overflow-y-auto" 
+                            placeholder="Type your access instructions here..."
+                            value={accessInstructions}
+                            onChange={(e) => setAccessInstructions(e.target.value)}
+                        />
+                        <IconButton
+                            icon="CheckCircle"
+                            className="btn btn-primary my-4"
+                            type="submit"
+                            text="Update"
+                        />
+                    </form>
+                </HeaderCard>
+            </div>\
+        </div>
     );
 };
 

@@ -220,7 +220,7 @@ const CommunicationPortal = ({userData}) => {
   //VARIABLES
 
   return(
-    <div id="communication card" className="flex flex-col items-center justify-center flex-grow">
+    <div id="communication card" className="flex flex-grow items-stretch justify-center flex-grow">
       <HeaderCard headerText="Message Centre">
         <div id="communication panes wrapper" className="flex flex-row gap-4 my-4">
           <div id="conversation icons" className="flex flex-col gap-4 mt-2 p-2 w-1/12 items-center">

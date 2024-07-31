@@ -70,7 +70,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 overflow-y-scroll" style={{"max-height":"40vh"}}>
         {messages.map((message, index) => (
           <ChatBubble 
             key={index}
