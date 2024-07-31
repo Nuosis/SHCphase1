@@ -23,20 +23,20 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   const equipmentOptions = [
     {
       "id": 1,
-      "name": "Valcume Cleaner",
+      "name": "Cleaner Provides Equipment",
       "price": 35,
       "imagePath": "equipment-vacuum.png"
     },
     {
       "id": 2,
-      "name": "Washing Machine",
-      "price": 48,
+      "name": "Request Carpet Clean Quote",
+      "price": 0,
       "imagePath": "equipment-washing-machine.png"
     },
     {
       "id": 3,
-      "name": "Tools",
-      "price": 12,
+      "name": "Request Maintenence Quote",
+      "price": 0,
       "imagePath": "equipment-tools.png"
     }
   ];
@@ -115,6 +115,13 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     }));
   }, [setWorkOrderData]);
 
+  const setComment = useCallback((value) => {
+    setWorkOrderData(prevData => ({
+      ...prevData,
+      comment: value
+    }));
+  }, [setWorkOrderData]);
+
   useEffect(() => {
     const focusedId = inputRefs.current.focusedId;
     if (focusedId && inputRefs.current[focusedId]) {
@@ -158,9 +165,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
 
   const EquipmentEditor = ({ provideEquipment }) => (
     <div className="space-y-4">
-      <div className="text-lg">
-        Cleaner to provide:
-      </div>
       <div className="flex flex-wrap gap-3">
         {equipmentOptions.map((equipment) => {
           let isSelected = isEquipmentSelected(workOrderData, equipment);
@@ -169,14 +173,18 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
               className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''}`}
               onClick={() => handleSelectEquipment(workOrderData, equipment)}
             >
-              <img src={equipment.imagePath} className="w-12 mr-2" alt={equipment.name} />
-              <label>{equipment.name} <em>(+ ${equipment.price} )</em></label>
+              <img src={equipment.imagePath} className="w-12" alt={equipment.name} />
+              <label className="px-2">
+              {equipment.name}
+              { equipment.price > 0 ? <em> (+ ${equipment.price})</em> : '' }
+              </label>
             </a>
           );
         })}
       </div>
     </div>
   );
+
 
   console.log('workOrderData', workOrderData);
 
@@ -245,11 +253,20 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     {
       id: "4",
       headerText: "Add Comment",
-      headerHiddenText: { ToDo: "Let's add a comment input" },
+      headerHiddenText: { 'Comment': workOrderData.comment ? 'Provided' : 'No Comment' },
       flex: "row",
       state: workOrderData,
       setState: setWorkOrderData,
-      children: <></>,
+      children: (
+      <>
+        <textarea 
+            className="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
+            placeholder="Add comment..."
+            value={workOrderData.comment}
+            onChange={(e) => setComment(e.target.value)}
+        />
+      </>
+      ),
     }
   ];
 
