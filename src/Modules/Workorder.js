@@ -128,7 +128,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
 
   const TaskEditor = ({ tasks, taskType }) => (
     <div className="space-y-4 mr-8">
-      <div className="text-lg font-bold">
+      <div className="text-lg">
         {taskType === 'high' ? 'High Priority Tasks' : 'Low Priority Tasks'}
       </div>
       {tasks.map((task) => (
@@ -136,7 +136,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
           <input
             ref={(input) => inputRefs.current[task.id] = input}
             type="text"
-            className="flex-grow block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            className="flex-grow block w-full px-3 py-2 bg-white text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             value={task.description}
             onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
             onFocus={() => handleFocus(task.id)}
@@ -157,16 +157,16 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   );
 
   const EquipmentEditor = ({ provideEquipment }) => (
-    <div className="space-y-4 mr-8">
-      <div className="text-lg font-bold">
-        Select Equipment
+    <div className="space-y-4">
+      <div className="text-lg">
+        Cleaner to provide:
       </div>
       <div className="flex flex-wrap gap-3">
         {equipmentOptions.map((equipment) => {
           let isSelected = isEquipmentSelected(workOrderData, equipment);
           return (
             <a
-              className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary hover:text-white ${isSelected ? 'bg-primary text-white' : ''}`}
+              className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''}`}
               onClick={() => handleSelectEquipment(workOrderData, equipment)}
             >
               <img src={equipment.imagePath} className="w-12 mr-2" alt={equipment.name} />
