@@ -231,7 +231,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     {
       id: "3",
       headerText: "Additional Details",
-      headerHiddenText: { ToDo: 'here we need to add icon grid for up-sell' },
+      headerHiddenText: { 'Selected Items': workOrderData.lineTotals.length - 2 },
       flex: "row",
       state: workOrderData,
       setState: setWorkOrderData,
