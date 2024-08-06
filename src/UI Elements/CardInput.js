@@ -41,6 +41,7 @@ const CardInput = (
     console.log("CardInput is rendering...",{state,stateKey,childType})
     const [inputValue, setInputValue] = useState(!value ? getValue(state, stateKey):value);
     const [popup, setPopup] = useState({ show: false, message: '' });
+    const [file, setFile] = useState(null);
 
     const handleLocalChange = (e) => {
       console.log("handleLocalChange", e.target.value)
@@ -153,6 +154,21 @@ const CardInput = (
         e.target.blur();
       }
     };
+
+    const handleFileChange = (event) => {
+      const selectedFile = event.target.files[0];
+      setFile(selectedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result.split(',')[1];
+        // Here you can directly handle the base64 data within the CardInput component
+        console.log('Base64 data:', base64data);
+        // setBase64Data(base64data); // If you want to store it in the state
+        // Additional logic to handle the file data, such as uploading it to FileMaker
+      };
+      reader.readAsDataURL(selectedFile);
+    };
+    
 
     const handlePDF_Click = (e) => {console.log("pdf click")}
     
@@ -271,6 +287,19 @@ const CardInput = (
             className="max-w-20 mt-2 p-2 border rounded text-black " 
             onClick={handlePDF_Click} 
           />
+        </div>
+      );
+    } else if (childType === "fileUpload") {
+      return (
+        <div>
+          <label htmlFor={id} className="block text-sm font-bold text-primary dark:text-gray-400">{label}</label>
+          <input
+            type="file"
+            id={`${type}-${label}-${id}`}
+            className="max-w-full mt-2 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded"
+            onChange={handleFileChange}
+          />
+          {file && <p>{file.name}</p>}
         </div>
       );
     } else if(childType==="textarea"){

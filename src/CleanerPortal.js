@@ -164,7 +164,8 @@ function CleanerPortal() {
   
     // Dynamic component map
     const componentMap = {
-        MyPets: MyPets,
+        // MyPets: MyPets,
+        // cleanerConsole
         AccessCard: AccessCard,
         GeneralInstructions: GeneralInstructions,
         InformationCard: InformationCard,
@@ -186,7 +187,7 @@ function CleanerPortal() {
           ...(activeComponent === 'InformationCard' && {}),
           ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions }),
           ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions}),
-          ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet}),
+          // ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet}),
           ...(activeComponent === 'WorkOrderReport' && { workOrderData, setMessage, userData, setUserData  }),
           ...(activeComponent === 'CommunicationPortal' && { userData }),
           // Extend this pattern for other components as needed
