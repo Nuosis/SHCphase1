@@ -24,24 +24,26 @@ const GeneralInstructions = ({json, onSubmitGenInstruct}) => {
     };
 
     return (
-      <div className="flex flex-col items-center justify-center flex-grow">
-        <HeaderCard headerText="General Instructions" headerTextStyle={headerTextStyle}>
-            <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 min-h-96 mb-4">
-                <textarea 
-                    className="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
-                    placeholder="Type any additional instructions here. These will be sent to the cleaner for every clean. Your preferences, (scent, areas of focus, etc) are really helpful here."
-                    value={generalInstructions}
-                    onChange={(e) => setGeneralInstructions(e.target.value)}
-                />
-                <IconButton
-                    icon="CheckCircle"
-                    className="btn btn-primary"
-                    type="submit"
-                    text="Update"
-                />
-            </form>
-        </HeaderCard>
-      </div>
+        <div className="flex-grow items-stretch justify-center flex-grow">
+            <div className="flex flex-col items-center justify-center flex-grow">
+                <HeaderCard headerText="General Instructions" headerTextStyle={headerTextStyle}>
+                    <form onSubmit={handleAccessSubmit} className="flex flex-col justify-end gap-4 min-h-96 mb-4">
+                        <textarea 
+                            className="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
+                            placeholder="Type any additional instructions here. These will be sent to the cleaner for every clean. Your preferences, (scent, areas of focus, etc) are really helpful here."
+                            value={generalInstructions}
+                            onChange={(e) => setGeneralInstructions(e.target.value)}
+                        />
+                        <IconButton
+                            icon="CheckCircle"
+                            className="btn btn-primary"
+                            type="submit"
+                            text="Update"
+                        />
+                    </form>
+                </HeaderCard>
+            </div>
+        </div>
     );
 };
 
