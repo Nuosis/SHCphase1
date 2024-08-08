@@ -22,6 +22,7 @@ import { readRecord } from './FileMaker/readRecord.js'
 import { updateRecord } from './FileMaker/updateRecord.js'
 import { deleteRecord } from './FileMaker/deleteRecord.js'
 import { HouseOutlined } from '@mui/icons-material';
+import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
 
 // If the imported icons are not directly referenced the package build complains
 const icons = {
@@ -479,7 +480,7 @@ function CustomerPortal() {
       <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:border-gray-700 sticky top-0" style={{ borderBottom: "1px solid rgba(156,163,175,0.25)" }}>
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
           <a href="https://selecthomecleaning.ca" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-            <img src="select-home-cleaning.png" className="max-h-12" alt="Select Home Cleaning" />
+            <img src={SHC} className="max-h-12" alt="Select Home Cleaning" />
           </a>
           <button
             data-collapse-toggle="navbar-multi-level"
