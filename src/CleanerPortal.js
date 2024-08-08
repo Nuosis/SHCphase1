@@ -188,7 +188,7 @@ function CleanerPortal() {
           ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions }),
           ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions}),
           // ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet}),
-          ...(activeComponent === 'WorkOrderReport' && { workOrderData, setMessage, userData, setUserData  }),
+          // ...(activeComponent === 'WorkOrderReport' && { workOrderData, setMessage, userData, setUserData  }),
           ...(activeComponent === 'CommunicationPortal' && { userData }),
           // Extend this pattern for other components as needed
       };
