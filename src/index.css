@@ -184,3 +184,10 @@
     background-position: 50% 60%;
   }
 }
+
+/* Custom styles to adjust the spin button positioning */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  position: relative;
+  left: -0.8rem;
+}

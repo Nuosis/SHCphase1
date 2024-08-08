@@ -9,7 +9,6 @@ import { Delete, AddCircle } from '@mui/icons-material';
 const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect, setEdited }) => {
   const { userData, setUserData } = useUser();
   const [cleaningDate, setCleaningDate] = useState(workOrderData.cleaningDate);
-  const [rate, setRate] = useState(workOrderData.price / workOrderData.hours);
   const [highTasks, setHighTasks] = useState(workOrderData.tasks.highPriority.map(task => ({ id: uuidv4(), description: task })));
   const [lowTasks, setLowTasks] = useState(workOrderData.tasks.lowPriority.map(task => ({ id: uuidv4(), description: task })));
   const [provideEquipment, setProvideEquipment] = useState(() => {
@@ -22,24 +21,32 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
 
   const equipmentOptions = [
     {
-      "id": 1,
-      "name": "Cleaner Provides Equipment",
-      "price": 35,
-      "imagePath": "equipment-vacuum.png"
+      id: 1,
+      name: "Cleaner Provides Equipment",
+      price: 10,
+      priceType: "hour",
+      priceDescription: "+ $10 per hour",
+      imagePath: "vacume.svg"
     },
     {
-      "id": 2,
-      "name": "Request Carpet Clean Quote",
-      "price": 0,
-      "imagePath": "equipment-washing-machine.png"
+      id: 2,
+      name: "Request Carpet Clean Quote",
+      price: 0,
+      priceDescription: "",
+      priceType: "fixed",
+      imagePath: "carpet-clean.svg"
     },
     {
-      "id": 3,
-      "name": "Request Maintenance Quote",
-      "price": 0,
-      "imagePath": "equipment-tools.png"
+      id: 3,
+      name: "Request Maintenance Quote",
+      price: 0,
+      priceDescription: "",
+      priceType: "fixed",
+      imagePath: "repair.svg"
     }
   ];
+
+  const cleaningHourPrice = 80;
 
   const [lineTotals, setLineTotals] = useState(workOrderData.lineTotals);
   const inputRefs = useRef({});  // Use refs to keep track of input elements
@@ -83,8 +90,8 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
       // If equipment is not found, add it to lineTotals
       newLineTotals.push({
         description: equipment.name,
-        amount: equipment.price,
-        hours: null // or specify hours if relevant for the equipment
+        amount: equipment.priceType === "hour" ? equipment.price * workOrderData.hours : equipment.price,
+        perHour: equipment.price
       });
     }
   
@@ -116,12 +123,55 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     }));
   }, [setWorkOrderData]);
 
-  const setComment = useCallback((value) => {
-    setWorkOrderData(prevData => ({
-      ...prevData,
-      comment: value
-    }));
-  }, [setWorkOrderData]);
+  useEffect(() => {
+    const updateLineTotals = () => {
+      // Create a copy of the current line totals
+      let newLineTotals = [...workOrderData.lineTotals];
+  
+      // Reset the price to 0 before recalculating
+      let newPrice = 0;
+  
+      newLineTotals.forEach(function(line) {
+        console.log(line);
+        if (line.description === "Home Cleaning") {
+          // Update Home Cleaning amount
+          line.amount = cleaningHourPrice * workOrderData.hours;
+        } else if (line.perHour) {
+          line.amount = line.perHour * workOrderData.hours;
+        } else {
+        }
+      });
+  
+      // Calculate subtotal excluding GST
+      const subtotal = newLineTotals.reduce((total, item) => item.description !== "GST" ? total + item.amount : total, 0);
+  
+      // Handle GST calculation
+      let gstItem = newLineTotals.find(item => item.description === "GST");
+      if (gstItem) {
+        // Recalculate GST based on the new subtotal
+        gstItem.amount = subtotal * 0.05;
+      } else {
+        // Add GST line item if it doesn't exist
+        gstItem = {
+          description: "GST",
+          amount: subtotal * 0.05
+        };
+        newLineTotals.push(gstItem);
+      }
+  
+      // Calculate the final price including GST
+      newPrice = subtotal + gstItem.amount;
+  
+      // Update workOrderData state with the new line totals and price
+      setWorkOrderData(prevData => ({
+        ...prevData,
+        lineTotals: newLineTotals,
+        price: newPrice
+      }));
+    };
+  
+    updateLineTotals();
+  }, [workOrderData.hours, setWorkOrderData]);
 
   useEffect(() => {
     if (focusedTaskId && inputRefs.current[focusedTaskId]) {
@@ -136,58 +186,62 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
 
   const TaskEditor = ({ tasks, taskType }) => {
     return (
-      <div className="space-y-4 mr-8">
-        <div className="text-lg">
+      <div>
+        <div className="text-lg mb-4">
           {taskType === 'high' ? 'High Priority Tasks' : 'Low Priority Tasks'}
         </div>
-        {tasks.map((task) => (
-          <div key={task.id} className="flex items-center space-x-3">
-            <input
-              ref={(input) => {
-                inputRefs.current[task.id] = input;
-                if (focusedTaskId === task.id) {
-                  input?.focus();
-                }
-              }}
-              type="text"
-              className="flex-grow block w-full px-3 py-2 bg-white text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={task.description}
-              onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
-              onFocus={() => handleFocus(task.id)}
-            />
-            <button
-              type="button"
-              className="btn animate-none dark:btn-outline dark:text-gray-500 btn-sm ml-4 p-2 min-h-10"
-              onClick={() => handleRemoveTask(task.id, taskType)}
-            >
-              <Delete/>
-            </button>
-          </div>
-        ))}
-        <button type="button" className="bg-primary text-white px-4 py-2 inline-flex rounded-md" style={{"margin-top":"2rem"}} onClick={() => handleAddTask(taskType)}>
-          <AddCircle/>&nbsp;&nbsp;Add Task
-        </button>
+        <div className="gap-4 flex flex-wrap pb-4">
+          {tasks.map((task) => (
+            <div key={task.id} className="flex">
+              <input
+                ref={(input) => {
+                  inputRefs.current[task.id] = input;
+                  if (focusedTaskId === task.id) {
+                    input?.focus();
+                  }
+                }}
+                type="text"
+                className="w-40 px-3 py-2 bg-white text-black border-r-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 border border-gray-300 rounded-l-lg shadow-sm"
+                value={task.description}
+                onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
+                onFocus={() => handleFocus(task.id)}
+              />
+              <button
+                type="button"
+                className="btn items-center rounded-l-none text-base animate-none border dark:border-gray-600 border border-gray-300 dark:btn-outline dark:text-gray-500 btn-sm p-2 min-h-12"
+                onClick={() => handleRemoveTask(task.id, taskType)}
+              >
+                <Delete />
+              </button>
+            </div>
+          ))}
+          <button type="button" className="bg-white text-primary dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 border border-gray-300 px-4 py-2 items-center rounded-md hover:bg-primary hover:text-white" onClick={() => handleAddTask(taskType)}>
+            <AddCircle />&nbsp;&nbsp;Add Task
+          </button>
+        </div>
       </div>
     );
   };
 
   const EquipmentEditor = ({ provideEquipment }) => (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-6 justify-left">
         {equipmentOptions.map((equipment) => {
           let isSelected = isEquipmentSelected(workOrderData, equipment);
           return (
-            <a
+            <div
               key={equipment.id}
-              className={`flex items-center border border-solid rounded-md border-color-primary py-1 px-2 hover:bg-primary text-black hover:cursor-pointer dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''}`}
+              className={`flex flex-col w-40 items-center justify-center border border-solid rounded-md border-color-primary py-2 px-2 hover:bg-primary text-black hover:cursor-pointer dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${
+                isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''
+              }`}
               onClick={() => handleSelectEquipment(workOrderData, equipment)}
             >
-              <img src={equipment.imagePath} className="w-12 hover:cursor-pointer" alt={equipment.name} />
-              <label className="px-2 hover:cursor-pointer">
-              {equipment.name}
-              { equipment.price > 0 ? <em> (+ ${equipment.price})</em> : '' }
+              <img src={equipment.imagePath} className="w-16 mb-2" alt={equipment.name} />
+              <label className="text-center text-xs text-gray-400">
+                {equipment.name}
+                {equipment.price > 0 && <em><br/>({equipment.priceDescription})</em>}
               </label>
-            </a>
+            </div>
           );
         })}
       </div>
@@ -215,6 +269,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
             inputClass="w-16"
             parentClass="space-y-4 mr-8"
             state={workOrderData}
+            setState={setWorkOrderData}
             stateKey="hours"
             setEdited={setEdited}
           />
@@ -226,6 +281,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
             inputClass="w-40"
             parentClass="space-y-4 mr-8"
             state={workOrderData}
+            setState={setWorkOrderData}
             stateKey="cleaningDate"
             setEdited={setEdited}
           />
@@ -268,11 +324,17 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
       setState: setWorkOrderData,
       children: (
       <>
-        <textarea 
-            className="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 " 
-            placeholder="Add comment..."
-            value={workOrderData.comment}
-            onChange={(e) => setComment(e.target.value)}
+      <CardInput 
+          type="textarea" 
+          childType="field"
+          inputClass="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
+          laceholder="Add comment..."
+          value={workOrderData.comment}
+          parentClass="grow"
+          state={workOrderData}
+          setState={setWorkOrderData}
+          stateKey="comment"
+          setEdited={setEdited}
         />
       </>
       ),
@@ -282,31 +344,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   return (
     <div className="flex-grow items-stretch justify-center flex-grow">
       <CardContainer cardsData={cardsData} />
-      <div className="flex">
-        <div className="flex flex-grow w-full gap-4 justify-center">
-          <TextButton
-              icon="AddCircle"
-              className="btn btn-primary self-end"
-              type="button"
-              text="My Pets"
-              onClick={() => handleComponentSelect('MyPets')}
-          />
-          <TextButton
-              icon="AddCircle"
-              className="btn btn-primary self-end"
-              type="button"
-              text="General Instructions"
-              onClick={() => handleComponentSelect('GeneralInstructions')}
-          />
-          <TextButton
-              icon="AddCircle"
-              className="btn btn-primary self-end"
-              type="button"
-              text="Access Instructions"
-              onClick={() => handleComponentSelect('AccessCard')}
-          />
-        </div>
-      </div>
     </div>
   );
 };

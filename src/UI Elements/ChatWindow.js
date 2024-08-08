@@ -1,44 +1,21 @@
-import React, { useState, useEffect, useRef  } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChatBubble from './ChatBubble';
 import { IconButton } from '../UI Elements/Button';
 
 const ChatWindow = ({ messages, onSendMessage, userData }) => {
   const [messageText, setMessageText] = useState('');
-  // const socketRef = useRef(null);
-  /*
-  useEffect(() => {
-    // Establish WebSocket connection
-    socketRef.current = new WebSocket('wss://server.claritybusinesssolutions.ca:4343');
-
-    socketRef.current.onopen = () => {
-      console.log('WebSocket connection established');
-    };
-
-    socketRef.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      console.log('socketMessage', message)
-    };
-
-    socketRef.current.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    return () => {
-      socketRef.current.close();
-    };
-  }, [onSendMessage]); 
-  */
+  const messagesEndRef = useRef(null); // Ref to track the end of the message list
 
   const getCurrentLocalTime = () => {
     const date = new Date();
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
-  
+
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-  
+
     const strTime = `${hours}:${minutesStr} ${ampm}`;
     return strTime;
   };
@@ -48,9 +25,8 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
   };
 
   const handleSendMessage = () => {
-    const currentTime = getCurrentLocalTime()
-    // update state
-    // send to webApp
+    const currentTime = getCurrentLocalTime();
+
     if (messageText.trim() !== '') {
       const message = {
         name: userData.userData.userInfo.firstName,
@@ -58,19 +34,24 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
         chatText: messageText,
         status: "delivered",
         sendDirection: "out"
-      }
-      console.log({message})
-
-      // socketRef.current.send(JSON.stringify(message));
+      };
+      console.log({ message });
 
       setMessageText('');
       onSendMessage(message);
     }
   };
 
+  // Scroll to the bottom of the messages container whenever the messages array is updated
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 overflow-y-scroll" style={{"max-height":"40vh"}}>
+      <div className="flex flex-col gap-4 overflow-y-scroll" style={{ maxHeight: "40vh" }}>
         {messages.map((message, index) => (
           <ChatBubble 
             key={index}
@@ -81,6 +62,8 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
             sendDirection={message.sendDirection}
           />
         ))}
+        {/* Element to keep track of the end of the messages */}
+        <div ref={messagesEndRef} />
       </div>
       <div className="flex items-center gap-4 my-4">
         <input
