@@ -574,7 +574,7 @@ function CustomerPortal() {
                 </div>
               </li>
                {/* NEW ORDER */}
-               {newWorkOrderData ? (
+               {newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate ? (
                 <button
                     id="newOrder"
                     className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
