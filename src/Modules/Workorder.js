@@ -249,7 +249,6 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     </div>
   );
 
-
   console.log('workOrderData', workOrderData);
 
   const cardsData = [
@@ -264,7 +263,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
         <>
           <CardInput 
             label="Hours" 
-            type="text" 
+            type="number" 
             id="hours" 
             childType="field"
             inputClass="w-16"
@@ -329,7 +328,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
           type="textarea" 
           childType="field"
           inputClass="textarea text-black textarea-bordered w-full flex-grow overflow-y-auto dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
-          laceholder="Add comment..."
+          placeholder="Add comment..."
           value={workOrderData.comment}
           parentClass="grow"
           state={workOrderData}

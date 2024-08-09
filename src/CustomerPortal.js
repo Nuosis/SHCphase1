@@ -29,7 +29,6 @@ const icons = {
   HouseOutlined,  
 };
 
-
 function CustomerPortal() {
   //STATE
   const { authState } = useAuth();
@@ -187,53 +186,51 @@ function CustomerPortal() {
   };
 
   function prepareActivityData() {
-      const activities = {};
-  
-      // Include workOrderData as the first entry if it exists, converting the date to ISO format
-      if (newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate) {
-          activities[newWorkOrderData.activity] = [{
-              date: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10),
-              isSelected: (workOrderData && new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) === new Date(workOrderData.cleaningDate).toISOString().slice(0, 10))
-          }];
-      }
-  
-      // Include billableData, ensuring not to overwrite the workOrderData entry
-      if (userData && userData.billableData) {
-          Object.entries(userData.billableData).forEach(([key, records]) => {
-              records.forEach(record => {
-                  if (!activities[key]) {
-                      activities[key] = [];
-                  }
-                  activities[key].push({
-                      date: new Date(record.invoiceDate).toISOString().slice(0, 10),
-                      isSelected: (workOrderData && workOrderData.activity === key && new Date(workOrderData.cleaningDate).toISOString().slice(0, 10) === new Date(record.invoiceDate).toISOString().slice(0, 10))
-                  });
-              });
-          });
-      }
-  
-      return activities;
+    const activities = {};
+
+    // Include newWorkOrderData as the first entry if it exists, converting the date to ISO format
+    if (newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate) {
+        activities[newWorkOrderData.activity] = [{
+            date: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10),
+            name: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) + ' <span class="font-bold text-primary">(New)</span>',
+            isSelected: (workOrderData && new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) === new Date(workOrderData.cleaningDate).toISOString().slice(0, 10))
+        }];
+    }
+
+    // Include billableData, ensuring not to overwrite the workOrderData entry
+    if (userData && userData.billableData) {
+        Object.entries(userData.billableData).forEach(([key, records]) => {
+            records.forEach(record => {
+                if (!activities[key]) {
+                    activities[key] = [];
+                }
+                activities[key].push({
+                    date: new Date(record.invoiceDate).toISOString().slice(0, 10),
+                    name: new Date(record.invoiceDate).toISOString().slice(0, 10),
+                    isSelected: (workOrderData && workOrderData.activity === key && new Date(workOrderData.cleaningDate).toISOString().slice(0, 10) === new Date(record.invoiceDate).toISOString().slice(0, 10))
+                });
+            });
+        });
+    }
+
+    return activities;
   }
-  
+    
   function generateActivityRows(activities) {
     const sortedActivities = Object.entries(activities).map(([activity, details]) => {
-      const sortedDetails = details.sort((a, b) => new Date(b.date) - new Date(a.date));
-      return [activity, sortedDetails];
+        const sortedDetails = details.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return [activity, sortedDetails];
     });
 
     const activityRows = sortedActivities.map(([activity, details]) => (
-      details.map(detail => (
-        <div
-          key={detail.date}
-          text={new Date(detail.date).toISOString().slice(0, 10)}
-          onClick={() => handleWorkOrderChange(detail.date)}
-          className={detail.isSelected ? 'selected-class' : ''}
-        >
-          <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-            {new Date(detail.date).toISOString().slice(0, 10)}
-          </a>
-        </div>
-      ))
+        details.map(detail => (
+            <div
+                key={detail.date}
+                onClick={() => handleWorkOrderChange(detail.date)}
+                className={detail.isSelected ? 'selected-class' : ''}
+                dangerouslySetInnerHTML={{ __html: `<a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">${detail.name}</a>` }}
+            />
+        ))
     ));
 
     return activityRows;
@@ -503,7 +500,7 @@ function CustomerPortal() {
                   className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
                   onClick={handleNewOrder}
                 >
-                <HouseOutlined style={{ fontSize: '2.1rem' }}></HouseOutlined>
+               <i className="iconoir-cart-plus text-3xl"></i>
                 <p className="pl-2">New Order</p>
               </button>
               {/* HISTORY */}
@@ -588,9 +585,6 @@ function CustomerPortal() {
         {/* BANNER */}
         <div 
           className="h-[15vw] mb-8 flex items-top shadow-lg header-image"
-          style={{ 
-            
-          }}
         />
         {/* USER SPACE */}
         {renderActiveComponent()}

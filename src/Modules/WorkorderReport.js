@@ -2,6 +2,7 @@ import React from 'react';
 import CardContainer from '../UI Elements/CardContainer';
 import CardInput from '../UI Elements/CardInput.js';
 import { IconButton } from '../UI Elements/Button.js';
+import WorkOrderOverview from '../UI Elements/WorkOrderOverview.js';
 
 const submitRatingToGMB = async (rating) => {
   try {
@@ -34,16 +35,12 @@ const WorkOrderReport = ({ workOrderData, setMessage, edited, setEdited, userDat
       state: workOrderData,
       setState: null,
       persistOpen: false,
+      children: (
+        <WorkOrderOverview workOrderData={workOrderData} />
+      ),
     },
     {
       id: "2",
-      headerText: "Activity Report",
-      headerHiddenText: { Activity: workOrderData.activity, Cleaner: workOrderData.cleaner },
-      state: workOrderData,
-      setState: null,
-    },
-    {
-      id: "3",
       headerText: "Feedback",
       headerHiddenText: { Alert: "Tip your cleaner 15% on Us!" },
       state: userData,
@@ -55,7 +52,7 @@ const WorkOrderReport = ({ workOrderData, setMessage, edited, setEdited, userDat
         <>
           <CardInput 
             label="If you think we've earned it, we would love a 5 star review. We'll send a thank you to your cleaner of a 15% tip" 
-            type="text" 
+            type="star" 
             id="rating" 
             childType="star"
             state={userData}

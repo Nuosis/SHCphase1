@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Close, Delete } from '@mui/icons-material';
-import StarRating from '../UI Elements/StarRating.js';
+import { FaStar } from 'react-icons/fa'; // Import FontAwesome star icon
 import Popup from '../UI Elements/Popup.js';
 
 const icons = { Close, Delete };
@@ -25,7 +25,6 @@ const CardInput = ({
   label,
   type = 'text',
   id,
-  key,
   childType,
   state,
   setState,
@@ -41,21 +40,8 @@ const CardInput = ({
   const [popup, setPopup] = useState({ show: false, message: '' });
   const [file, setFile] = useState(null);
 
-  const handleLocalChange = (e) => {
-    let newValue = e.target.value;
-    if (type === 'number') {
-      newValue = e.target.value === '' ? '' : parseFloat(e.target.value);
-    }
-    setInputValue(newValue);
-  };
-
-  const handleStateChange = (e) => {
-    let newValue = e && e.target && e.target.value !== undefined ? e.target.value : e;
-    if (type === 'number') {
-      newValue = newValue === '' ? '' : parseFloat(newValue);
-    }
+  const handleStateChange = (newValue) => {
     const oldValue = getValue(state, stateKey);
-
     if (newValue !== oldValue) {
       const updatedState = { ...state };
       const keys = stateKey.split('.');
@@ -90,82 +76,13 @@ const CardInput = ({
         value: newValue
       };
       setEdited(prevEdits => [...prevEdits, editInfo]);
-    } else {
-      e.target.blur();
     }
   };
 
-  const handleTelBlur = (e) => {
-    const newValue = e.target.value;
-    let digits = newValue.replace(/\D/g, '');
-    if (digits.length !== 10) {
-      setPopup({ show: true, message: "Telephone numbers must be 10 digits long: '(nnn) nnn-nnnn'" });
-      return;
-    }
-    digits = `+${digits}`;
-    const oldValue = getValue(state, stateKey);
-
-    if (digits !== oldValue) {
-      const updatedState = { ...state };
-      const keys = stateKey.split('.');
-      let current = updatedState;
-
-      for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i];
-        if (key.includes('[') && key.includes(']')) {
-          const index = parseInt(key.match(/\d+/)[0]);
-          const arrayKey = key.split('[')[0];
-          if (!current[arrayKey]) {
-            current[arrayKey] = [];
-          }
-          if (!current[arrayKey][index]) {
-            current[arrayKey][index] = {};
-          }
-          current = current[arrayKey][index];
-        } else {
-          if (!current[key]) {
-            current[key] = {};
-          }
-          current = current[key];
-        }
-      }
-
-      current[keys[keys.length - 1]] = digits;
-      setState(updatedState);
-
-      const editInfo = {
-        action: "update",
-        path: stateKey,
-        value: digits
-      };
-      setEdited(prevEdits => [...prevEdits, editInfo]);
-    } else {
-      e.target.blur();
-    }
+  const handleStarClick = (rating) => {
+    setInputValue(rating);
+    handleStateChange(rating);
   };
-
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result.split(',')[1];
-      console.log('Base64 data:', base64data);
-    };
-    reader.readAsDataURL(selectedFile);
-  };
-
-  const camelCaseToTitleCase = (str) => {
-    if (!str) return '';
-    return str.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
-  };
-
-  function toTitleCase(str) {
-    if (!str) return '';
-    return str.replace(/\w\S*/g, function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-  }
 
   return (
     <div className={parentClass}>
@@ -179,15 +96,27 @@ const CardInput = ({
           {label}
         </label>
       )}
-      <input
-        type={type}
-        id={`${type}-${label}-${id}`}
-        className={`max-w-full mt-2 min-h-12 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded ${inputClass}`}
-        value={inputValue}
-        placeholder={placeholder}
-        onBlur={handleStateChange}
-        onChange={handleLocalChange}
-      />
+      {type === 'star' ? (
+        <div className="flex items-center text-2xl space-x-2 py-4">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaStar
+              key={star}
+              className={`cursor-pointer ${inputValue >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+              onClick={() => handleStarClick(star)}
+            />
+          ))}
+        </div>
+      ) : (
+        <input
+          type={type}
+          id={`${type}-${label}-${id}`}
+          className={`max-w-full mt-2 min-h-12 p-2 dark:bg-gray-600 text-black dark:text-gray-400 dark:border-gray-700 border rounded ${inputClass}`}
+          value={inputValue}
+          placeholder={placeholder}
+          onBlur={(e) => handleStateChange(e.target.value)}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+      )}
     </div>
   );
 };

@@ -173,21 +173,15 @@
 }
 
 .header-image {
-  background-image: url(/src/images/appartment-photo-day.jpg);
+  background-image: url(/src/images/appartment-photo.jpg);
   background-size: cover;
-  background-position: 50% 80%;
+  background-position: 50% 55%;
+
 }
 
 @media ( prefers-color-scheme: dark ) {
   .header-image {
-    background-image: url(/src/images/appartment-photo-night.jpg);
+    background-image: url(/src/images/apartment-night.jpg);
     background-position: 50% 60%;
   }
-}
-
-/* Custom styles to adjust the spin button positioning */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  position: relative;
-  left: -0.8rem;
 }

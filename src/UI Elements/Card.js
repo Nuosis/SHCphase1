@@ -74,7 +74,7 @@ const Card = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg max-w-screen-md w-full mb-6 overflow-hidden">
+    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-none sm:rounded-lg max-w-screen-md w-full mb-6 overflow-hidden">
       {popup.show && (
         <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50" style={{ zIndex: 30 }}>
           <Popup message={popup.message} onClose={() => setPopup({ ...popup, show: false })} />
