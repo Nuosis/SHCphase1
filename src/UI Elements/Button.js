@@ -34,34 +34,3 @@ export const TextButtonSecondary = ({ className="btn btn-outline dark:btn-outlin
         </button>
     );
 };
-
-export const RoundButton = ({ onClick, name, image }) => {
-  // console.log({name})
-  const getInitials = (name) => {
-      return name.split(' ')
-                 .slice(0, 2) // Take only the first two names (if applicable)
-                 .map((n) => n[0]) // Get the first letter of each part
-                 .join(''); // Join them together
-  };
-
-  return (
-      <button 
-          onClick={onClick} 
-          className="flex justify-center items-center bg-primary hover:bg-secondary text-white font-bold p-0 rounded-full w-8 h-8"
-      >
-          {image ? (
-              <img
-                  src={image}
-                  className="rounded-full"
-                  style={{ height: "32px", width: "32px" }}
-                  alt=""
-                  loading="lazy"
-              />
-          ) : name === "multiMember" ? (
-            <Group className="text-xl text-primary" />
-          ) : (
-            <span className="text-sm p-1">{getInitials(name)}</span>
-          )}
-      </button>
-  );
-};

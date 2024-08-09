@@ -232,8 +232,8 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
           return (
             <div
               key={equipment.id}
-              className={`flex flex-col w-40 items-center justify-center border border-solid rounded-md border-color-primary py-2 px-2 hover:bg-primary text-black hover:cursor-pointer dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${
-                isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : ''
+              className={`flex flex-col w-40 items-center justify-center border border-solid rounded-md border-color-primary py-2 px-2 text-black hover:cursor-pointer dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700 hover:text-white ${
+                isSelected ? 'bg-primary text-white dark:bg-primary dark:text-white' : 'hover:bg-gray-200 dark:hover:bg-gray-500'
               }`}
               onClick={() => handleSelectEquipment(workOrderData, equipment)}
             >

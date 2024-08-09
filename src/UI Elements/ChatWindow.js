@@ -50,8 +50,8 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 overflow-y-scroll" style={{ maxHeight: "40vh" }}>
+    <div className="flex flex-col gap-4 px-8">
+      <div className="flex flex-col gap-4 overflow-y-scroll" style={{ maxHeight: "44vh" }}>
         {messages.map((message, index) => (
           <ChatBubble 
             key={index}
@@ -65,19 +65,19 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
         {/* Element to keep track of the end of the messages */}
         <div ref={messagesEndRef} />
       </div>
-      <div className="flex items-center gap-4 my-4">
+      <div className="flex items-center gap-4 mb-4">
         <input
           type="text"
           value={messageText}
           onChange={handleInputChange}
-          placeholder="Message cleaner..."
+          placeholder="Message..."
           className="flex-grow p-3 border border-gray-300 rounded dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600"
         />
         <IconButton
           icon="Send"
           onClick={handleSendMessage}
           className="btn btn-primary"
-          text="Send to Cleaner"
+          text="Send Message"
         />
       </div>
     </div>

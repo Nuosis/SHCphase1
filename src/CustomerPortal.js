@@ -440,8 +440,20 @@ function CustomerPortal() {
   };
 
   const handleNewOrder = () => {
-    //window.location.href = 'https://www.selecthomecleaning.ca'; //render in same tab
-    window.open('https://www.selecthomecleaning.ca', '_blank'); //open in new tab
+    // Check if new work order data exists
+    if (newWorkOrderData) {
+      // Set the active component to display the new work order
+      if (!newWorkOrderData.invoiceNo) {
+        setActiveComponent('WorkOrderCard');
+        setWorkOrderData(newWorkOrderData); // Set the new work order data as the current work order
+      } else {
+        setActiveComponent('WorkOrderReport');
+        setWorkOrderData(newWorkOrderData); // Set the new work order data as the current work order
+      }
+    } else {
+      // Handle the case when there is no new work order data
+      window.open('https://www.selecthomecleaning.ca', '_blank'); //open in new tab
+    }
   };
   
   // Handle the state of the open dropdown menues
@@ -494,36 +506,6 @@ function CustomerPortal() {
           </button>
           <div className={`w-full md:block md:w-auto  ${isMenubarOpen ? '' : 'hidden'}`} id="navbar-multi-level">
             <ul className="flex flex-col font-medium p-4 md:p-0 mx-6 my-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              {/* NEW ORDER */}
-              <button
-                  id="newOrder"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
-                  onClick={handleNewOrder}
-                >
-               <i className="iconoir-cart-plus text-3xl"></i>
-                <p className="pl-2">New Order</p>
-              </button>
-              {/* HISTORY */}
-              <li>
-                <button
-                  id="previousOrdersLink"
-                  data-dropdown-toggle="previousOrder"
-                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
-                  onClick={togglePreviousOrders}
-                >
-                  
-                  <i className="iconoir-multiple-pages text-3xl"></i>
-                  <p className="pl-2">Work Orders</p>
-                  <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                  </svg>
-                </button>
-                <div id="previousOrder" className={`z-10 ${isPreviousOrdersOpen ? '' : 'hidden'} absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
-                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
-                    {generateActivityRows(activities).flat()}
-                  </ul>
-                </div>
-              </li>
               {/* ACCOUNT */}
               <li>
                 <button
@@ -570,6 +552,47 @@ function CustomerPortal() {
                   </div>
                 </div>
               </li>
+              {/* WORK ORDERS */}
+              <li>
+                <button
+                  id="previousOrdersLink"
+                  data-dropdown-toggle="previousOrder"
+                  className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                  onClick={togglePreviousOrders}
+                >
+                  
+                  <i className="iconoir-multiple-pages text-3xl"></i>
+                  <p className="pl-2">Work Orders</p>
+                  <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
+                  </svg>
+                </button>
+                <div id="previousOrder" className={`z-10 ${isPreviousOrdersOpen ? '' : 'hidden'} absolute font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
+                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+                    {generateActivityRows(activities).flat()}
+                  </ul>
+                </div>
+              </li>
+               {/* NEW ORDER */}
+               {newWorkOrderData ? (
+                <button
+                    id="newOrder"
+                    className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                    onClick={handleNewOrder}
+                  >
+                  <i className="iconoir-cart-alt text-3xl"></i>
+                  <p className="pl-2">View Order</p>
+                </button>
+               ) : (
+                <button
+                id="newOrder"
+                className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
+                onClick={handleNewOrder}
+                >
+                <i className="iconoir-cart-plus text-3xl"></i>
+                <p className="pl-2">New Order</p>
+                </button>
+               )}
             </ul>
           </div>
         </div>

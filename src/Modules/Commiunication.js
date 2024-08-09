@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import HeaderCard from '../UI Elements/HeaderCard';
-import { RoundButton } from '../UI Elements/Button';
 import ChatWindow from '../UI Elements/ChatWindow.js';
 import { readRecord } from '../FileMaker/readRecord.js';
 import { createRecord } from '../FileMaker/createRecord.js';
@@ -9,7 +8,9 @@ import { useAuth } from '../AuthContext.js';
 
 const CommunicationPortal = ({ userData }) => {
   const [messages, setMessages] = useState([]);
-  const [isMessaging, setIsMessaging] = useState({});
+  const [isMessaging, setIsMessaging] = useState(null);
+  const [selectedConversationId, setSelectedConversationId] = useState(null); // Track selected conversation ID
+  const [showChatPanel, setShowChatPanel] = useState(false); // Track visibility of chat panel
   const { authState } = useAuth();
   const [, setForceRender] = useState(0); 
   const lastMessageRef = useRef(null); // Ref for the last message
@@ -84,7 +85,15 @@ const CommunicationPortal = ({ userData }) => {
   };
   
   const handleLoadMessages = async (id) => {
-    if (id !== isMessaging.id) {
+    if (id === selectedConversationId) {
+      // Toggle visibility of the chat panel
+      setShowChatPanel(!showChatPanel);
+      // Deselect conversation if the panel is hidden
+      if (showChatPanel) {
+        setSelectedConversationId(null);
+      }
+    } else {
+      // Load new conversation
       const conversation = userConversations.find(convo => convo.id === id);
   
       if (conversation) {
@@ -96,6 +105,8 @@ const CommunicationPortal = ({ userData }) => {
           }))
         };
         setIsMessaging(conversationObj);
+        setSelectedConversationId(id); // Set the selected conversation ID
+        setShowChatPanel(true); // Ensure chat panel is shown when a new conversation is selected
         await handleGetMessages(id);
       } else {
         console.error('Conversation not found for id:', id);
@@ -108,6 +119,7 @@ const CommunicationPortal = ({ userData }) => {
       throw new Error("data passed needs to be an array"); 
     }
     
+    const messages = [];
     data.forEach(item => {
       const message = {};
       const sendDirection = item.fieldData['_senderID'] === userData.userData.userInfo.metaData.ID ? 'out' : 'in';
@@ -182,31 +194,42 @@ const CommunicationPortal = ({ userData }) => {
   }, [messages]); // Trigger this effect whenever `messages` changes
 
   return (
-    <div id="communication card" className="flex flex-grow items-stretch justify-center flex-grow">
-      <HeaderCard headerText="Message Centre">
-        <div id="communication panes wrapper" className="flex flex-row gap-4 my-4">
-          <div id="conversation icons" className="flex flex-col gap-4 mt-2 p-2 w-1/12 items-center">
+    <div className="flex flex-grow items-stretch justify-center flex-grow">
+      <HeaderCard bodyClass="p-0 border-t dark:border-gray-600 h-full">
+        <div className="flex flex-row h-full">
+          <div className="flex flex-col h-min-full gap-4 w-3/12 border-r bg-gray-100 dark:bg-gray-800/50 dark:border-gray-600">
             {userConversations.map((conversation, index) => (
-              <RoundButton
+              <button
                 key={index}
-                id={conversation.id}
                 onClick={() => handleLoadMessages(conversation.id)}
-                name={getName(conversation.members)}
-                image={null} 
-              />
+                className={`flex items-center space-x-3 py-2 px-8 hover:bg-gray-200 dark:hover:bg-gray-600 ${
+                  selectedConversationId === conversation.id && showChatPanel ? 'bg-gray-300 dark:bg-gray-600/50' : ''
+                }`}
+              >
+                <div className="flex justify-center items-center bg-primary text-white font-bold rounded-full w-10 h-10 overflow-hidden">
+                  <span className="text-lg">{conversation.members[0].memberName.split(' ').slice(0, 2).map((n) => n[0]).join('')}</span>
+                </div>
+                <span className="text-gray-700 font-medium dark:text-white">{conversation.members[0].memberName.split(' ')[0]}</span>
+              </button>
             ))}
           </div>
-          <div id="chatContainer" className="w-11/12 h-min-full">
-            {messages && messages.length !== 0 ? (
-              <>
-                <div className="text-2xl font-bold text-primary pr-8 py-4 dark:text-secondary">Alana</div>
-                <ChatWindow messages={messages} onSendMessage={sendMessage} userData={userData} />
-                <div ref={lastMessageRef} /> {/* Element to scroll into view */}
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center"></div>
-            )}
-          </div>
+          {showChatPanel && (
+            <div className="w-9/12 h-min-full pb-4 dark:bg-gray-600">
+              {messages && messages.length !== 0 ? (
+                <>
+                  <div className="text-2xl font-bold text-primary pl-8 py-3 dark:text-secondary dark:bg-gray-600 border-b dark:border-gray-500">
+                    {isMessaging?.members[0].name.split(' ')[0]}
+                  </div>
+                  <ChatWindow messages={messages} onSendMessage={sendMessage} userData={userData} />
+                  <div ref={lastMessageRef} /> {/* Element to scroll into view */}
+                </>
+              ) : (
+                <div className="w-full pl-4 h-full flex items-center">
+                 
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </HeaderCard>
     </div>
