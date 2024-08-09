@@ -201,14 +201,15 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
                   }
                 }}
                 type="text"
-                className="w-40 px-3 py-2 bg-white text-black border-r-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 border border-gray-300 rounded-l-lg shadow-sm"
+                className="w-52 px-3 py-2 bg-white text-black dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 border border-gray-300 rounded-lg shadow-sm"
                 value={task.description}
                 onChange={(e) => handleTaskChange(task.id, e.target.value, taskType)}
                 onFocus={() => handleFocus(task.id)}
               />
               <button
                 type="button"
-                className="btn items-center rounded-l-none text-base animate-none border dark:border-gray-600 border border-gray-300 dark:btn-outline dark:text-gray-500 btn-sm p-2 min-h-12"
+                className="btn items-center rounded-l-none text-base animate-none dark:text-gray-500 btn-sm p-2 min-h-10"
+                style={{ margin: '1px 0px 1px -2.7rem', minHeight: '2.6rem', borderTopRightRadius: '7px', borderBottomRightRadius: '7px' }}
                 onClick={() => handleRemoveTask(task.id, taskType)}
               >
                 <Delete />

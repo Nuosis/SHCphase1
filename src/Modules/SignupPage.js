@@ -8,6 +8,7 @@ import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
 import provinces from '../Environment/provinces.json';
 import { IconButton } from '../UI Elements/Button';
+import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -373,7 +374,7 @@ function SignupPage() {
           <nav className="bg-white shadow-lg border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700  sticky top-0" style={{borderBottom: "1px solid rgba(156,163,175,0.25)"}}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
               <a href="#" className="flex items-center py-2 px-2 text-gray-700 hover:text-gray-900">
-                <img src="select-home-cleaning.png" className="max-h-12" alt="Select Home Cleaning"/>
+                <img src={SHC} className="max-h-12" alt="Select Home Cleaning" />
               </a>
             </div>
           </nav>

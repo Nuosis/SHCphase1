@@ -22,7 +22,7 @@ import { readRecord } from './FileMaker/readRecord.js'
 import { updateRecord } from './FileMaker/updateRecord.js'
 import { deleteRecord } from './FileMaker/deleteRecord.js'
 import { HouseOutlined } from '@mui/icons-material';
-import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
+import SHC from './images/SelectHome-StackedLogo-Pine&Lime.png'
 
 // If the imported icons are not directly referenced the package build complains
 const icons = {
