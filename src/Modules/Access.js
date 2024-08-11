@@ -3,6 +3,8 @@ import HeaderCard from '../UI Elements/HeaderCard';
 import { TextButton, IconButton } from '../UI Elements/Button';
 import 'daisyui';
 
+//TODO: update not working
+
 const AccessCard = ({json, onSubmitAccess}) => {
     // Convert the initial JSON data to a usable state format
     const parsedJson = json.map((entry) => ({

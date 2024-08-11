@@ -8,6 +8,7 @@ import { deleteRecord } from '../FileMaker/deleteRecord.js'
 import { readRecord } from '../FileMaker/readRecord.js'
 
 const icons = {Close, Delete};
+
 const getValue = (state, path) => {
   // console.log('Initial State:', state);
   try {
@@ -24,7 +25,8 @@ const getValue = (state, path) => {
       console.error(`Error navigating state with key ${path}:`, error);
       return ''; // Return a default/fallback value
   }
-}
+};
+
 const CardDelete = (
   { 
     label, 

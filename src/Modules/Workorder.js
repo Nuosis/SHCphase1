@@ -3,7 +3,7 @@ import { useUser } from '../UserContext.js';
 import CardContainer from '../UI Elements/CardContainer';
 import CardInput from '../UI Elements/CardInput.js';
 import { v4 as uuidv4 } from 'uuid';
-import { TextButton } from '../UI Elements/Button';
+// import { TextButton } from '../UI Elements/Button';
 import { Delete, AddCircle } from '@mui/icons-material';
 
 const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect, setEdited }) => {
@@ -19,7 +19,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
     carpetCleaning: false
   });
 
-  const equipmentOptions = [
+  const additionalItems = [
     {
       id: 1,
       name: "Cleaner Provides Equipment",
@@ -227,7 +227,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   const EquipmentEditor = ({ provideEquipment }) => (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-6 justify-left">
-        {equipmentOptions.map((equipment) => {
+        {additionalItems.map((equipment) => {
           let isSelected = isEquipmentSelected(workOrderData, equipment);
           return (
             <div

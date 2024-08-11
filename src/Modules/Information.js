@@ -56,7 +56,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
               type="text"
               id="lastName"
               childType="field"
-               parentClass="space-y-4 mr-8"
+              parentClass="space-y-4 mr-8"
               state={userData}
               setState={setUserData}
               stateKey="userData.userInfo.lastName"

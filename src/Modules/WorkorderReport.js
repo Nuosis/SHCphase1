@@ -4,6 +4,10 @@ import CardInput from '../UI Elements/CardInput.js';
 import { IconButton } from '../UI Elements/Button.js';
 import WorkOrderOverview from '../UI Elements/WorkOrderOverview.js';
 
+//TODO: communicate with cleaner and company does not load communciations module
+//TODO: get receipt
+//TODO: submit to GMB
+
 const submitRatingToGMB = async (rating) => {
   try {
     const response = await fetch('YOUR_GMB_API_ENDPOINT', {
