@@ -1,8 +1,10 @@
-import { getValue } from '../../UserContext.js';
+import { getStateValue } from '../../Contexts/contextFunctions/GetStateValue.js';
 import { createRecord } from '../createRecord.js';
+import { useOrg } from '../../Contexts/OrgContext.js';
 
-const getSettings = (table, state, requiredValues) => {
-  console.log("getSettings...",{table,state,requiredValues})
+const GetSettings = (table, requiredValues) => {
+  console.log("getSettings...",{table, requiredValues})
+  const { orgData } = useOrg();
   if (table === "dapiRecordDetails") {
     if (!requiredValues.fkID) {
       throw new Error("fkID is required");
@@ -15,7 +17,7 @@ const getSettings = (table, state, requiredValues) => {
         params: {
           fieldData: {
             "_fkID": requiredValues.fkID,
-            "_orgID": getValue(state, "userData.orgData.orgInfo.metaData.ID"),
+            "_orgID": getStateValue(orgData, "orgInfo.metaData.ID"),
             data: "{\"star\":\"\",\"description\":\"\"}",
             type: requiredValues.type
           }
@@ -30,13 +32,13 @@ const getSettings = (table, state, requiredValues) => {
   }
 };
 
-const Create = async (token, table, state, requiredValues) => {
+const Create = async (token, table, requiredValues) => {
   console.log("Create called ...")
   
   let settings;
   try {
     console.log("calling getSettings ...")
-    settings = getSettings(table, state, requiredValues); // returns params, layout {database} {server}
+    settings = GetSettings(table, requiredValues); // returns params, layout {database} {server}
   } catch (error) {
     console.error("Error getting settings:", error.message);
     throw error;

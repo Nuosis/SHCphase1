@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { IconButton } from '../UI Elements/Button';
-import { createRecord } from '../FileMaker/createRecord.js';
-import { useAuth } from '../AuthContext.js';
 import Popup from '../UI Elements/Popup.js';
-import { useUser } from '../UserContext.js';
+
 
 const RenderCreating = ({ id, type, setNewObj, newObj }) => {
   // Handle input changes to update newObj state
@@ -47,11 +45,7 @@ const Card = ({
   id,
   headerText,
   headerHiddenText,
-  state,
-  setState,
-  setEdited,
   children,
-  onSubmit,
   onNew,
   isOpen,
   onToggle,
@@ -59,9 +53,7 @@ const Card = ({
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newObj, setNewObj] = useState({ label: "", value: "" });
-  const { authState } = useAuth();
   const [popup, setPopup] = useState({ show: false, message: '' });
-  const { getUserData } = useUser();
 
   const toggleCreating = () => {
     if (onNew) {
@@ -88,6 +80,7 @@ const Card = ({
         onClick={onToggle}
       >
         {headerText}
+        {/*if is closed render hidden text*/}
         {!isOpen && (
           <span className="text-xs text-gray-400 font-normal float-right mt-2 hide-when-active">
             {Object.keys(headerHiddenText).map((key, index, array) => (
@@ -98,6 +91,8 @@ const Card = ({
           </span>
         )}
       </h1>
+      
+      {/* RENDER CHILDREN */}
       <form id={`accordion-collapse-body-${id}`} className={`px-8 pt-0 pb-8 ${isOpen ? '' : 'hidden'}`}>
         <div className={`flex flex-${flex}`}>
           {React.Children.map(children, (child) =>
@@ -105,6 +100,8 @@ const Card = ({
           )}
         </div>
       </form>
+
+      {/* inputs for creating (MS: not sure what this is doing)*/}
       {isOpen && onNew && (
         <div className="flex mb-4 w-full">
           {isCreating ? (

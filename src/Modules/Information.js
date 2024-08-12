@@ -1,16 +1,15 @@
 import React, { /*useState, /*useEffect*/ } from 'react';
-import { useUser } from '../UserContext.js';
-import Card  from '../UI Elements/Card';
+import { useUser } from '../Contexts/UserContext.js';
 import CardContainer  from '../UI Elements/CardContainer';
 import CardInput from '../UI Elements/CardInput.js';
 import CardDelete from '../UI Elements/CardDelete.js';
 
-const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
+const InformationCard = ({ setEdited }) => {
   const { userData, setUserData } = useUser();
-  const infoData = userData.userData.userInfo;
-  const addressData = userData.userData.userAddress;
-  const emailData = userData.userData.userEmail;
-  const phoneData = userData.userData.userPhones;
+  const infoData = userData.Info;
+  const addressData = userData.Address;
+  const emailData = userData.Email;
+  const phoneData = userData.Phones;
 
   // Helper function to format phone numbers
   function formatNumber(phoneNumber) {
@@ -24,7 +23,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
   }
 
   // Function to render card data
-  const renderAccordion = () => {
+  const renderElements = () => {
     const details = [];
 
     // Render Info
@@ -32,10 +31,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
       details.push({
         id: "infoGroup-user-info",
         headerText: "Name",
-        headerHiddenText: { Null: userData.userData.userInfo.displayName },
-        state: userData,
-        setState: setUserData,
-        setEdited: setEdited,
+        headerHiddenText: { Null: userData.Info.displayName },
         defaultOpen: true,
         flex: "row",
         children: (
@@ -48,7 +44,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
               parentClass="space-y-4 mr-8"
               state={userData}
               setState={setUserData}
-              stateKey="userData.userInfo.firstName"
+              stateKey="userData.Info.firstName"
               setEdited={setEdited}
             />
             <CardInput
@@ -59,7 +55,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
               parentClass="space-y-4 mr-8"
               state={userData}
               setState={setUserData}
-              stateKey="userData.userInfo.lastName"
+              stateKey="userData.Info.lastName"
               setEdited={setEdited}
             />
           </>
@@ -91,7 +87,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                     inputClass="w-80"
                     state={userData}
                     setState={setUserData}
-                    stateKey={`userData.userAddress.${type}[${index}].street`}
+                    stateKey={`userData.Address.${type}[${index}].street`}
                     setEdited={setEdited}
                   />
                   <CardInput
@@ -102,7 +98,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                     inputClass="w-80"
                     state={userData}
                     setState={setUserData}
-                    stateKey={`userData.userAddress.${type}[${index}].city`}
+                    stateKey={`userData.Address.${type}[${index}].city`}
                     setEdited={setEdited}
                   />
                   <CardInput
@@ -113,7 +109,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                     inputClass="w-80"
                     state={userData}
                     setState={setUserData}
-                    stateKey={`userData.userAddress.${type}[${index}].province`}
+                    stateKey={`userData.Address.${type}[${index}].province`}
                     setEdited={setEdited}
                   />
                   <CardInput
@@ -123,7 +119,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                     childType="field"
                     state={userData}
                     setState={setUserData}
-                    stateKey={`userData.userAddress.${type}[${index}].postalCode`}
+                    stateKey={`userData.Address.${type}[${index}].postalCode`}
                     setEdited={setEdited}
                   />
                 </React.Fragment>
@@ -161,7 +157,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                       inputClass="w-80"
                       state={userData}
                       setState={setUserData}
-                      stateKey={`userData.userEmail.${key}[${index}].email`}
+                      stateKey={`userData.Email.${key}[${index}].email`}
                       setEdited={setEdited}
                       value={emailDetail.email}
                     />
@@ -174,7 +170,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                       inputClass="w-80"
                       state={userData}
                       setState={setUserData}
-                      stateKey={`userData.userEmail.${key}[${index}].email`}
+                      stateKey={`userData.Email.${key}[${index}].email`}
                       setEdited={setEdited}
                       value={emailDetail.email}
                     />
@@ -213,7 +209,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                       childType="tel"
                       state={userData}
                       setState={setUserData}
-                      stateKey={`userData.userPhones.${key}[${index}].phone`}
+                      stateKey={`userData.Phones.${key}[${index}].phone`}
                       setEdited={setEdited}
                       value={formatNumber(phoneDetail.phone)}
                       placeholder="(123) 456-7890"
@@ -226,7 +222,7 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
                       childType="tel"
                       state={userData}
                       setState={setUserData}
-                      stateKey={`userData.userPhones.${key}[${index}].phone`}
+                      stateKey={`userData.Phones.${key}[${index}].phone`}
                       setEdited={setEdited}
                       value={formatNumber(phoneDetail.phone)}
                     />
@@ -244,8 +240,8 @@ const InformationCard = ({ onSubmitInformation, edited, setEdited }) => {
 
   // JSX
   return (
-    <div className="flex-grow items-stretch justify-center flex-grow">
-        <CardContainer cardsData={renderAccordion()} />
+    <div className="items-stretch justify-center flex-grow">
+        <CardContainer cardsData={renderElements()} />
     </div>
   );
 };

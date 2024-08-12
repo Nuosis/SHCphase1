@@ -4,7 +4,7 @@ import ChatWindow from '../UI Elements/ChatWindow.js';
 import { readRecord } from '../FileMaker/readRecord.js';
 import { createRecord } from '../FileMaker/createRecord.js';
 import { updateRecord } from '../FileMaker/updateRecord.js';
-import { useAuth } from '../AuthContext.js';
+import { useAuth } from '../Contexts/AuthContext.js';
 
 const CommunicationPortal = ({ userData }) => {
   const [messages, setMessages] = useState([]);
@@ -15,14 +15,14 @@ const CommunicationPortal = ({ userData }) => {
   const [, setForceRender] = useState(0); 
   const lastMessageRef = useRef(null); // Ref for the last message
 
-  const userConversations = userData.userData.userConversations;
+  const userConversations = userData.Conversations;
   console.log({ userConversations }, { userData });
 
   const handleSubmitMessage = async (message) => {
     console.log('Message:', message);
     const convoID = isMessaging.id;
     const convoMembers = isMessaging.members;
-    const senderID = userData.userData.userInfo.metaData.ID;
+    const senderID = userData.Info.metaData.ID;
 
     let fieldData = {
       "_conversationID": convoID,
@@ -49,7 +49,7 @@ const CommunicationPortal = ({ userData }) => {
       console.log({ member });
       const text = {
         type: "message",
-        sender: userData.userData.userInfo.displayName,
+        sender: userData.Info.displayName,
         recipient: member.name
       };
       fieldData = {
@@ -122,7 +122,7 @@ const CommunicationPortal = ({ userData }) => {
     const messages = [];
     data.forEach(item => {
       const message = {};
-      const sendDirection = item.fieldData['_senderID'] === userData.userData.userInfo.metaData.ID ? 'out' : 'in';
+      const sendDirection = item.fieldData['_senderID'] === userData.Info.metaData.ID ? 'out' : 'in';
       const status = item.portalData && item.portalData.dapiMessageStatus && item.portalData.dapiMessageStatus.length > 0
         ? item.portalData.dapiMessageStatus[item.portalData.dapiMessageStatus.length - 1]
         : {};
@@ -224,9 +224,7 @@ const CommunicationPortal = ({ userData }) => {
                   <div ref={lastMessageRef} /> {/* Element to scroll into view */}
                 </>
               ) : (
-                <div className="w-full pl-4 h-full flex items-center">
-                 
-                </div>
+                <div className="w-full pl-4 h-full flex items-center"/>
               )}
             </div>
           )}

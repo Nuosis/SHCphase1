@@ -24,25 +24,20 @@
  * 
  */
 import React, { useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
-import { useUser, getValue} from './UserContext.js';
-import Popup from './UI Elements/Popup.js'
-import Footer from './UI Elements/Footer';
-import AccessCard from './Modules/Access.js'
-import GeneralInstructions from './Modules/GeneralInstructions.js';
-import InformationCard from './Modules/Information.js';
-import WorkOrderCard from './Modules/Workorder.js';
-import WorkOrderReport from './Modules/WorkorderReport.js';
-import MyPets from './Pets/Pet.js';
-import CommunicationPortal from './Modules/Commiunication.js';
-import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
-import Create from './FileMaker/CRUD/Create.js'
-import { createRecord } from './FileMaker/createRecord.js';
-import { readRecord } from './FileMaker/readRecord.js'
-import { updateRecord } from './FileMaker/updateRecord.js'
-import { deleteRecord } from './FileMaker/deleteRecord.js'
-import { HouseOutlined } from '@mui/icons-material';
+import { useAuth } from '../Contexts/AuthContext.js';
+import { useWorkOrder, prepareWorkOrderData } from '../Contexts/WorkOrderContext.js';
+import { useUser } from '../Contexts/UserContext.js';
+import Popup from '../UI Elements/Popup.js'
+import Footer from '../UI Elements/Footer.js';
+import AccessCard from '../Modules/Access.js'
+import GeneralInstructions from '../Modules/GeneralInstructions.js';
+import InformationCard from '../Modules/Information.js';
+import WorkOrderCard from '../Modules/Workorder.js';
+import WorkOrderReport from '../Modules/WorkorderReport.js';
+import MyPets from '../Pets/Pet.js';
+import CommunicationPortal from '../Modules/Commiunication.js';
+import altUserImage from '../images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
+import { ProcessEdit } from '../Contexts/contextFunctions/ProcessEdit.js';
 
 
 function CleanerPortal() {
@@ -59,109 +54,20 @@ function CleanerPortal() {
     const [ activeComponent, setActiveComponent ] = useState(initialComponent);
     console.log({userData},{workOrderData},{newWorkOrderData})
   
-    // push edits to fileMkaer
+    // push edits to fileMaker
     useEffect(() => {
       /**
        * setEdited passes an object of {action, path}   
        * ACTIONS >> Delete, Update, Create
+       * PATH >> STATE.{{pathToValue}}
       */ 
       if (edited.length === 0) return;
       const edit = edited[0];
       console.log("Processing Edit:", edit); // Check the current edit
       const { action, path, value } = edit; // Assumes each edit is an object { action, path, value }
-      // console.log({action},{path},{value})
-      let payload = value ? value : ""
-      const processEdit = async () => {
-        try {
-          const pathParts = path.split('.');
-          const key = pathParts.pop(); // Gets the last element
-          const metaDataPath = [...pathParts, "metaData"].join('.');
-          const metaData = getValue(userData, metaDataPath);
-          const isPortalRecord = typeof metaData[key] === 'object' && metaData[key] !== null;
-          const table = isPortalRecord? metaData[key].table : metaData.table;
-          const metaDataField = isPortalRecord? metaData[key].field : key;
-          let UUID = isPortalRecord? metaData[key].ID : metaData.ID;
-          let recordID = isPortalRecord? metaData[key].recordID : metaData.recordID;
-          const fieldParts = metaDataField.split('.')
-          const field = fieldParts[0];
-          const fieldObjKey = fieldParts[1] ?  fieldParts[1] : null ;
-          console.log({key},{payload},{metaData},{table},{field},{fieldObjKey},{recordID},{UUID})
-          let record
+      ProcessEdit(action, path, value, authState, setEdited, setPopup);
+    },[edited])
     
-          if (!recordID && !UUID) {
-            // recordID and UUID being empty indicates the record does not yet exist and needs to be created
-            console.log("calling create record ...",{key})
-            record = await Create(authState.token ,table,userData,{fkID:metaData.ID,type:"rating"})
-            recordID=record.response.data[0].recordId?record.response.data[0].recordId:null
-            UUID=record.response.data[0].fieldData["__ID"]?record.response.data[0].fieldData["__ID"]:null
-            // console.log("record received ...",{recordID, UUID})
-            if (!recordID){
-              setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-              return
-            }
-          } else if (!recordID) {
-            const query = [{"__ID": UUID}];
-            const layout = table;
-            console.log("getting recordID ...")
-            record = await readRecord(authState.token, {query}, layout);
-            if (record.length === 0) throw new Error("Error getting recordID from FileMaker");
-            recordID = record.response.recordId?record.response.recordId:null
-            if (!recordID){
-              setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-              return
-            }
-          } else if (isPortalRecord) {
-            const query = [{"__ID": UUID}];
-            const layout = table;
-            console.log("getting record ...",{query},{layout})
-            record = await readRecord(authState.token, {query}, layout);
-            if (record.length === 0 || record === undefined) throw new Error("Error getting portal record from FileMaker");
-          }
-          console.log({record})
-  
-  
-          if (fieldObjKey !== null){
-            /*  data is set in field as part of a json object. 
-                Get Object, update fieldObjKey with value and set
-                value to json to be sent back
-            */
-              console.log("getting field json ...",{fieldObjKey})
-              const data = record.response.data[0].fieldData;
-              const jsonObj=JSON.parse(data[field])
-              console.log({jsonObj})
-              jsonObj[fieldObjKey]=value
-              payload = jsonObj
-              console.log("payload set",payload)
-          }
-  
-          const layout = table;
-    
-          if (action === 'update') {
-            const keyValue = !payload ? getValue(userData, path) : payload;
-            const stringValue = typeof keyValue === 'string' ? keyValue : JSON.stringify(keyValue);          
-            const params = { fieldData: { [field]: stringValue } };
-            // console.log({params})
-            // console.log({layout,recordID})
-            const data = await updateRecord(authState.token, params, layout, recordID);
-            if (data.messages && data.messages[0].code !== "0") {
-              throw new Error(`Failed to update record: ${data.messages[0].message}`);
-            }
-            console.log("update successful")
-          } else if (action === 'delete') {
-            const data = await deleteRecord(authState.token, layout, recordID);
-            if (data.messages && data.messages[0].code !== "0") {
-              throw new Error(`Failed to delete record: ${data.messages[0].message}`);
-            }
-          }
-          // Remove the processed edit
-          setEdited(prev => prev.slice(1));
-        } catch (error) {
-          console.error(`Error processing ${action}:`, error);
-        }
-      };
-      processEdit();
-    },[edited, userData, authState.token])
-  
     // Dynamic component map
     const componentMap = {
         // MyPets: MyPets,

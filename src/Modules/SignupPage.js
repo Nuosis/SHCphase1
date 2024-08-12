@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
+import provinces from '../Environment/provinces.json';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../AuthContext.js';
-import { useWorkOrder, /*prepareWorkOrderData*/ } from '../WorkOrderContext.js';
-import { useUser } from '../UserContext.js';
+import { useAuth } from '../Contexts/AuthContext.js';
+import { useWorkOrder, /*prepareWorkOrderData*/ } from '../Contexts/WorkOrderContext.js';
+import { useUser } from '../Contexts/UserContext.js';
+import { useOrg } from '../Contexts/OrgContext.js';
+import { useCleaner } from '../Contexts/CleanerContext.js';
+import { useCustomer } from '../Contexts/CustomerContext.js';
 import { sanitizeInput, validateEmail, validatePhoneNumber } from '../Security/inputValidation.js';
 import Popup from '../UI Elements/Popup.js';
 import { createRecord } from '../FileMaker/createRecord.js';
-import provinces from '../Environment/provinces.json';
 import { IconButton } from '../UI Elements/Button';
-import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -16,8 +19,9 @@ function useQuery() {
 
 function SignupPage() {
     const { createAuthUser, logIn, authState, setAuthState } = useAuth();
-    const { workOrderData, setWorkOrderData, setNewWorkOrderData } = useWorkOrder();
+    const { /*workOrderData,*/ setWorkOrderData, setNewWorkOrderData } = useWorkOrder();
     const { getUserData } = useUser();
+    const { getOrgData } = useOrg();
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [popup, setPopup] = useState({ show: false, message: '' });
     const [formFields, setFormFields] = useState({
@@ -104,14 +108,18 @@ function SignupPage() {
                 userToken: responseData.token,
             }));
             const filemakerId = responseData.filemakerId
-            const userDataInit = await getUserData(filemakerId)
-
+            // console.log(filemakerId)
+            // set userData State
+            const userDataInit = await getUserData(filemakerId,authState)
             if (userDataInit.success !== true) {
                 throw new Error("User data is not set. Check user context.");
+            } else {
+              console.log("userData: ",userDataInit.partyData)
             };
-
-            const type = userDataInit.userData.userDetails.partyType[0].data
-
+            const type = userDataInit.partyData.Details.partyType[0].data
+            const orgId = userDataInit.partyData.Info.metaData.orgID
+            // set orgData State
+            getOrgData(orgId,authState)
             if (type === 'Cleaner') {
               console.log('User type is cleaner');              
               setTimeout(() => navigate('/cleaner-portal'), 500);

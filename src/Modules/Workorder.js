@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useUser } from '../UserContext.js';
+import { useUser } from '../Contexts/UserContext.js';
 import CardContainer from '../UI Elements/CardContainer';
 import CardInput from '../UI Elements/CardInput.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -342,7 +342,7 @@ const WorkOrderCard = ({ workOrderData, setWorkOrderData, handleComponentSelect,
   ];
 
   return (
-    <div className="flex-grow items-stretch justify-center flex-grow">
+    <div className="items-stretch justify-center flex-grow">
       <CardContainer cardsData={cardsData} />
     </div>
   );

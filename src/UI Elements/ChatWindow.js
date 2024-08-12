@@ -29,7 +29,7 @@ const ChatWindow = ({ messages, onSendMessage, userData }) => {
 
     if (messageText.trim() !== '') {
       const message = {
-        name: userData.userData.userInfo.firstName,
+        name: userData.Info.firstName,
         timeText: currentTime,
         chatText: messageText,
         status: "delivered",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconButton } from '../UI Elements/Button';
 import HeaderCard from '../UI Elements/HeaderCard';
-import { prepareWorkOrderData } from '../WorkOrderContext';
+import { prepareWorkOrderData } from '../Contexts/WorkOrderContext';
 import Popup from '../UI Elements/Popup';
 
 const CreditCardDetails = ({ token, userData, setActiveComponent, setWorkOrderData }) => {

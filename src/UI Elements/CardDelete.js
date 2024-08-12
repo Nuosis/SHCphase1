@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useAuth } from '../AuthContext.js';
+import { useAuth } from '../Contexts/AuthContext.js';
 import { Close, Delete } from '@mui/icons-material';
 import StarRating from '../UI Elements/StarRating.js';
 import Popup from '../UI Elements/Popup.js'
-import { useUser } from '../UserContext.js';
+import { useUser } from '../Contexts/UserContext.js';
 import { deleteRecord } from '../FileMaker/deleteRecord.js'
 import { readRecord } from '../FileMaker/readRecord.js'
 
@@ -77,7 +77,7 @@ const CardDelete = (
       console.error(`Error processing delete:`, error);
     }
 
-    const userID = state.userData.userInfo.metaData.ID
+    const userID = state.Info.metaData.ID
     getUserData(userID)
   };
 

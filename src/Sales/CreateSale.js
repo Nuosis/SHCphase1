@@ -89,19 +89,19 @@ async function createSale(userData,workOrderData,token) {
   // const userData = useUser();
   // const workOrderData = useWorkOrder();
   const orgSellables = userData.orgData.orgSellables;
-  const custID = userData.userData.userInfo.ID;
+  const custID = userData.Info.ID;
   const sellableID = orgSellables[workOrderData.activity][0].ID
   // console.log("sellableID: ",sellableID)
 
   //ESTABLISH QBO
   try {
-    const qboInfo = userData.userData.userDetails.qboInfo[0].data;
+    const qboInfo = userData.Details.qboInfo[0].data;
     const qboData = JSON.parse(qboInfo)
     // console.log(qboData)
     let qboId = qboData.id;
     if (!qboId) {
       try {
-        const customerData = { DisplayName: userData.userData.userInfo.displayName, PrimaryEmailAddr: {Address: userData.userData.userEmail.main[0].email} };
+        const customerData = { DisplayName: userData.Info.displayName, PrimaryEmailAddr: {Address: userData.Email.main[0].email} };
         const qboCustomer = await callQBOApi(token, 'createCustomer', { customerData });
         qboId = qboCustomer.Customer.Id;
         await createRecord(token, { data: { "Id": qboId }, type: "qboInfo" }, 'dapiRecordDetails', false);
@@ -112,12 +112,12 @@ async function createSale(userData,workOrderData,token) {
   }
   
   //ESTABLISH STRIPE CUSTOMER
-  let stripeInfo = userData.userData.userDetails.stripeInfo[0].data;
+  let stripeInfo = userData.Details.stripeInfo[0].data;
   const stripeData=JSON.parse(stripeInfo)
   let stripeId = stripeData.id
   if (!stripeId) {
     try {
-      const stripeCustomer = await callStripeApi(token, 'addCustomer', { email: userData.userData.userEmail.main[0].email, name: userData.userData.userInfo.displayName });
+      const stripeCustomer = await callStripeApi(token, 'addCustomer', { email: userData.Email.main[0].email, name: userData.Info.displayName });
       stripeId = stripeCustomer.id;
       await createRecord(token, { data: { "Id": stripeId }, type: "stripeInfo" }, 'dapiRecordDetails', false);
     } catch (error) {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import variables from "./Environment/env.json"
+import variables from "../Environment/env.json"
 
 const AuthContext = createContext();
 
@@ -51,8 +51,6 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-
-
     const createAuthUser = async (formData) => {
         console.log('creatingAuthUser')
         const data = {
@@ -95,7 +93,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // You can also define logOut, createUser, etc., here
+    // You can also define logOut,etc., here
 
     return (
         <AuthContext.Provider value={{ authState, setAuthState, logIn, createAuthUser }}>

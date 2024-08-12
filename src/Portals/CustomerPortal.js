@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import { useWorkOrder, prepareWorkOrderData } from './WorkOrderContext';
-import { useUser, getValue} from './UserContext.js';
-import Popup from './UI Elements/Popup.js'
-import Footer from './UI Elements/Footer';
-import AccessCard from './Modules/Access.js'
-import GeneralInstructions from './Modules/GeneralInstructions.js';
-import InformationCard from './Modules/Information.js';
-import WorkOrderCard from './Modules/Workorder.js';
-import WorkOrderReport from './Modules/WorkorderReport.js';
-import CreditCardForm from './Modules/CreditCardInput.js';
-import CreditCardDetails from './Modules/CreditCardDetails.js';
-import MyPets from './Pets/Pet.js';
-import CommunicationPortal from './Modules/Commiunication.js';
-import altUserImage from './images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
-import CreateSale from './Sales/CreateSale.js'
-import Create from './FileMaker/CRUD/Create.js'
-import { callStripeApi } from './Sales/stripe.js'
-import { createRecord } from './FileMaker/createRecord.js';
-import { readRecord } from './FileMaker/readRecord.js'
-import { updateRecord } from './FileMaker/updateRecord.js'
-import { deleteRecord } from './FileMaker/deleteRecord.js'
+import { useAuth } from '../Contexts/AuthContext.js';
+import { useWorkOrder, prepareWorkOrderData } from '../Contexts/WorkOrderContext.js';
+import { useUser } from '../Contexts/UserContext.js';
+import { useOrg } from '../Contexts/OrgContext.js';
+import Popup from '../UI Elements/Popup.js'
+import Footer from '../UI Elements/Footer.js';
+import AccessCard from '../Modules/Access.js'
+import GeneralInstructions from '../Modules/GeneralInstructions.js';
+import InformationCard from '../Modules/Information.js';
+import WorkOrderCard from '../Modules/Workorder.js';
+import WorkOrderReport from '../Modules/WorkorderReport.js';
+import CreditCardForm from '../Modules/CreditCardInput.js';
+import CreditCardDetails from '../Modules/CreditCardDetails.js';
+import MyPets from '../Pets/Pet.js';
+import CommunicationPortal from '../Modules/Commiunication.js';
+import altUserImage from '../images/c311444e-7884-4491-b760-c2e4c858d4ce.webp'
+import CreateSale from '../Sales/CreateSale.js'
+import { callStripeApi } from '../Sales/stripe.js'
+import { createRecord } from '../FileMaker/createRecord.js';
 import { HouseOutlined } from '@mui/icons-material';
-import SHC from './images/SelectHome-StackedLogo-Pine&Lime.png'
+import SHC from '../images/SelectHome-StackedLogo-Pine&Lime.png'
+import { ProcessEdit } from '../Contexts/contextFunctions/ProcessEdit.js';
 
 // If the imported icons are not directly referenced the package build complains
 const icons = {
@@ -34,6 +32,7 @@ function CustomerPortal() {
   const { authState } = useAuth();
   const { workOrderData, setWorkOrderData, newWorkOrderData, setNewWorkOrderData } = useWorkOrder();
   const { userData, getUserData, setUserData } = useUser();
+  const { orgData } = useOrg();
   const [ popup, setPopup ] = useState({ show: false, message: '' });
   const [ edited, setEdited ] = useState([])
   const [ isPreviousOrdersOpen, setIsPreviousOrdersOpen ] = useState(false);
@@ -41,112 +40,21 @@ function CustomerPortal() {
   const [ isMenubarOpen, setIsMenubarOpen ] = useState(false);
   const initialComponent = Object.keys(newWorkOrderData).length > 0 ? 'WorkOrderCard':'';
   const [ activeComponent, setActiveComponent ] = useState(initialComponent);
-  console.log({userData},{workOrderData},{newWorkOrderData})
+  console.log({userData},{orgData},{workOrderData},{newWorkOrderData})
 
-  // push edits to fileMkaer
+  // push edits to fileMaker
   useEffect(() => {
     /**
      * setEdited passes an object of {action, path}   
      * ACTIONS >> Delete, Update, Create
+     * PATH >> STATE.{{pathToValue}}
     */ 
     if (edited.length === 0) return;
     const edit = edited[0];
     console.log("Processing Edit:", edit); // Check the current edit
     const { action, path, value } = edit; // Assumes each edit is an object { action, path, value }
-    // console.log({action},{path},{value})
-    let payload = value ? value : ""
-
-
-    const processEdit = async () => {
-      try {
-        const pathParts = path.split('.');
-        const key = pathParts.pop(); // Gets the last element
-        const metaDataPath = [...pathParts, "metaData"].join('.');
-        const metaData = getValue(userData, metaDataPath);
-        const isPortalRecord = typeof metaData[key] === 'object' && metaData[key] !== null;
-        const table = isPortalRecord? metaData[key].table : metaData.table;
-        const metaDataField = isPortalRecord? metaData[key].field : key;
-        let UUID = isPortalRecord? metaData[key].ID : metaData.ID;
-        let recordID = isPortalRecord? metaData[key].recordID : metaData.recordID;
-        const fieldParts = metaDataField.split('.')
-        const field = fieldParts[0];
-        const fieldObjKey = fieldParts[1] ?  fieldParts[1] : null ;
-        console.log({key},{payload},{metaData},{table},{field},{fieldObjKey},{recordID},{UUID})
-        let record
-  
-        if (!recordID && !UUID) {
-          // recordID and UUID being empty indicates the record does not yet exist and needs to be created
-          console.log("calling create record ...",{key})
-          record = await Create(authState.token ,table,userData,{fkID:metaData.ID,type:"rating"})
-          recordID=record.response.data[0].recordId?record.response.data[0].recordId:null
-          UUID=record.response.data[0].fieldData["__ID"]?record.response.data[0].fieldData["__ID"]:null
-          // console.log("record received ...",{recordID, UUID})
-          if (!recordID){
-            setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-            return
-          }
-        } else if (!recordID) {
-          const query = [{"__ID": UUID}];
-          const layout = table;
-          console.log("getting recordID ...")
-          record = await readRecord(authState.token, {query}, layout);
-          if (record.length === 0) throw new Error("Error getting recordID from FileMaker");
-          recordID = record.response.recordId?record.response.recordId:null
-          if (!recordID){
-            setPopup({ show: true, message: "There was an issue in the way the data is stored and retrieved. Update unsuccessfull" });
-            return
-          }
-        } else if (isPortalRecord) {
-          const query = [{"__ID": UUID}];
-          const layout = table;
-          console.log("getting record ...",{query},{layout})
-          record = await readRecord(authState.token, {query}, layout);
-          if (record.length === 0 || record === undefined) throw new Error("Error getting portal record from FileMaker");
-        }
-        console.log({record})
-
-
-        if (fieldObjKey !== null){
-          /*  data is set in field as part of a json object. 
-              Get Object, update fieldObjKey with value and set
-              value to json to be sent back
-          */
-            console.log("getting field json ...",{fieldObjKey})
-            const data = record.response.data[0].fieldData;
-            const jsonObj=JSON.parse(data[field])
-            console.log({jsonObj})
-            jsonObj[fieldObjKey]=value
-            payload = jsonObj
-            console.log("payload set",payload)
-        }
-
-        const layout = table;
-  
-        if (action === 'update') {
-          const keyValue = !payload ? getValue(userData, path) : payload;
-          const stringValue = typeof keyValue === 'string' ? keyValue : JSON.stringify(keyValue);          
-          const params = { fieldData: { [field]: stringValue } };
-          // console.log({params})
-          // console.log({layout,recordID})
-          const data = await updateRecord(authState.token, params, layout, recordID);
-          if (data.messages && data.messages[0].code !== "0") {
-            throw new Error(`Failed to update record: ${data.messages[0].message}`);
-          }
-          console.log("update successful")
-        } else if (action === 'delete') {
-          const data = await deleteRecord(authState.token, layout, recordID);
-          if (data.messages && data.messages[0].code !== "0") {
-            throw new Error(`Failed to delete record: ${data.messages[0].message}`);
-          }
-        }
-        // Remove the processed edit
-        setEdited(prev => prev.slice(1));
-      } catch (error) {
-        console.error(`Error processing ${action}:`, error);
-      }
-    };
-    processEdit();
-  },[edited, userData, authState.token])
+    ProcessEdit(action, path, value, authState, setEdited, setPopup);
+  },[edited])
 
   // Dynamic component map
   const componentMap = {
@@ -171,10 +79,10 @@ function CustomerPortal() {
     // Define props here if they are dynamic based on the component
     const componentProps = {
         ...(activeComponent === 'WorkOrderCard' && { workOrderData, setWorkOrderData, handleComponentSelect, setEdited }),
-        ...(activeComponent === 'InformationCard' && { onSubmitInformation: handleSubmitInfo, edited, setEdited }),
-        ...(activeComponent === 'GeneralInstructions' && { json: userData.userData.userDetails.generalInstructions, onSubmitGenInstruct: handleSubmitGenInstruct }),
-        ...(activeComponent === 'AccessCard' && { json: userData.userData.userDetails.accessInstructions, onSubmitAccess: handleSubmitAccess }),
-        ...(activeComponent === 'MyPets' && { json: userData.userData.userDetails.pet, onSubmit: handleSubmitPets }),
+        ...(activeComponent === 'InformationCard' && { setEdited }),
+        ...(activeComponent === 'GeneralInstructions' && { json: userData.Details.generalInstructions, onSubmitGenInstruct: setEdited }),
+        ...(activeComponent === 'AccessCard' && { json: userData.Details.accessInstructions, onSubmitAccess:  setEdited }),
+        ...(activeComponent === 'MyPets' && { json: userData.Details.pet, onSubmit: setEdited }),
         ...(activeComponent === 'WorkOrderReport' && { workOrderData, setMessage, edited, setEdited, userData, setUserData  }),
         ...(activeComponent === 'CreditCardForm' && { token, userData, onSubmit: handleSubmitWorkOrder }),
         ...(activeComponent === 'CreditCardDetails' && { token, userData, setActiveComponent, setWorkOrderData }),
@@ -272,14 +180,6 @@ function CustomerPortal() {
         icon: 'FileDownload'
       };
     } 
-
-    // else if (activeComponent === 'MyPets') {
-    //   footerProps = {
-    //     buttonText: 'New Pet',
-    //     // This button handler doesnt work
-    //     buttonClickHandler: MyPets.handleAddPet,
-    //   };
-    // }
   
     // Render the footer with the determined props
     return <Footer {...footerProps} />;
@@ -340,23 +240,8 @@ function CustomerPortal() {
     }
   };
 
-  const handleSubmitAccess = (instructions) => {
-      console.log('Access Instructions:', instructions);
-      // Process the access instructions here
-  };
-
-  const handleSubmitGenInstruct = (instructions) => {
-      console.log('General Instructions:', instructions);
-      // Process the access instructions here
-  };
-
   const handleGetReceipt = (json) => {
       console.log('getReceipt:', json);
-      // Process the access instructions here
-  };
-
-  const handleSubmitInfo = (json) => {
-      console.log('userInfo:', json);
       // Process the access instructions here
   };
 
@@ -364,7 +249,7 @@ function CustomerPortal() {
       console.log('workOrder Submitted:', workOrderData);
       
       // confirm CC or collect
-      const stripeData = JSON.parse(userData.userData.userDetails.stripeInfo[0].data)
+      const stripeData = JSON.parse(userData.Details.stripeInfo[0].data)
       // console.log({stripeData})
       const hasCreditCard = await callStripeApi(authState.token, 'hasValidCard', {customerId: stripeData.id})
       // console.log('hasCreditCard: ',hasCreditCard)
@@ -386,7 +271,7 @@ function CustomerPortal() {
         setNewWorkOrderData({});
 
         // reset billable in userData
-        await getUserData(userData.userData.userInfo.ID)
+        await getUserData(userData.Info.metaData.ID)
 
         handleComponentChange('WorkOrderReport')
 
@@ -432,11 +317,6 @@ function CustomerPortal() {
         setPopup({ show: true, message: 'Payment method required' });
         handleComponentChange('CreditCardForm')
       }
-  };
-
-  const handleSubmitPets = (Pets) => {
-      console.log('Pets:', Pets);
-      // Process the access instructions here
   };
 
   const handleNewOrder = () => {
@@ -521,7 +401,7 @@ function CustomerPortal() {
                     alt=""
                     loading="lazy"
                   />
-                  <p className="pl-2">{userData.userData.userInfo.firstName} {userData.userData.userInfo.lastName}</p>
+                  <p className="pl-2">{userData.Info.firstName} {userData.Info.lastName}</p>
                   <svg className="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
                   </svg>
@@ -573,8 +453,8 @@ function CustomerPortal() {
                   </ul>
                 </div>
               </li>
-               {/* NEW ORDER */}
-               {newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate ? (
+                {/* NEW ORDER */}
+                {newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate ? (
                 <button
                     id="newOrder"
                     className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
@@ -583,7 +463,7 @@ function CustomerPortal() {
                   <i className="iconoir-cart-alt text-3xl"></i>
                   <p className="pl-2">View Order</p>
                 </button>
-               ) : (
+                ) : (
                 <button
                 id="newOrder"
                 className="flex items-center justify-between w-full py-2 px-3 text-gray-900 dark:text-gray-200 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-primary md:p-0 md:w-auto md:dark:hover:text-secondary dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
@@ -592,7 +472,7 @@ function CustomerPortal() {
                 <i className="iconoir-cart-plus text-3xl"></i>
                 <p className="pl-2">New Order</p>
                 </button>
-               )}
+              )}
             </ul>
           </div>
         </div>

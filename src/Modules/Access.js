@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HeaderCard from '../UI Elements/HeaderCard';
-import { TextButton, IconButton } from '../UI Elements/Button';
+import { /*TextButton,*/ IconButton } from '../UI Elements/Button';
 import 'daisyui';
 
 //TODO: update not working

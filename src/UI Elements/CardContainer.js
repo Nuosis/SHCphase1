@@ -18,12 +18,8 @@ const CardContainer = ({ cardsData }) => {
             id={cardData.id}
             headerText={cardData.headerText}
             headerHiddenText={cardData.headerHiddenText}
-            state={cardData.state}
-            setState={cardData.setState}
-            setEdited={cardData.setEdited}
-            onSubmit={cardData.onSubmit}
             onNew={cardData.onNew}
-            defaultOpen={cardData.defaultOpen}
+            defaultOpen={cardData.isOpen}
             flex={cardData.flex}
             isOpen={openCardId === cardData.id}
             onToggle={() => handleCardToggle(cardData.id)}

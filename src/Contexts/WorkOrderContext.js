@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import {readRecord} from './FileMaker/readRecord'
+import {readRecord} from '../FileMaker/readRecord'
 
 const WorkOrderContext = createContext();
 
