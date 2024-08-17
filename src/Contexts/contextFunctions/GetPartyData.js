@@ -5,7 +5,7 @@ import { createDetailsObject } from './CreateDetailsObj.js';
 import { createConversationObject } from './CreateCommunicationObj.js';
 import { createPhonesObject } from './CreatePhoneObj.js'; 
 import { createRelatedObject } from './CreateRelatedObj.js';
-import { getBillables } from './CreateBillablesObj.js';
+import { createBillablesObject } from './CreateBillablesObj.js';
 
 
 export const getPartyData = async (filemakerId,authState) => {
@@ -20,7 +20,7 @@ export const getPartyData = async (filemakerId,authState) => {
   
   try{
       //GET party INFO
-      const filemakerPartyObject = await readRecord(authState.token,{query},partyLayout)
+      const filemakerPartyObject = await readRecord(authState.userToken,{query},partyLayout)
       // console.log({filemakerPartyObject})
       if(filemakerPartyObject.length===0){
           throw new Error("Error on getting party info from FileMaker")
@@ -58,7 +58,7 @@ export const getPartyData = async (filemakerId,authState) => {
       //console.log({Phones})
       const Related = createRelatedObject(partyObject,"dapiPartyRelatedParties_partyID")
       //console.log({Related})
-      const billableData = getBillables(partyObject,authState)
+      const billableData = await createBillablesObject(filemakerId,authState)
       console.log({billableData})
       const partyData = {Info,Details,Address,Email,Conversations,Phones,Related,billableData}
       return {success: true,partyData};

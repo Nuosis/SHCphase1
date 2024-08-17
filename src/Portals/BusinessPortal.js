@@ -5,6 +5,6 @@
  * job management (quoting, invoicing, inspecting)
  */
 
-function ProviderPortal() {}
+function BusinessPortal() {}
 
-export default ProviderPortal;
+export default BusinessPortal;

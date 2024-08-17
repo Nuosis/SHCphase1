@@ -84,7 +84,7 @@ const MyPets = ({json, onSubmit}) => {
                 )}
                 {!showNewPetForm && (
                     <div className="flex">
-                        <div class="grow"></div>
+                        <div className="grow"></div>
                         <IconButton
                             icon="AddCircle"
                             className="btn btn-primary self-end"

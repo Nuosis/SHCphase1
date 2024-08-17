@@ -4,7 +4,7 @@ async function deleteRecord(token, layout, recordID) {
     // Prepare the data for the API call
     const payloadData = {
         method: "deleteRecord",
-        server: "server.selectjanitorial.com",
+        server: "server.claritybusinesssolutions.ca",
         database: "clarityData",
         layout,
         recordID: recordID,

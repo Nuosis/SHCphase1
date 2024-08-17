@@ -64,12 +64,12 @@ const CardDelete = (
       } else if (!recordID) {
         const params = [{"_partyID": UUID}];
         const layout = table;
-        const data = await readRecord(authState.token, params, layout);
+        const data = await readRecord(authState.appToken, params, layout);
         if (data.length === 0) throw new Error("Error getting recordID from FileMaker");
         recordID = data.response.recordId;
       }
       const layout = table;
-      const data = await deleteRecord(authState.token, layout, recordID);
+      const data = await deleteRecord(authState.appToken, layout, recordID);
       if (data.messages && data.messages[0].code !== "0") {
         throw new Error(`Failed to delete record: ${data.messages[0].message}`);
       }

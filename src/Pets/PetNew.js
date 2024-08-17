@@ -91,7 +91,7 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                     }}
                 />
             </div>
-            <div class="mb-8">
+            <div className="mb-8">
                 <label className="block text-sm font-bold text-primary dark:text-gray-400">Special Instructions</label>
                 <textarea
                     className="mt-2 block w-full px-3 py-2 text-black border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-700"
@@ -118,7 +118,7 @@ const NewPet = ({ pet, pets, setPets, onSubmit, onCancel, onDelete }) => {
                     type="button"
                     text="Cancel"
                 />
-                <div class="grow"></div>
+                <div className="grow"></div>
                 <IconButton 
                     icon="CheckCircle"
                     className="btn btn-primary"

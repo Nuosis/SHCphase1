@@ -1,19 +1,20 @@
 import React, { createContext, useContext, useState } from 'react';
-import variables from "../Environment/env.json"
+import config from '../Environment/config';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+
     const [authState, setAuthState] = useState({
-        token: variables.token,
-        apiKey: variables.apiKey,
+        appToken: config.appToken,
+        apiKey: config.apiKey,
         userToken: "",
-        adminUserName: variables.adminUserName,
-        adminPassword: variables.adminPassword,
-        server: variables.server,
-        errorMessage: null, // For storing login errors
+        adminUserName: config.adminUserName,
+        adminPassword: config.adminPassword,
+        server: config.server,
+        errorMessage: "", // For storing login errors
     });
 
     const logIn = async (formData) => {
@@ -23,8 +24,8 @@ export const AuthProvider = ({ children }) => {
             password: formData.password,
             apiKey: authState.apiKey,
         };
-        //console.log("requestData: ",requestData)
-        //console.log("serverURL: ",variables.server)
+        // console.log("requestData: ",requestData)
+        // console.log("serverURL: ",config.server)
 
         try {
             const response = await fetch(`${authState.server}/login`, {
@@ -60,11 +61,11 @@ export const AuthProvider = ({ children }) => {
         };
 
         try {        
-            const response = await fetch(`${variables.server}/createUser`, {
+            const response = await fetch(`${config.server}/createUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + authState.token,
+                    'Authorization': 'Bearer ' + authState.appToken,
                 },
                 body: JSON.stringify(data),
             });
@@ -74,12 +75,13 @@ export const AuthProvider = ({ children }) => {
             }
 
             const responseData = await response.json();
-            console.log('User Created:', responseData);
+            console.log('User Created:');
 
             // Update state with the login data
             setAuthState(prevState => ({
                 ...prevState,
                 userToken: responseData.token,
+                // token: responseData.token,
             }));
             return true; // Indicates success
 

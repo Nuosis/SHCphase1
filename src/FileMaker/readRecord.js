@@ -11,12 +11,12 @@ async function readRecord(token, params, layout) {
     // Prepare the data for the API call
     const payloadData = {
         method: "findRecord",
-        server: "server.selectjanitorial.com",
+        server: "server.claritybusinesssolutions.ca",
         database: "clarityData",
         layout,
         params
     };
-    // console.log({payloadData})
+    console.log({payloadData})
 
 
     const response = await fetch('https://server.claritybusinesssolutions.ca:4343/clarityData', {

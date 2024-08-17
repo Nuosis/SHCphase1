@@ -85,7 +85,7 @@ function CleanerPortal() {
       //console.log('Active component:', activeComponent);
       const Component = componentMap[activeComponent];
       if (!Component) return null;
-      const token=authState.token
+      const token=authState.appToken
   
       // Define props here if they are dynamic based on the component
       const componentProps = {
@@ -211,7 +211,7 @@ function CleanerPortal() {
           woData = workOrderData;
         } else {
           console.log('need to construct new workOrderObject')
-          woData = await prepareWorkOrderData(authState.token, userData, date, "Home Cleaning");
+          woData = await prepareWorkOrderData(authState.appToken, userData, date, "Home Cleaning");
         }
 
         //UPDATE STATE (OR NOT)

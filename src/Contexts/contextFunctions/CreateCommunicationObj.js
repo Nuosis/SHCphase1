@@ -8,7 +8,7 @@ export     async function createConversationObject(userObject,authState) {
       {"dapiConversationMembers::_memberID": userObject[0].fieldData["__ID"]}
   ];
 
-  const conversationObject = await readRecord(authState.token,{query: memberQuery},layout)
+  const conversationObject = await readRecord(authState.userToken,{query: memberQuery},layout)
   if(conversationObject.length===0){
       throw new Error("Error on getting organization info from FileMaker")
   }

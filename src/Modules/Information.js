@@ -41,7 +41,7 @@ const InformationCard = ({ setEdited }) => {
               type="text"
               id="firstName"
               childType="field"
-              parentClass="space-y-4 mr-8"
+              parentclassName="space-y-4 mr-8"
               state={userData}
               setState={setUserData}
               stateKey="userData.Info.firstName"
@@ -52,7 +52,7 @@ const InformationCard = ({ setEdited }) => {
               type="text"
               id="lastName"
               childType="field"
-              parentClass="space-y-4 mr-8"
+              parentclassName="space-y-4 mr-8"
               state={userData}
               setState={setUserData}
               stateKey="userData.Info.lastName"
@@ -84,7 +84,7 @@ const InformationCard = ({ setEdited }) => {
                     type="text"
                     id={`street-${type}-${index}`}
                     childType="field"
-                    inputClass="w-80"
+                    inputclassName="w-80"
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.Address.${type}[${index}].street`}
@@ -95,7 +95,7 @@ const InformationCard = ({ setEdited }) => {
                     type="text"
                     id={`city-${type}-${index}`}
                     childType="field"
-                    inputClass="w-80"
+                    inputclassName="w-80"
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.Address.${type}[${index}].city`}
@@ -106,7 +106,7 @@ const InformationCard = ({ setEdited }) => {
                     type="text"
                     id={`province-${type}-${index}`}
                     childType="field"
-                    inputClass="w-80"
+                    inputclassName="w-80"
                     state={userData}
                     setState={setUserData}
                     stateKey={`userData.Address.${type}[${index}].province`}
@@ -154,7 +154,7 @@ const InformationCard = ({ setEdited }) => {
                       type="email"
                       id={`email-${key}-${index}`}
                       childType="field"
-                      inputClass="w-80"
+                      inputclassName="w-80"
                       state={userData}
                       setState={setUserData}
                       stateKey={`userData.Email.${key}[${index}].email`}
@@ -167,7 +167,7 @@ const InformationCard = ({ setEdited }) => {
                       type="email"
                       id={`email-delete-${key}-${index}`}
                       childType="field"
-                      inputClass="w-80"
+                      inputclassName="w-80"
                       state={userData}
                       setState={setUserData}
                       stateKey={`userData.Email.${key}[${index}].email`}

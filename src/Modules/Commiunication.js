@@ -36,7 +36,7 @@ const CommunicationPortal = ({ userData }) => {
 
     try {
       console.log("Calling CreateRecord ...");
-      result = await createRecord(authState.token, params, layout, true);
+      result = await createRecord(authState.appToken, params, layout, true);
     } catch (error) {
       console.error("Error creating record:", error.message);
       throw new Error(`Failed to create message record in FileMaker: ${error.message}`);
@@ -60,7 +60,7 @@ const CommunicationPortal = ({ userData }) => {
       };
       params = { fieldData };
       layout = "dapiStatus";
-      createRecord(authState.token, params, layout, false);
+      createRecord(authState.appToken, params, layout, false);
     });
   };
 
@@ -69,7 +69,7 @@ const CommunicationPortal = ({ userData }) => {
       const layout = "dapiMessageObject";
       const query = [{ "dapiMessageConversation::__ID": id }];
   
-      const messagesObject = await readRecord(authState.token, { query }, layout);
+      const messagesObject = await readRecord(authState.appToken, { query }, layout);
       if (messagesObject.response.data.length === 0) {
         throw new Error("Error on getting message info from FileMaker");
       }
@@ -145,7 +145,7 @@ const CommunicationPortal = ({ userData }) => {
         const recordID = message.statusRecordID;
         const params = { fieldData };
         const layout = "dapiStatus";
-        updateRecord(authState.token, params, layout, recordID);
+        updateRecord(authState.appToken, params, layout, recordID);
       }
     });
     console.log({ messages });
@@ -195,7 +195,7 @@ const CommunicationPortal = ({ userData }) => {
 
   return (
     <div className="flex flex-grow items-stretch justify-center flex-grow">
-      <HeaderCard bodyClass="p-0 border-t dark:border-gray-600 h-full">
+      <HeaderCard bodyclassName="p-0 border-t dark:border-gray-600 h-full">
         <div className="flex flex-row h-full">
           <div className="flex flex-col h-min-full gap-4 w-3/12 border-r bg-gray-100 dark:bg-gray-800/50 dark:border-gray-600">
             {userConversations.map((conversation, index) => (

@@ -16,7 +16,7 @@ export const getOrg = async (orgId,authState) => {
       {"__ID": orgId}
   ];
   try{
-      const filemakerOrgObject = await readRecord(authState.token,{query},orgLayout)
+      const filemakerOrgObject = await readRecord(authState.userToken,{query},orgLayout)
       if(filemakerOrgObject.length===0){
           throw new Error("Error on getting organization info from FileMaker")
       }

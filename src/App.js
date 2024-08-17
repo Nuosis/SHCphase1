@@ -6,16 +6,15 @@ import { UserProvider } from './Contexts/UserContext';
 import { OrgProvider } from './Contexts/OrgContext';
 import { CleanerProvider } from './Contexts/CleanerContext'
 import { CustomerProvider } from './Contexts/CustomerContext';
-import SignupPage from './Modules/SignupPage';
+import SignupPage from './Portals/SignupPage';
 import CleanerPortal from './Portals/CleanerPortal'; // Your protected component
-import ProviderPortal from './Portals/ProviderPortal'; // Your protected component
+import BusinessPortal from './Portals/BusinessPortal'; // Your protected component
 import CustomerPortal from './Portals/CustomerPortal'; // Your protected component
 import ProtectedRoute from './ProtectedRoute'; // Your ProtectedRoute component
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { getStateValue } from './Contexts/contextFunctions/GetStateValue';
+// import { getStateValue } from './Contexts/contextFunctions/GetStateValue';
 
-//const stripePromise = loadStripe('pk_test_51HukyvL804ojXsbD9GxRMkVNO6ab5KhrxUpqbUN9wKLZsPVpvgIqrQPlxW8hZH2nXccMELTn93y69Yg1fQDj8lpT00FH2WGsD1');
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_TEST_KEY);
 if (!stripePromise) {
   console.error('Failed to initialize Stripe with the provided key');
@@ -52,7 +51,7 @@ function App() {
                   <ProtectedRoute>
                     <CustomerProvider>
                       <CleanerProvider>
-                        <ProviderPortal />
+                        <BusinessPortal />
                       </CleanerProvider>
                     </CustomerProvider>
                   </ProtectedRoute>

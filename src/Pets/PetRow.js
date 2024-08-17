@@ -16,8 +16,8 @@ const PetRow = ({ id, type, name, temperament, specialInstructions, onEdit }) =>
                 <div className="flex flex-col">
                     <h2 className="font-bold text-lg text-primary dark:text-secondary mb-4">{name}</h2>
                     <div className="">
-                        <div><span class="font-semibold italic text-primary">Temperament:</span> {temperament.join(', ')}</div>
-                        <div><span class="font-semibold italic text-primary">Special Instructions:</span> {specialInstructions}</div>
+                        <div><span className="font-semibold italic text-primary">Temperament:</span> {temperament.join(', ')}</div>
+                        <div><span className="font-semibold italic text-primary">Special Instructions:</span> {specialInstructions}</div>
                         <IconButton
                             icon="Edit"
                             className="btn btn-outline btn-sm dark:btn-outline dark:text-gray-500 mt-4"

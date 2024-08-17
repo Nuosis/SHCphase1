@@ -2,6 +2,23 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+## IMPROVEMENTS
+Finish Implementing State Management 
+Implement UI elements Library
+- https://nextui.org/
+- https://mui.com/
+- https://ui.shadcn.com/
+- https://mantine.dev/
+- https://v2.chakra-ui.com/
+Restructure 
+- How to structure a Complex React App - https://www.youtube.com/watch?v=UUga4-z7b6s
+
+Review State Update Process - ensure effectivient and not overly complicated (useCallBack)
+Implement Automotic Testing "Test Driven Development"
+Review Specific Component for local improvements
+
+
 ## Available Scripts
 
 In the project directory, you can run:

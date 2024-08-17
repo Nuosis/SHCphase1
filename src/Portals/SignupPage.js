@@ -106,11 +106,15 @@ function SignupPage() {
             setAuthState(prevState => ({
                 ...prevState,
                 userToken: responseData.token,
+                //token: responseData.token,
             }));
             const filemakerId = responseData.filemakerId
-            // console.log(filemakerId)
-            // set userData State
-            const userDataInit = await getUserData(filemakerId,authState)
+            const auth = {}
+            auth.userToken=responseData.token
+            console.log({authState})
+            
+            // set State Data
+            const userDataInit = await getUserData(filemakerId,auth)
             if (userDataInit.success !== true) {
                 throw new Error("User data is not set. Check user context.");
             } else {
@@ -118,8 +122,10 @@ function SignupPage() {
             };
             const type = userDataInit.partyData.Details.partyType[0].data
             const orgId = userDataInit.partyData.Info.metaData.orgID
+            
             // set orgData State
-            getOrgData(orgId,authState)
+            getOrgData(orgId,auth)
+            
             if (type === 'Cleaner') {
               console.log('User type is cleaner');              
               setTimeout(() => navigate('/cleaner-portal'), 500);
@@ -227,7 +233,7 @@ function SignupPage() {
             };
             const layout = "dapiParty"
             const returnRecord = true;
-            partyResult = await createRecord(authState.token,params,layout,returnRecord);
+            partyResult = await createRecord(authState.appToken,params,layout,returnRecord);
             // console.log(partyResult) //remove in production
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
@@ -251,7 +257,7 @@ function SignupPage() {
             };
             const layout = "dapiRecordDetails"
             const recordReturn = false;
-            detailResult = await createRecord(authState.token,params,layout, recordReturn);
+            detailResult = await createRecord(authState.appToken,params,layout, recordReturn);
             console.log(detailResult)
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
@@ -273,7 +279,7 @@ function SignupPage() {
             };
             const layout = "dapiEmail"
             const emailReturn = false;
-            emailResult = await createRecord(authState.token,params,layout, emailReturn);
+            emailResult = await createRecord(authState.appToken,params,layout, emailReturn);
             console.log(emailResult)
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
@@ -296,7 +302,7 @@ function SignupPage() {
             };
             const layout = "dapiPhone"
             const phoneReturn = false;
-            phoneResult = await createRecord(authState.token,params,layout, phoneReturn);
+            phoneResult = await createRecord(authState.appToken,params,layout, phoneReturn);
             console.log(phoneResult)
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
@@ -319,7 +325,7 @@ function SignupPage() {
             };
             const layout = "dapiAddress"
             const returnResult = false;
-            addressResult = await createRecord(authState.token,params,layout, returnResult);
+            addressResult = await createRecord(authState.appToken,params,layout, returnResult);
             console.log(addressResult)
         } catch (error) {
             setPopup({ show: true, message: "Failed to create FileMaker Party account. Please try again." }); //remove in production
@@ -329,14 +335,14 @@ function SignupPage() {
 
         // update AuthUser with FileMakerID
         console.log("Updating Auth User")
-        const data = {newFileMakerID: partyID, userToken: authState.userToken}
+        const data = {newFileMakerID: partyID, userToken: authState.appToken}
         console.log({authState})
         try {       
             const response = await fetch(`${authState.server}/updateUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + authState.token,
+                    'Authorization': 'Bearer ' + authState.appToken,
                 },
                 body: JSON.stringify(data),
             });

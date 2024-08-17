@@ -1,22 +1,26 @@
 import { readRecord } from '../../FileMaker/readRecord.js';
 
 //GET USER PURCHASE HX
-export async function getBillables(filemakerId,authState){
+export async function createBillablesObject(filemakerId,authState){
   const billableLayout = "dapiBillableObject"
   let query = [
       {"_partyID": filemakerId}
   ];
-  const filemakerBillableObject = await readRecord(authState.token,{query},billableLayout)
-  if(filemakerBillableObject.length===0){
-      throw new Error("Error on getting billable info from FileMaker")
+  const filemakerBillableObject = await readRecord(authState.userToken,{query},billableLayout)
+  // console.log({filemakerBillableObject})
+  if (filemakerBillableObject.error || 
+    (filemakerBillableObject.messages && filemakerBillableObject.messages.length > 0 && filemakerBillableObject.messages[0].code !== "0")) {
+      console.error("Error on getting billable info from FileMaker")
+      throw new Error("Error on getting billable info from FileMaker");
   }
+
   console.log("billable fetch successfull ...")
-  console.log({filemakerBillableObject})
   let billableData = {}
   if(!filemakerBillableObject.error) {
     const billableObject = filemakerBillableObject.response.data
     if (Array.isArray(billableObject)) {
       billableObject.forEach(bill => {
+          // console.log({bill})
           const description = bill.portalData.dapiBillableSellable[0]["dapiBillableSellable::description"];
           // Find the service provider where the field type is 'cleaner'
           const serviceProviderEntry = bill.portalData.dapiBillableDetails.find(detail => detail["dapiBillableDetails::type"] === 'cleaner');
@@ -66,7 +70,6 @@ export async function getBillables(filemakerId,authState){
                 ratingDescription: {table: 'dapiRecordDetails', recordID: ratingRecordID, ID: ratingRecordUUID,field: "data.description"}
               }
           };
-
           // Check if the description key exists in billableData
           if (billableData[description]) {
               // If it exists, push the new billable object to the existing array
@@ -75,8 +78,10 @@ export async function getBillables(filemakerId,authState){
               // If it doesn't exist, create a new array with the billable object
               billableData[description] = [billable];
           }
+          // console.log({billableData})
           return billableData
       });
     }
   }
+  return billableData
 }

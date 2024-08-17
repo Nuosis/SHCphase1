@@ -72,7 +72,7 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
     console.error('No matching billable record found');
     return;
   }
-  console.log({billableRecord});
+  console.log("Billable record found",{billableRecord});
 
   const ID = billableRecord.metaData.ID;
   const rating = billableRecord.rating ? billableRecord.rating : 0 ;
@@ -90,7 +90,7 @@ export const prepareWorkOrderData = async (token, userData, date, activity) => {
       detail: item.fieldData.detail,
       label: item.fieldData.label
     }));
-    // console.log({scopeData})
+    //console.log({scopeData})
 
     // Replicate the structure seen in workOrderData from the second image
     const woData = {

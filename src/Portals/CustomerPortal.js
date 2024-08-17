@@ -42,7 +42,7 @@ function CustomerPortal() {
   const [ activeComponent, setActiveComponent ] = useState(initialComponent);
   console.log({userData},{orgData},{workOrderData},{newWorkOrderData})
 
-  // push edits to fileMaker
+  // push edits to fileMaker //adjust to useCallback MS
   useEffect(() => {
     /**
      * setEdited passes an object of {action, path}   
@@ -74,7 +74,7 @@ function CustomerPortal() {
     //console.log('Active component:', activeComponent);
     const Component = componentMap[activeComponent];
     if (!Component) return null;
-    const token=authState.token
+    const token=authState.appToken
 
     // Define props here if they are dynamic based on the component
     const componentProps = {
@@ -100,7 +100,7 @@ function CustomerPortal() {
     if (newWorkOrderData && newWorkOrderData.activity && newWorkOrderData.cleaningDate) {
         activities[newWorkOrderData.activity] = [{
             date: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10),
-            name: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) + ' <span class="font-bold text-primary">(New)</span>',
+            name: new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) + ' <span className="font-bold text-primary">(New)</span>',
             isSelected: (workOrderData && new Date(newWorkOrderData.cleaningDate).toISOString().slice(0, 10) === new Date(workOrderData.cleaningDate).toISOString().slice(0, 10))
         }];
     }
@@ -136,7 +136,7 @@ function CustomerPortal() {
                 key={detail.date}
                 onClick={() => handleWorkOrderChange(detail.date)}
                 className={detail.isSelected ? 'selected-class' : ''}
-                dangerouslySetInnerHTML={{ __html: `<a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">${detail.name}</a>` }}
+                dangerouslySetInnerHTML={{ __html: `<a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">${detail.name}</a>` }}
             />
         ))
     ));
@@ -201,8 +201,7 @@ function CustomerPortal() {
       } else if (workOrderData && workOrderData.cleaningDate === date) {
         woData = workOrderData;
       } else {
-        console.log('need to construct new workOrderObject')
-        woData = await prepareWorkOrderData(authState.token, userData, date, "Home Cleaning");
+        woData = await prepareWorkOrderData(authState.userToken, userData, date, "Home Cleaning");
       }
 
       //UPDATE STATE (OR NOT)
@@ -251,11 +250,11 @@ function CustomerPortal() {
       // confirm CC or collect
       const stripeData = JSON.parse(userData.Details.stripeInfo[0].data)
       // console.log({stripeData})
-      const hasCreditCard = await callStripeApi(authState.token, 'hasValidCard', {customerId: stripeData.id})
+      const hasCreditCard = await callStripeApi(authState.appToken, 'hasValidCard', {customerId: stripeData.id})
       // console.log('hasCreditCard: ',hasCreditCard)
 
       if (hasCreditCard) {
-        const saleData = await CreateSale(userData,workOrderData,authState.token);
+        const saleData = await CreateSale(userData,workOrderData,authState.appToken);
         if (saleData.success) {
           console.log("Sale process completed successfully.");
           // Customer created in Stripe and QBO and stored in UserData
@@ -288,7 +287,7 @@ function CustomerPortal() {
             currency: 'CAD',
             customerId: stripeData.id
           }
-          let paymentIntent = await callStripeApi(authState.token, 'createPaymentIntent', params)
+          let paymentIntent = await callStripeApi(authState.appToken, 'createPaymentIntent', params)
           // prcess if returns error >> popup
           console.log({paymentIntent})
           if (!paymentIntent || !paymentIntent.clientSecret) {
@@ -303,7 +302,7 @@ function CustomerPortal() {
           }
           console.log({params})
 
-          let response = await createRecord(authState.token, params, 'dapiRecordDetails', false)
+          let response = await createRecord(authState.appToken, params, 'dapiRecordDetails', false)
           console.log({response})
           if(!response.messages || !response.messages[0] || response.messages[0].code !== "0") {
             throw new Error(`error recording paymentIntention: ${JSON.stringify(response)}`)
