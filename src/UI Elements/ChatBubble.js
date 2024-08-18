@@ -5,9 +5,9 @@ const ChatBubble = ({ name, timeText, chatText, status, sendDirection}) => {
   let chatBubbleClass
   let chatBubbleType
   if(sendDirection==="in"){
-    chatBubbleclassName="chat chat-start"
+    chatBubbleClass="chat chat-start"
   } else {
-    chatBubbleclassName="chat chat-end"
+    chatBubbleClass="chat chat-end"
     chatBubbleType="chat-bubble-info"
   }
   return (
