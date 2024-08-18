@@ -7,14 +7,17 @@ export     async function createConversationObject(userObject,authState) {
   const memberQuery = [
       {"dapiConversationMembers::_memberID": userObject[0].fieldData["__ID"]}
   ];
+  const conversations = [];
 
   const conversationObject = await readRecord(authState.userToken,{query: memberQuery},layout)
-  if(conversationObject.length===0){
-      throw new Error("Error on getting organization info from FileMaker")
+  console.log(conversationObject)
+  if(conversationObject.error){
+    console.error("Error on getting conversation info from FileMaker")
+    return conversations
   }
   const data = conversationObject.response.data
   // console.log("conversation data",{data},{conversationObject})
-  const conversations = [];
+
   data.forEach(record => {
     const { fieldData, portalData } = record;
     

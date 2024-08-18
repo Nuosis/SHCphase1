@@ -9,7 +9,7 @@ import { createBillablesObject } from './CreateBillablesObj.js';
 
 
 export const getPartyData = async (filemakerId,authState) => {
-  console.log("getPartyData Called ...")
+  console.log("getPartyData Called ...",filemakerId)
   
   let query = []
   //GET party OBJECT RECORD

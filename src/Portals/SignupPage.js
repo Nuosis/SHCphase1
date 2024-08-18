@@ -111,7 +111,7 @@ function SignupPage() {
             const filemakerId = responseData.filemakerId
             const auth = {}
             auth.userToken=responseData.token
-            console.log({authState})
+            console.log({responseData})
             
             // set State Data
             const userDataInit = await getUserData(filemakerId,auth)
@@ -334,6 +334,8 @@ function SignupPage() {
         console.log("address created")
 
         // update AuthUser with FileMakerID
+
+        /* ERRORED
         console.log("Updating Auth User")
         const data = {newFileMakerID: partyID, userToken: authState.appToken}
         console.log({authState})
@@ -362,6 +364,7 @@ function SignupPage() {
             setPopup({ show: true, message: error.message || "Failed to update auth account with db ID." });
             return
         }
+        */
 
         setPopup({ show: true, message: "Account Created!" });
         

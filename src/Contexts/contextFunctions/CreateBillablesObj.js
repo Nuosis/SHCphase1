@@ -8,14 +8,15 @@ export async function createBillablesObject(filemakerId,authState){
   ];
   const filemakerBillableObject = await readRecord(authState.userToken,{query},billableLayout)
   // console.log({filemakerBillableObject})
-  if (filemakerBillableObject.error || 
-    (filemakerBillableObject.messages && filemakerBillableObject.messages.length > 0 && filemakerBillableObject.messages[0].code !== "0")) {
+  let billableData = {}
+  if (filemakerBillableObject.error 
+    // ||(filemakerBillableObject.messages && filemakerBillableObject.messages.length > 0 && filemakerBillableObject.messages[0].code !== "0")
+    ) {
       console.error("Error on getting billable info from FileMaker")
-      throw new Error("Error on getting billable info from FileMaker");
+      return billableData
   }
 
   console.log("billable fetch successfull ...")
-  let billableData = {}
   if(!filemakerBillableObject.error) {
     const billableObject = filemakerBillableObject.response.data
     if (Array.isArray(billableObject)) {
