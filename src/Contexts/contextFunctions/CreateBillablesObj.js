@@ -12,6 +12,7 @@ export async function createBillablesObject(filemakerId,authState){
   if (filemakerBillableObject.error 
     // ||(filemakerBillableObject.messages && filemakerBillableObject.messages.length > 0 && filemakerBillableObject.messages[0].code !== "0")
     ) {
+      console.log(filemakerBillableObject)
       console.error("Error on getting billable info from FileMaker")
       return billableData
   }

@@ -1,5 +1,5 @@
 export function createSellableObject(userObject, portalStem) {
-      console.log('Sellables...:',{userObject},portalStem)
+      console.log('Sellables...:')
       const newObject = {};
       if (Array.isArray(userObject[0]?.portalData?.[portalStem])) {
       userObject[0].portalData[portalStem].forEach(record => {

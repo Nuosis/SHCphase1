@@ -10,8 +10,8 @@ export     async function createConversationObject(userObject,authState) {
   const conversations = [];
 
   const conversationObject = await readRecord(authState.userToken,{query: memberQuery},layout)
-  console.log(conversationObject)
   if(conversationObject.error){
+    console.log(conversationObject)
     console.error("Error on getting conversation info from FileMaker")
     return conversations
   }

@@ -59,7 +59,7 @@ export const getPartyData = async (filemakerId,authState) => {
       const Related = createRelatedObject(partyObject,"dapiPartyRelatedParties_partyID")
       //console.log({Related})
       const billableData = await createBillablesObject(filemakerId,authState)
-      console.log({billableData})
+      //console.log({billableData})
       const partyData = {Info,Details,Address,Email,Conversations,Phones,Related,billableData}
       return {success: true,partyData};
   } catch (error) {

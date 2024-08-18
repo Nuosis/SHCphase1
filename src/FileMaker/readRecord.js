@@ -16,7 +16,7 @@ async function readRecord(token, params, layout) {
         layout,
         params
     };
-    console.log({payloadData})
+    //console.log({payloadData})
 
 
     const response = await fetch('https://server.claritybusinesssolutions.ca:4343/clarityData', {
